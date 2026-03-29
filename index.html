@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Engine Exhaust Analysis System</title>
+    <title>Engine Exhaust Analysis System | Engineering Lab</title>
     <style>
         * {
             margin: 0;
@@ -12,60 +12,40 @@
         }
 
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0f172a;
             color: #f1f5f9;
-            font-family: 'Segoe UI', 'Roboto', sans-serif;
             line-height: 1.6;
-            overflow-x: hidden;
         }
 
-        /* ===== HEADER ===== */
-        header {
+        /* HEADER */
+        .header {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border-bottom: 1px solid #334155;
-            padding: 1.5rem 2rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-        }
-
-        .header-container {
-            max-width: 1600px;
-            margin: 0 auto;
+            border-bottom: 2px solid #334155;
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        .header-info h1 {
-            font-size: 1.8rem;
+        .header-title {
+            font-size: 24px;
             font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .header-info p {
-            font-size: 0.9rem;
-            color: #cbd5e1;
-            opacity: 0.8;
-        }
-
-        .header-status {
+            letter-spacing: 1px;
             display: flex;
-            gap: 2rem;
             align-items: center;
+            gap: 12px;
         }
 
         .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background-color: #22c55e;
             animation: pulse 2s infinite;
+            box-shadow: 0 0 8px #22c55e;
         }
 
         @keyframes pulse {
@@ -73,1022 +53,1199 @@
             50% { opacity: 0.5; }
         }
 
+        .header-right {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
         .live-clock {
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-size: 14px;
             color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #3b82f6;
         }
 
-        /* ===== MAIN CONTAINER ===== */
-        .main-container {
-            max-width: 1600px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .grid {
             display: grid;
-            grid-template-columns: 1fr 1.2fr 1fr;
-            gap: 1.5rem;
-            min-height: calc(100vh - 200px);
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        /* ===== PANELS ===== */
+        /* PANEL STYLING */
         .panel {
-            background-color: #1e293b;
+            background: #1e293b;
             border: 1px solid #334155;
             border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
             transition: all 0.3s ease;
         }
 
         .panel:hover {
             border-color: #475569;
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
         }
 
         .panel-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1.2rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 2px solid #334155;
-            color: #e2e8f0;
-        }
-
-        .section {
-            margin-bottom: 1.5rem;
-        }
-
-        .section:last-child {
-            margin-bottom: 0;
-        }
-
-        .section-header {
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 15px;
             text-transform: uppercase;
-            color: #cbd5e1;
-            margin-bottom: 0.8rem;
             letter-spacing: 1px;
-            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* ===== FORM ELEMENTS ===== */
-        .form-group {
-            margin-bottom: 1rem;
+        .panel-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: #3b82f6;
+            border-radius: 2px;
         }
 
-        .form-group:last-child {
-            margin-bottom: 0;
+        /* INPUT FIELDS */
+        .input-group {
+            margin-bottom: 15px;
         }
 
-        label {
+        .input-label {
             display: block;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 0.4rem;
+            font-size: 12px;
             color: #cbd5e1;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
-        input[type="number"],
-        input[type="text"] {
+        input[type="number"] {
             width: 100%;
-            padding: 0.6rem 0.8rem;
-            background-color: #0f172a;
+            padding: 10px 12px;
+            background: #0f172a;
             border: 1px solid #334155;
             border-radius: 4px;
             color: #f1f5f9;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s ease;
         }
 
-        input[type="number"]:focus,
-        input[type="text"]:focus {
+        input[type="number"]:focus {
             outline: none;
             border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
         }
 
         input[type="number"]::placeholder {
             color: #64748b;
         }
 
-        /* ===== RESULT CARDS ===== */
-        .result-card {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 1rem;
-            margin-bottom: 0.8rem;
-            transition: all 0.3s ease;
+        /* STEP BUTTONS */
+        .steps-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        .result-card.highlighted {
-            border-color: #3b82f6;
-            background-color: rgba(59, 130, 246, 0.05);
+        button {
+            padding: 12px 16px;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            color: #f1f5f9;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: #475569;
+            border-color: #64748b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #0f172a;
+            border-color: #1e293b;
+            color: #64748b;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* RESULT VALUES */
+        .result-item {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
         }
 
         .result-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
+            font-size: 11px;
             color: #94a3b8;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 0.3rem;
+            margin-bottom: 4px;
         }
 
         .result-value {
-            font-size: 1.4rem;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 700;
             color: #f1f5f9;
-            font-family: 'Courier New', monospace;
+            word-break: break-all;
         }
 
         .result-unit {
-            font-size: 0.8rem;
-            color: #cbd5e1;
-            margin-left: 0.4rem;
-            opacity: 0.7;
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
         }
 
-        /* ===== LAMBDA CARD (HERO) ===== */
-        .lambda-card {
-            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
-            border: 2px solid #3b82f6;
-            border-radius: 8px;
-            padding: 1.5rem;
-            text-align: center;
-            margin-bottom: 1rem;
-            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+        /* STATUS COLORS */
+        .status-good {
+            border-left: 4px solid #22c55e;
         }
 
-        .lambda-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: #93c5fd;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-        }
-
-        .lambda-value {
-            font-size: 3rem;
-            font-weight: 700;
-            color: #93c5fd;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 0.8rem;
-        }
-
-        .lambda-status {
-            display: inline-block;
-            padding: 0.4rem 1rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .lambda-status.stoichiometric {
-            background-color: rgba(34, 197, 94, 0.1);
+        .status-good .result-value {
             color: #22c55e;
-            border: 1px solid #22c55e;
         }
 
-        .lambda-status.lean {
-            background-color: rgba(59, 130, 246, 0.1);
+        .status-warning {
+            border-left: 4px solid #eab308;
+        }
+
+        .status-warning .result-value {
+            color: #eab308;
+        }
+
+        .status-error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .status-error .result-value {
+            color: #ef4444;
+        }
+
+        .status-info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .status-info .result-value {
             color: #3b82f6;
-            border: 1px solid #3b82f6;
         }
 
-        .lambda-status.rich {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid #ef4444;
-        }
-
-        /* ===== COMPARISON ===== */
-        .mass-flow-comparison {
+        /* ACTION BUTTONS */
+        .action-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-        }
-
-        .flow-item {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 0.9rem;
-            text-align: center;
-        }
-
-        .flow-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: #94a3b8;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.4rem;
-        }
-
-        .flow-value {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #f1f5f9;
-            font-family: 'Courier New', monospace;
-        }
-
-        .flow-unit {
-            font-size: 0.7rem;
-            color: #cbd5e1;
-            margin-top: 0.2rem;
-            opacity: 0.7;
-        }
-
-        /* ===== ERROR DISPLAY ===== */
-        .error-display {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .error-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: #94a3b8;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.4rem;
-        }
-
-        .error-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #eab308;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 0.6rem;
-        }
-
-        .error-status {
-            font-size: 0.75rem;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            display: inline-block;
-            font-weight: 600;
-        }
-
-        .error-status.acceptable {
-            background-color: rgba(34, 197, 94, 0.1);
-            color: #22c55e;
-            border: 1px solid #22c55e;
-        }
-
-        .error-status.warning {
-            background-color: rgba(234, 179, 8, 0.1);
-            color: #eab308;
-            border: 1px solid #eab308;
-        }
-
-        .error-status.critical {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid #ef4444;
-        }
-
-        /* ===== ADVANCED PANEL ===== */
-        .advanced-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.8rem;
-        }
-
-        .advanced-item {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 0.8rem;
-        }
-
-        .advanced-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: #94a3b8;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.3rem;
-        }
-
-        .advanced-value {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #f1f5f9;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* ===== FOOTER ===== */
-        footer {
-            background-color: #1e293b;
-            border-top: 1px solid #334155;
-            padding: 1.5rem 2rem;
-            margin-top: 2rem;
-        }
-
-        .footer-container {
-            max-width: 1600px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-
-        .btn {
-            padding: 0.7rem 1.5rem;
-            border: 1px solid #334155;
-            background-color: #0f172a;
-            color: #f1f5f9;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            border-color: #475569;
-            background-color: #1e293b;
+            gap: 15px;
+            margin-top: 30px;
         }
 
         .btn-primary {
-            background-color: #3b82f6;
+            background: #3b82f6;
             border-color: #3b82f6;
-            color: #fff;
+            padding: 14px;
+            font-size: 13px;
         }
 
         .btn-primary:hover {
-            background-color: #2563eb;
+            background: #2563eb;
             border-color: #2563eb;
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
         }
 
-        .btn-success {
-            background-color: #22c55e;
+        .btn-secondary {
+            background: #ef4444;
+            border-color: #ef4444;
+            padding: 14px;
+            font-size: 13px;
+        }
+
+        .btn-secondary:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        /* ALERT */
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            border-left: 4px solid;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
             border-color: #22c55e;
-            color: #000;
+            color: #86efac;
         }
 
-        .btn-success:hover {
-            background-color: #16a34a;
-            border-color: #16a34a;
-            color: #fff;
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #93c5fd;
         }
 
-        .btn-warning {
-            background-color: #eab308;
-            border-color: #eab308;
-            color: #000;
+        /* FOOTER */
+        .footer {
+            border-top: 1px solid #334155;
+            padding-top: 20px;
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
         }
 
-        .btn-warning:hover {
-            background-color: #ca8a04;
-            border-color: #ca8a04;
-            color: #fff;
-        }
-
-        /* ===== VALIDATION ===== */
-        .input-error {
-            border-color: #ef4444 !important;
-        }
-
-        .error-message {
-            font-size: 0.75rem;
-            color: #ef4444;
-            margin-top: 0.2rem;
-        }
-
-        /* ===== RESPONSIVE ===== */
+        /* RESPONSIVE */
         @media (max-width: 1200px) {
-            .main-container {
+            .grid {
                 grid-template-columns: 1fr 1fr;
-                gap: 1rem;
             }
         }
 
         @media (max-width: 768px) {
-            .main-container {
+            .grid {
                 grid-template-columns: 1fr;
             }
 
-            .header-container {
+            .steps-container {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
                 flex-direction: column;
-                text-align: center;
-                gap: 1rem;
+                gap: 15px;
             }
 
-            .header-status {
+            .header-right {
                 width: 100%;
-                justify-content: center;
-            }
-
-            .advanced-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .mass-flow-comparison {
-                grid-template-columns: 1fr;
+                justify-content: space-between;
             }
         }
 
-        /* ===== ANIMATIONS ===== */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* SUB STYLING */
+        sub {
+            font-size: 0.85em;
+            vertical-align: baseline;
+            position: relative;
+            bottom: -0.25em;
         }
 
-        .panel {
-            animation: fadeIn 0.3s ease;
+        /* CALCULATION TRACE */
+        .calculation-trace {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #94a3b8;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
-        .result-value {
-            transition: color 0.3s ease;
+        .trace-line {
+            margin-bottom: 6px;
+            padding: 4px;
+            border-left: 2px solid #334155;
+            padding-left: 8px;
         }
 
-        .highlighted .result-value {
-            color: #3b82f6;
+        .trace-line.good {
+            border-left-color: #22c55e;
+            color: #86efac;
+        }
+
+        .trace-line.error {
+            border-left-color: #ef4444;
+            color: #fca5a5;
+        }
+
+        .trace-line.info {
+            border-left-color: #3b82f6;
+            color: #93c5fd;
         }
     </style>
 </head>
 <body>
     <!-- HEADER -->
-    <header>
-        <div class="header-container">
-            <div class="header-info">
-                <h1>Engine Exhaust Analysis System</h1>
-                <p>Dry Exhaust vs Energy Balance Comparison</p>
-            </div>
-            <div class="header-status">
-                <div class="status-indicator">
-                    <div class="status-dot"></div>
-                    <span>System Online</span>
-                </div>
-                <div class="live-clock" id="clock">00:00:00</div>
-            </div>
+    <div class="header">
+        <div class="header-title">
+            <span class="status-indicator"></span>
+            Engine Exhaust Analysis System
         </div>
-    </header>
-
-    <!-- MAIN CONTENT -->
-    <main class="main-container">
-        <!-- LEFT: INPUT PANEL -->
-        <div class="panel">
-            <div class="panel-title">Input Parameters</div>
-
-            <!-- Gas Analyzer -->
-            <div class="section">
-                <div class="section-header">Gas Analyzer</div>
-                <div class="form-group">
-                    <label>C<sub>O₂</sub> (%vol)</label>
-                    <input type="number" id="co2" placeholder="0 - 20" step="0.01" min="0" max="20">
-                    <div class="error-message" id="co2-error"></div>
-                </div>
-                <div class="form-group">
-                    <label>C<sub>O</sub> (%vol)</label>
-                    <input type="number" id="co" placeholder="0 - 10" step="0.01" min="0">
-                </div>
-                <div class="form-group">
-                    <label>O<sub>2</sub> (%vol)</label>
-                    <input type="number" id="o2" placeholder="0 - 21" step="0.01" min="0">
-                </div>
-                <div class="form-group">
-                    <label>HC (ppm)</label>
-                    <input type="number" id="hc-ppm" placeholder="0 - 5000" step="1" min="0">
-                </div>
-                <div class="form-group">
-                    <label>NO (ppm)</label>
-                    <input type="number" id="no-ppm" placeholder="0 - 3000" step="1" min="0">
-                </div>
-            </div>
-
-            <!-- Fuel Properties -->
-            <div class="section">
-                <div class="section-header">Fuel Properties</div>
-                <div class="form-group">
-                    <label>H<sub>cv</sub> (H/C ratio)</label>
-                    <input type="number" id="hcv" placeholder="3.5 - 4.5" step="0.1" min="0">
-                </div>
-                <div class="form-group">
-                    <label>O<sub>cv</sub> (O/C ratio)</label>
-                    <input type="number" id="ocv" placeholder="0 - 1" step="0.1" min="0">
-                </div>
-                <div class="form-group">
-                    <label>n (HC molecules)</label>
-                    <input type="number" id="n-hc" placeholder="1 - 20" step="1" min="1">
-                </div>
-            </div>
-
-            <!-- Fuel Flow -->
-            <div class="section">
-                <div class="section-header">Fuel Flow</div>
-                <div class="form-group">
-                    <label>V̇<sub>fuel</sub> (ml/min)</label>
-                    <input type="number" id="v-fuel" placeholder="0.1 - 1000" step="0.1" min="0">
-                </div>
-                <div class="form-group">
-                    <label>ρ<sub>fuel</sub> (kg/m³)</label>
-                    <input type="number" id="rho-fuel" placeholder="700 - 900" step="1" min="0">
-                </div>
-            </div>
-
-            <!-- Exhaust Conditions -->
-            <div class="section">
-                <div class="section-header">Exhaust Conditions</div>
-                <div class="form-group">
-                    <label>T (K)</label>
-                    <input type="number" id="temp-k" placeholder="273 - 1000" step="1" min="273">
-                    <div class="error-message" id="temp-error"></div>
-                </div>
-                <div class="form-group">
-                    <label>P (Pa)</label>
-                    <input type="number" id="pressure-pa" placeholder="101325" step="1" min="0">
-                </div>
-            </div>
-
-            <!-- Energy Balance -->
-            <div class="section">
-                <div class="section-header">Energy Balance</div>
-                <div class="form-group">
-                    <label>ṁ<sub>W</sub> (kg/s)</label>
-                    <input type="number" id="m-water" placeholder="0.001 - 1" step="0.001" min="0">
-                </div>
-                <div class="form-group">
-                    <label>C<sub>p,W</sub> (kJ/kg·K)</label>
-                    <input type="number" id="cp-water" placeholder="4.18" step="0.01" min="0">
-                </div>
-                <div class="form-group">
-                    <label>C<sub>p,G</sub> (kJ/kg·K)</label>
-                    <input type="number" id="cp-gas" placeholder="1.0 - 1.5" step="0.01" min="0">
-                </div>
-                <div class="form-group">
-                    <label>T<sub>gas,in</sub> (K)</label>
-                    <input type="number" id="t-gas-in" placeholder="273 - 800" step="1" min="273">
-                </div>
-                <div class="form-group">
-                    <label>T<sub>gas,out</sub> (K)</label>
-                    <input type="number" id="t-gas-out" placeholder="273 - 800" step="1" min="273">
-                    <div class="error-message" id="dtemp-error"></div>
-                </div>
-                <div class="form-group">
-                    <label>T<sub>water,in</sub> (K)</label>
-                    <input type="number" id="t-water-in" placeholder="273 - 350" step="1" min="273">
-                </div>
-                <div class="form-group">
-                    <label>T<sub>water,out</sub> (K)</label>
-                    <input type="number" id="t-water-out" placeholder="273 - 350" step="1" min="273">
-                </div>
-            </div>
+        <div class="header-right">
+            <div class="live-clock" id="liveClock">00:00:00</div>
         </div>
+    </div>
 
-        <!-- CENTER: CORE RESULTS -->
-        <div class="panel">
-            <div class="panel-title">Core Results</div>
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <div class="grid">
+            <!-- INPUT PANEL -->
+            <div class="panel">
+                <div class="panel-title">Input Data</div>
 
-            <!-- Lambda Card -->
-            <div class="lambda-card">
-                <div class="lambda-label">Air-Fuel Ratio</div>
-                <div class="lambda-value" id="lambda-value">0.000</div>
-                <div class="lambda-status" id="lambda-status">—</div>
-            </div>
+                <div class="input-group">
+                    <label class="input-label">CO<sub>2</sub> (%)</label>
+                    <input type="number" id="co2" placeholder="0.0" step="0.01" min="0">
+                </div>
 
-            <!-- Mass Flow Section -->
-            <div class="section">
-                <div class="section-header">Mass Flow Comparison</div>
-                <div class="mass-flow-comparison">
-                    <div class="flow-item">
-                        <div class="flow-label">Dry Exhaust</div>
-                        <div class="flow-value" id="m-dry">0.000</div>
-                        <div class="flow-unit">kg/s</div>
-                    </div>
-                    <div class="flow-item">
-                        <div class="flow-label">Energy Balance</div>
-                        <div class="flow-value" id="m-eb">0.000</div>
-                        <div class="flow-unit">kg/s</div>
-                    </div>
+                <div class="input-group">
+                    <label class="input-label">CO (ppm)</label>
+                    <input type="number" id="co" placeholder="0.0" step="0.1" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">O<sub>2</sub> (%)</label>
+                    <input type="number" id="o2" placeholder="0.0" step="0.01" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">HC (ppm)</label>
+                    <input type="number" id="hc_ppm" placeholder="0.0" step="0.1" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">NO (ppm)</label>
+                    <input type="number" id="no_ppm" placeholder="0.0" step="0.1" min="0">
+                </div>
+
+                <hr style="border: 1px solid #334155; margin: 15px 0;">
+
+                <div class="input-group">
+                    <label class="input-label">H<sub>cv</sub> (Hydrogen)</label>
+                    <input type="number" id="h_cv" placeholder="0.0" step="0.01" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">O<sub>cv</sub> (Oxygen)</label>
+                    <input type="number" id="o_cv" placeholder="0.0" step="0.01" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">n (Molar)</label>
+                    <input type="number" id="n_mol" placeholder="0.0" step="0.01" min="0">
+                </div>
+
+                <hr style="border: 1px solid #334155; margin: 15px 0;">
+
+                <div class="input-group">
+                    <label class="input-label">V̇<sub>f</sub> (ml/min) - Fuel Flow</label>
+                    <input type="number" id="v_fuel" placeholder="0.0" step="0.01" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">ρ<sub>f</sub> (kg/m³) - Fuel Density</label>
+                    <input type="number" id="rho_fuel" placeholder="850" step="0.1" min="0" value="850">
+                </div>
+
+                <hr style="border: 1px solid #334155; margin: 15px 0;">
+
+                <div class="input-group">
+                    <label class="input-label">T (K) - Exhaust Temp</label>
+                    <input type="number" id="T_exhaust" placeholder="373" step="1" min="0" value="373">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">P (Pa) - Pressure</label>
+                    <input type="number" id="P_exhaust" placeholder="101325" step="1" min="0" value="101325">
+                </div>
+
+                <hr style="border: 1px solid #334155; margin: 15px 0;">
+
+                <div class="input-group">
+                    <label class="input-label">ṁ<sub>W</sub> (kg/s) - Water Mass Flow</label>
+                    <input type="number" id="m_water" placeholder="0.0" step="0.001" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">C<sub>pW</sub> (J/kg·K) - Water Cp</label>
+                    <input type="number" id="cp_water" placeholder="4186" step="0.1" min="0" value="4186">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">C<sub>pG</sub> (J/kg·K) - Gas Cp</label>
+                    <input type="number" id="cp_gas" placeholder="1005" step="0.1" min="0" value="1005">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">T<sub>GI</sub> (K) - Gas Inlet Temp</label>
+                    <input type="number" id="T_gi" placeholder="0.0" step="0.1" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">T<sub>GO</sub> (K) - Gas Outlet Temp</label>
+                    <input type="number" id="T_go" placeholder="0.0" step="0.1" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">T<sub>WI</sub> (K) - Water Inlet Temp</label>
+                    <input type="number" id="T_wi" placeholder="0.0" step="0.1" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">T<sub>WO</sub> (K) - Water Outlet Temp</label>
+                    <input type="number" id="T_wo" placeholder="0.0" step="0.1" min="0">
                 </div>
             </div>
 
-            <!-- Error Section -->
-            <div class="section">
-                <div class="section-header">Analysis Error</div>
-                <div class="error-display">
-                    <div class="error-label">Relative Error</div>
-                    <div class="error-value" id="error-percent">0.00%</div>
-                    <div class="error-status" id="error-status">Acceptable</div>
+            <!-- STEP CALCULATION PANEL -->
+            <div class="panel">
+                <div class="panel-title">Calculation Steps</div>
+
+                <div id="alertContainer"></div>
+                <div id="calculationTrace" class="calculation-trace" style="display: none;"></div>
+
+                <div class="steps-container">
+                    <button onclick="app.step1_convert_ppm()">Step 1: Convert ppm</button>
+                    <button onclick="app.step2_lambda()">Step 2: λ Ratio</button>
+                    <button onclick="app.step3_fuel_mass()">Step 3: ṁ<sub>fuel</sub></button>
+                    <button onclick="app.step4_A0()">Step 4: A₀</button>
+                    <button onclick="app.step5_G_prime()">Step 5: G′</button>
+                    <button onclick="app.step6_volume()">Step 6: Volume</button>
+                    <button onclick="app.step7_density()">Step 7: Density</button>
+                    <button onclick="app.step8_exhaust_mass()">Step 8: ṁ<sub>G,dry</sub></button>
+                    <button onclick="app.step9_energy_balance()">Step 9: ṁ<sub>G,EB</sub></button>
+                    <button onclick="app.step10_error()">Step 10: Error %</button>
+                </div>
+
+                <hr style="border: 1px solid #334155; margin: 20px 0;">
+
+                <div class="action-buttons">
+                    <button class="btn-primary" onclick="app.compareResults()">Compare Results</button>
+                    <button class="btn-secondary" onclick="app.reset()">Reset All</button>
                 </div>
             </div>
 
-            <!-- Quick Statistics -->
-            <div class="section">
-                <div class="section-header">Quick Statistics</div>
-                <div class="result-card">
-                    <div class="result-label">Lambda Status</div>
-                    <div class="result-value" id="lambda-desc">—</div>
-                </div>
-                <div class="result-card">
-                    <div class="result-label">Mass Flow Ratio</div>
-                    <div class="result-value" id="mass-ratio">—</div>
-                </div>
-            </div>
-        </div>
+            <!-- RESULTS PANEL -->
+            <div class="panel">
+                <div class="panel-title">Results</div>
 
-        <!-- RIGHT: ADVANCED DATA -->
-        <div class="panel">
-            <div class="panel-title">Advanced Data</div>
-
-            <div class="section">
-                <div class="section-header">Calculated Parameters</div>
-                <div class="advanced-grid">
-                    <div class="advanced-item">
-                        <div class="advanced-label">A₀</div>
-                        <div class="advanced-value" id="a0">0.000</div>
-                    </div>
-                    <div class="advanced-item">
-                        <div class="advanced-label">G′</div>
-                        <div class="advanced-value" id="gprime">0.000</div>
-                    </div>
-                    <div class="advanced-item">
-                        <div class="advanced-label">ṁ<sub>fuel</sub> (kg/s)</div>
-                        <div class="advanced-value" id="m-fuel">0.000</div>
-                    </div>
-                    <div class="advanced-item">
-                        <div class="advanced-label">V̇<sub>std</sub> (m³/s)</div>
-                        <div class="advanced-value" id="v-std">0.000</div>
-                    </div>
-                    <div class="advanced-item">
-                        <div class="advanced-label">V̇<sub>actual</sub> (m³/s)</div>
-                        <div class="advanced-value" id="v-actual">0.000</div>
-                    </div>
-                    <div class="advanced-item">
-                        <div class="advanced-label">ρ (kg/m³)</div>
-                        <div class="advanced-value" id="rho">0.000</div>
-                    </div>
-                    <div class="advanced-item">
-                        <div class="advanced-label">HC (%vol)</div>
-                        <div class="advanced-value" id="hc-vol">0.000</div>
-                    </div>
-                    <div class="advanced-item">
-                        <div class="advanced-label">NO (%vol)</div>
-                        <div class="advanced-value" id="no-vol">0.000</div>
-                    </div>
-                    <div class="advanced-item">
-                        <div class="advanced-label">ΔT<sub>water</sub> (K)</div>
-                        <div class="advanced-value" id="dt-water">0.000</div>
-                    </div>
-                    <div class="advanced-item">
-                        <div class="advanced-label">ΔT<sub>gas</sub> (K)</div>
-                        <div class="advanced-value" id="dt-gas">0.000</div>
-                    </div>
+                <div class="result-item" id="result_hc">
+                    <div class="result-label">HC (converted)</div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">dimensionless</div>
                 </div>
-            </div>
 
-            <!-- Validation Status -->
-            <div class="section">
-                <div class="section-header">System Status</div>
-                <div class="result-card highlighted">
-                    <div class="result-label">Calculation Status</div>
-                    <div class="result-value" id="status-indicator">Ready</div>
+                <div class="result-item" id="result_no">
+                    <div class="result-label">NO (converted)</div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">dimensionless</div>
                 </div>
-                <div class="result-card">
-                    <div class="result-label">Last Update</div>
-                    <div class="result-value" id="last-update">—</div>
+
+                <hr style="border: 1px solid #334155; margin: 15px 0;">
+
+                <div class="result-item status-info" id="result_lambda">
+                    <div class="result-label">λ (Lambda)</div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">Air-Fuel Ratio</div>
+                </div>
+
+                <hr style="border: 1px solid #334155; margin: 15px 0;">
+
+                <div class="result-item" id="result_m_fuel">
+                    <div class="result-label">ṁ<sub>fuel</sub></div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">kg/s</div>
+                </div>
+
+                <div class="result-item" id="result_A0">
+                    <div class="result-label">A₀</div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">kg/kg fuel</div>
+                </div>
+
+                <div class="result-item" id="result_G_prime">
+                    <div class="result-label">G′</div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">kg/kg fuel</div>
+                </div>
+
+                <hr style="border: 1px solid #334155; margin: 15px 0;">
+
+                <div class="result-item" id="result_V_std">
+                    <div class="result-label">V̇<sub>STD</sub></div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">m³/s</div>
+                </div>
+
+                <div class="result-item" id="result_V_actual">
+                    <div class="result-label">V̇<sub>actual</sub></div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">m³/s</div>
+                </div>
+
+                <div class="result-item" id="result_rho">
+                    <div class="result-label">ρ (Exhaust)</div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">kg/m³</div>
+                </div>
+
+                <hr style="border: 1px solid #334155; margin: 15px 0;">
+
+                <div class="result-item status-info" id="result_m_dry">
+                    <div class="result-label">ṁ<sub>G,dry</sub></div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">kg/s</div>
+                </div>
+
+                <div class="result-item status-info" id="result_m_eb">
+                    <div class="result-label">ṁ<sub>G,EB</sub></div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">kg/s</div>
+                </div>
+
+                <div class="result-item status-info" id="result_error">
+                    <div class="result-label">Error %</div>
+                    <div class="result-value">—</div>
+                    <div class="result-unit">Deviation</div>
                 </div>
             </div>
         </div>
-    </main>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="footer-container">
-            <button class="btn btn-primary" onclick="calculateAll()">CALCULATE</button>
-            <button class="btn btn-success" onclick="exportData()">EXPORT</button>
-            <button class="btn btn-warning" onclick="resetForm()">RESET</button>
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>Engine Exhaust Analysis System v1.0 | Laboratory Engineering Tool | Validated Calculations</p>
         </div>
-    </footer>
+    </div>
 
     <script>
         // ============================================
-        // LIVE CLOCK
+        // ENGINE EXHAUST ANALYSIS APPLICATION
         // ============================================
-        function updateClock() {
-            const now = new Date();
-            const hh = String(now.getHours()).padStart(2, '0');
-            const mm = String(now.getMinutes()).padStart(2, '0');
-            const ss = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clock').textContent = `${hh}:${mm}:${ss}`;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
 
-        // ============================================
-        // UTILITY FUNCTIONS
-        // ============================================
-        function getInputValue(id) {
-            const val = parseFloat(document.getElementById(id).value);
-            return isNaN(val) ? null : val;
-        }
+        class ExhaustAnalysisApp {
+            constructor() {
+                this.data = {
+                    // Emissions (ppm/%)
+                    co2: 0,
+                    co: 0,
+                    o2: 0,
+                    hc_ppm: 0,
+                    no_ppm: 0,
+                    
+                    // Converted
+                    hc: 0,
+                    no: 0,
+                    
+                    // Fuel composition
+                    h_cv: 0,
+                    o_cv: 0,
+                    n_mol: 0,
+                    
+                    // Fuel flow
+                    v_fuel: 0, // ml/min
+                    rho_fuel: 850, // kg/m³
+                    m_fuel: 0, // kg/s (calculated)
+                    
+                    // Exhaust conditions
+                    T_exhaust: 373, // K
+                    P_exhaust: 101325, // Pa
+                    
+                    // Water side
+                    m_water: 0, // kg/s
+                    cp_water: 4186, // J/kg·K
+                    cp_gas: 1005, // J/kg·K
+                    T_gi: 0, // K
+                    T_go: 0, // K
+                    T_wi: 0, // K
+                    T_wo: 0, // K
+                    
+                    // Calculated
+                    lambda: null,
+                    A0: null,
+                    G_prime: null,
+                    V_std: null,
+                    V_actual: null,
+                    rho_exhaust: null,
+                    m_dry: null,
+                    m_eb: null,
+                    error_percent: null
+                };
 
-        function setOutputValue(id, value, decimals = 4) {
-            if (value === null || value === undefined || isNaN(value)) {
-                document.getElementById(id).textContent = '—';
-            } else {
-                document.getElementById(id).textContent = value.toFixed(decimals);
-            }
-        }
-
-        function clearErrors() {
-            document.getElementById('co2-error').textContent = '';
-            document.getElementById('temp-error').textContent = '';
-            document.getElementById('dtemp-error').textContent = '';
-            document.getElementById('co2').classList.remove('input-error');
-            document.getElementById('temp-k').classList.remove('input-error');
-        }
-
-        // ============================================
-        // CALCULATIONS
-        // ============================================
-        function calculateAll() {
-            clearErrors();
-            let hasError = false;
-
-            // Get input values
-            const co2 = getInputValue('co2');
-            const co = getInputValue('co');
-            const o2 = getInputValue('o2');
-            const hc_ppm = getInputValue('hc-ppm') || 0;
-            const no_ppm = getInputValue('no-ppm') || 0;
-            const hcv = getInputValue('hcv');
-            const ocv = getInputValue('ocv');
-            const n = getInputValue('n-hc');
-            const v_fuel = getInputValue('v-fuel');
-            const rho_fuel = getInputValue('rho-fuel');
-            const temp_k = getInputValue('temp-k');
-            const pressure_pa = getInputValue('pressure-pa');
-            const m_water = getInputValue('m-water');
-            const cp_water = getInputValue('cp-water');
-            const cp_gas = getInputValue('cp-gas');
-            const t_gas_in = getInputValue('t-gas-in');
-            const t_gas_out = getInputValue('t-gas-out');
-            const t_water_in = getInputValue('t-water-in');
-            const t_water_out = getInputValue('t-water-out');
-
-            // Validation
-            if (co2 === null || co2 === 0) {
-                document.getElementById('co2-error').textContent = 'C<sub>O₂</sub> must be > 0';
-                document.getElementById('co2').classList.add('input-error');
-                hasError = true;
+                this.trace = [];
+                this.initClocks();
             }
 
-            if (temp_k === null || temp_k < 273) {
-                document.getElementById('temp-error').textContent = 'T must be ≥ 273 K';
-                document.getElementById('temp-k').classList.add('input-error');
-                hasError = true;
+            initClocks() {
+                const updateClock = () => {
+                    const now = new Date();
+                    const time = now.toLocaleTimeString('en-GB', { 
+                        hour12: false, 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit' 
+                    });
+                    document.getElementById('liveClock').textContent = time;
+                };
+                updateClock();
+                setInterval(updateClock, 1000);
             }
 
-            if (hasError) {
-                document.getElementById('status-indicator').textContent = 'Validation Failed';
-                return;
+            // ========== VALIDATION ==========
+            validate() {
+                this.readInputs();
+                const errors = [];
+
+                if (this.data.co2 === 0 && this.data.co === 0 && this.data.o2 === 0) {
+                    errors.push('Gas composition cannot be all zeros');
+                }
+
+                if (this.data.co2 === 0 && this.data.co > 0) {
+                    errors.push('CO₂ cannot be zero if CO > 0');
+                }
+
+                if (this.data.T_exhaust <= 273) {
+                    errors.push('Temperature must be > 273 K (0°C)');
+                }
+
+                if (this.data.P_exhaust <= 0) {
+                    errors.push('Pressure must be positive');
+                }
+
+                if (errors.length > 0) {
+                    this.showAlert('error', errors.join('<br>'));
+                    return false;
+                }
+
+                return true;
             }
 
-            // Convert ppm to %vol
-            const hc_vol = hc_ppm / 10000;
-            const no_vol = no_ppm / 10000;
+            readInputs() {
+                this.data.co2 = parseFloat(document.getElementById('co2').value) || 0;
+                this.data.co = parseFloat(document.getElementById('co').value) || 0;
+                this.data.o2 = parseFloat(document.getElementById('o2').value) || 0;
+                this.data.hc_ppm = parseFloat(document.getElementById('hc_ppm').value) || 0;
+                this.data.no_ppm = parseFloat(document.getElementById('no_ppm').value) || 0;
 
-            setOutputValue('hc-vol', hc_vol, 5);
-            setOutputValue('no-vol', no_vol, 5);
+                this.data.h_cv = parseFloat(document.getElementById('h_cv').value) || 0;
+                this.data.o_cv = parseFloat(document.getElementById('o_cv').value) || 0;
+                this.data.n_mol = parseFloat(document.getElementById('n_mol').value) || 0;
 
-            // ============ LAMBDA CALCULATION ============
-            let lambda = null;
+                this.data.v_fuel = parseFloat(document.getElementById('v_fuel').value) || 0;
+                this.data.rho_fuel = parseFloat(document.getElementById('rho_fuel').value) || 850;
 
-            if (co2 !== null && co !== null && o2 !== null && hcv !== null && ocv !== null && n !== null) {
-                const numerator = (
-                    co2 + co / 2 + o2 + no_vol / 2 +
-                    (
-                        (hcv / 4) * (3.5 / (3.5 + (co !== 0 ? co / co2 : 0))) - ocv / 2
-                    ) / (co2 + co !== 0 ? (co2 + co) : 1)
-                );
+                this.data.T_exhaust = parseFloat(document.getElementById('T_exhaust').value) || 373;
+                this.data.P_exhaust = parseFloat(document.getElementById('P_exhaust').value) || 101325;
 
-                const denominator = (
-                    (1 + hcv / 4 - ocv / 2) /
-                    (co2 + co + n * hc_vol)
-                );
+                this.data.m_water = parseFloat(document.getElementById('m_water').value) || 0;
+                this.data.cp_water = parseFloat(document.getElementById('cp_water').value) || 4186;
+                this.data.cp_gas = parseFloat(document.getElementById('cp_gas').value) || 1005;
+                this.data.T_gi = parseFloat(document.getElementById('T_gi').value) || 0;
+                this.data.T_go = parseFloat(document.getElementById('T_go').value) || 0;
+                this.data.T_wi = parseFloat(document.getElementById('T_wi').value) || 0;
+                this.data.T_wo = parseFloat(document.getElementById('T_wo').value) || 0;
+            }
 
-                if (denominator !== 0) {
-                    lambda = numerator / denominator;
+            // ========== STEP 1: CONVERT PPM ==========
+            step1_convert_ppm() {
+                this.trace = ['=== STEP 1: Convert ppm ==='];
+                
+                if (!this.validate()) return;
+
+                try {
+                    // HC = HC_ppm / 10000
+                    this.data.hc = this.data.hc_ppm / 10000;
+                    this.addTrace(`HC = ${this.data.hc_ppm} / 10000 = ${this.data.hc.toExponential(4)}`, 'good');
+
+                    // NO = NO_ppm / 10000
+                    this.data.no = this.data.no_ppm / 10000;
+                    this.addTrace(`NO = ${this.data.no_ppm} / 10000 = ${this.data.no.toExponential(4)}`, 'good');
+
+                    this.updateResult('result_hc', this.data.hc.toExponential(4));
+                    this.updateResult('result_no', this.data.no.toExponential(4));
+
+                    this.showAlert('success', 'Step 1 Complete: ppm conversion successful');
+                    this.displayTrace();
+
+                } catch (e) {
+                    this.addTrace(`Error: ${e.message}`, 'error');
+                    this.showAlert('error', `Step 1 Failed: ${e.message}`);
                 }
             }
 
-            // Lambda display
-            if (lambda !== null && !isNaN(lambda) && lambda > 0) {
-                setOutputValue('lambda-value', lambda, 3);
+            // ========== STEP 2: LAMBDA ==========
+            step2_lambda() {
+                this.trace = ['=== STEP 2: Calculate λ (Lambda) ==='];
+                
+                if (!this.validate()) return;
 
-                let lambdaStatus = '';
-                let lambdaDesc = '';
-                if (Math.abs(lambda - 1.0) < 0.05) {
-                    lambdaStatus = 'stoichiometric';
-                    lambdaDesc = 'Stoichiometric Mixture';
-                } else if (lambda > 1.0) {
-                    lambdaStatus = 'lean';
-                    lambdaDesc = 'Lean Mixture';
+                try {
+                    if (this.data.hc === null) {
+                        this.showAlert('error', 'Please complete Step 1 first');
+                        return;
+                    }
+
+                    const numerator = this.data.co2 + this.data.co/2 + this.data.o2 + this.data.no/2 +
+                        ((this.data.h_cv/4) * (3.5 / (3.5 + (this.data.co/this.data.co2 || 0))) - this.data.o_cv/2) / (this.data.co2 + this.data.co);
+
+                    const denominator = (1 + this.data.h_cv/4 - this.data.o_cv/2) / (this.data.co2 + this.data.co + this.data.n_mol * this.data.hc);
+
+                    this.data.lambda = numerator / denominator;
+
+                    this.addTrace(`Numerator = ${numerator.toExponential(4)}`, 'info');
+                    this.addTrace(`Denominator = ${denominator.toExponential(4)}`, 'info');
+                    this.addTrace(`λ = ${this.data.lambda.toExponential(4)}`, 'good');
+
+                    // Color code based on lambda
+                    let status = 'status-info';
+                    if (Math.abs(this.data.lambda - 1) < 0.05) status = 'status-good';
+                    else if (this.data.lambda < 1) status = 'status-error';
+                    else if (this.data.lambda > 1) status = 'status-info';
+
+                    this.updateResult('result_lambda', this.data.lambda.toExponential(4), status);
+
+                    this.showAlert('success', `Step 2 Complete: λ = ${this.data.lambda.toFixed(4)}`);
+                    this.displayTrace();
+
+                } catch (e) {
+                    this.addTrace(`Error: ${e.message}`, 'error');
+                    this.showAlert('error', `Step 2 Failed: ${e.message}`);
+                }
+            }
+
+            // ========== STEP 3: FUEL MASS FLOW ==========
+            step3_fuel_mass() {
+                this.trace = ['=== STEP 3: Calculate Fuel Mass Flow ==='];
+                
+                if (!this.validate()) return;
+
+                try {
+                    // ṁ_fuel = (V̇_f × ρ_f) / (60 × 10^6)
+                    this.data.m_fuel = (this.data.v_fuel * this.data.rho_fuel) / (60 * 1e6);
+
+                    this.addTrace(`V̇_f = ${this.data.v_fuel} ml/min`, 'info');
+                    this.addTrace(`ρ_f = ${this.data.rho_fuel} kg/m³`, 'info');
+                    this.addTrace(`ṁ_fuel = (${this.data.v_fuel} × ${this.data.rho_fuel}) / (60 × 10^6)`, 'info');
+                    this.addTrace(`ṁ_fuel = ${this.data.m_fuel.toExponential(4)} kg/s`, 'good');
+
+                    this.updateResult('result_m_fuel', this.data.m_fuel.toExponential(4));
+
+                    this.showAlert('success', `Step 3 Complete: ṁ_fuel = ${this.data.m_fuel.toExponential(4)} kg/s`);
+                    this.displayTrace();
+
+                } catch (e) {
+                    this.addTrace(`Error: ${e.message}`, 'error');
+                    this.showAlert('error', `Step 3 Failed: ${e.message}`);
+                }
+            }
+
+            // ========== STEP 4: A0 ==========
+            step4_A0() {
+                this.trace = ['=== STEP 4: Calculate A₀ ==='];
+                
+                if (!this.validate()) return;
+
+                try {
+                    // A₀ = (22.4 / 0.21) [(1/12) + (1/4)(H - O/8)]
+                    const c = 1;
+                    const h = this.data.h_cv;
+                    const o = this.data.o_cv;
+
+                    const term1 = c / 12;
+                    const term2 = (1/4) * (h - o/8);
+
+                    this.data.A0 = (22.4 / 0.21) * (term1 + term2);
+
+                    this.addTrace(`C = 1, H = ${h}, O = ${o}`, 'info');
+                    this.addTrace(`Term1 = 1/12 = ${term1.toFixed(6)}`, 'info');
+                    this.addTrace(`Term2 = (1/4)(${h} - ${o}/8) = ${term2.toFixed(6)}`, 'info');
+                    this.addTrace(`A₀ = (22.4/0.21) × (${term1.toFixed(6)} + ${term2.toFixed(6)})`, 'info');
+                    this.addTrace(`A₀ = ${this.data.A0.toExponential(4)} kg/kg fuel`, 'good');
+
+                    this.updateResult('result_A0', this.data.A0.toExponential(4));
+
+                    this.showAlert('success', `Step 4 Complete: A₀ = ${this.data.A0.toExponential(4)}`);
+                    this.displayTrace();
+
+                } catch (e) {
+                    this.addTrace(`Error: ${e.message}`, 'error');
+                    this.showAlert('error', `Step 4 Failed: ${e.message}`);
+                }
+            }
+
+            // ========== STEP 5: G PRIME ==========
+            step5_G_prime() {
+                this.trace = ['=== STEP 5: Calculate G\' ==='];
+                
+                if (!this.validate()) return;
+
+                try {
+                    if (this.data.lambda === null || this.data.A0 === null) {
+                        this.showAlert('error', 'Please complete Steps 2 and 4 first');
+                        return;
+                    }
+
+                    // G' = (λ - 0.21)A₀ + 22.4(1/12)
+                    const term1 = (this.data.lambda - 0.21) * this.data.A0;
+                    const term2 = 22.4 * (1/12);
+
+                    this.data.G_prime = term1 + term2;
+
+                    this.addTrace(`λ = ${this.data.lambda.toFixed(4)}, A₀ = ${this.data.A0.toExponential(4)}`, 'info');
+                    this.addTrace(`Term1 = (${this.data.lambda.toFixed(4)} - 0.21) × ${this.data.A0.toExponential(4)} = ${term1.toExponential(4)}`, 'info');
+                    this.addTrace(`Term2 = 22.4 × (1/12) = ${term2.toExponential(4)}`, 'info');
+                    this.addTrace(`G' = ${term1.toExponential(4)} + ${term2.toExponential(4)} = ${this.data.G_prime.toExponential(4)}`, 'good');
+
+                    this.updateResult('result_G_prime', this.data.G_prime.toExponential(4));
+
+                    this.showAlert('success', `Step 5 Complete: G' = ${this.data.G_prime.toExponential(4)}`);
+                    this.displayTrace();
+
+                } catch (e) {
+                    this.addTrace(`Error: ${e.message}`, 'error');
+                    this.showAlert('error', `Step 5 Failed: ${e.message}`);
+                }
+            }
+
+            // ========== STEP 6: VOLUME FLOW ==========
+            step6_volume() {
+                this.trace = ['=== STEP 6: Calculate Volume Flow ==='];
+                
+                if (!this.validate()) return;
+
+                try {
+                    if (this.data.G_prime === null || this.data.m_fuel === null) {
+                        this.showAlert('error', 'Please complete Steps 3 and 5 first');
+                        return;
+                    }
+
+                    // V̇_STD = G' × ṁ_fuel
+                    this.data.V_std = this.data.G_prime * this.data.m_fuel;
+                    this.addTrace(`V̇_STD = G' × ṁ_fuel = ${this.data.G_prime.toExponential(4)} × ${this.data.m_fuel.toExponential(4)}`, 'info');
+                    this.addTrace(`V̇_STD = ${this.data.V_std.toExponential(4)} m³/s`, 'good');
+
+                    // V̇_actual = V̇_STD × (T / 273)
+                    this.data.V_actual = this.data.V_std * (this.data.T_exhaust / 273);
+                    this.addTrace(`V̇_actual = ${this.data.V_std.toExponential(4)} × (${this.data.T_exhaust} / 273)`, 'info');
+                    this.addTrace(`V̇_actual = ${this.data.V_actual.toExponential(4)} m³/s`, 'good');
+
+                    this.updateResult('result_V_std', this.data.V_std.toExponential(4));
+                    this.updateResult('result_V_actual', this.data.V_actual.toExponential(4));
+
+                    this.showAlert('success', `Step 6 Complete: V̇_STD = ${this.data.V_std.toExponential(4)}, V̇_actual = ${this.data.V_actual.toExponential(4)}`);
+                    this.displayTrace();
+
+                } catch (e) {
+                    this.addTrace(`Error: ${e.message}`, 'error');
+                    this.showAlert('error', `Step 6 Failed: ${e.message}`);
+                }
+            }
+
+            // ========== STEP 7: DENSITY ==========
+            step7_density() {
+                this.trace = ['=== STEP 7: Calculate Exhaust Density ==='];
+                
+                if (!this.validate()) return;
+
+                try {
+                    // ρ = (P × 29) / (8314 × T)
+                    this.data.rho_exhaust = (this.data.P_exhaust * 29) / (8314 * this.data.T_exhaust);
+
+                    this.addTrace(`P = ${this.data.P_exhaust} Pa, T = ${this.data.T_exhaust} K`, 'info');
+                    this.addTrace(`ρ = (${this.data.P_exhaust} × 29) / (8314 × ${this.data.T_exhaust})`, 'info');
+                    this.addTrace(`ρ = ${this.data.rho_exhaust.toExponential(4)} kg/m³`, 'good');
+
+                    this.updateResult('result_rho', this.data.rho_exhaust.toExponential(4));
+
+                    this.showAlert('success', `Step 7 Complete: ρ = ${this.data.rho_exhaust.toExponential(4)} kg/m³`);
+                    this.displayTrace();
+
+                } catch (e) {
+                    this.addTrace(`Error: ${e.message}`, 'error');
+                    this.showAlert('error', `Step 7 Failed: ${e.message}`);
+                }
+            }
+
+            // ========== STEP 8: EXHAUST MASS FLOW ==========
+            step8_exhaust_mass() {
+                this.trace = ['=== STEP 8: Calculate Dry Exhaust Mass Flow ==='];
+                
+                if (!this.validate()) return;
+
+                try {
+                    if (this.data.rho_exhaust === null || this.data.V_actual === null) {
+                        this.showAlert('error', 'Please complete Steps 6 and 7 first');
+                        return;
+                    }
+
+                    // ṁ_G,dry = ρ × V̇_actual
+                    this.data.m_dry = this.data.rho_exhaust * this.data.V_actual;
+
+                    this.addTrace(`ṁ_G,dry = ρ × V̇_actual`, 'info');
+                    this.addTrace(`ṁ_G,dry = ${this.data.rho_exhaust.toExponential(4)} × ${this.data.V_actual.toExponential(4)}`, 'info');
+                    this.addTrace(`ṁ_G,dry = ${this.data.m_dry.toExponential(4)} kg/s`, 'good');
+
+                    this.updateResult('result_m_dry', this.data.m_dry.toExponential(4), 'status-info');
+
+                    this.showAlert('success', `Step 8 Complete: ṁ_G,dry = ${this.data.m_dry.toExponential(4)} kg/s`);
+                    this.displayTrace();
+
+                } catch (e) {
+                    this.addTrace(`Error: ${e.message}`, 'error');
+                    this.showAlert('error', `Step 8 Failed: ${e.message}`);
+                }
+            }
+
+            // ========== STEP 9: ENERGY BALANCE ==========
+            step9_energy_balance() {
+                this.trace = ['=== STEP 9: Calculate Energy Balance Mass Flow ==='];
+                
+                if (!this.validate()) return;
+
+                try {
+                    const dT_gas = this.data.T_gi - this.data.T_go;
+                    const dT_water = this.data.T_wo - this.data.T_wi;
+
+                    if (Math.abs(dT_gas) < 0.01) {
+                        this.showAlert('error', 'Gas temperature difference too small (T_GI ≈ T_GO)');
+                        return;
+                    }
+
+                    if (Math.abs(dT_water) < 0.01) {
+                        this.showAlert('error', 'Water temperature difference too small (T_WO ≈ T_WI)');
+                        return;
+                    }
+
+                    // ṁ_G,EB = ṁ_W (C_pW / C_pG) ((T_WO - T_WI) / (T_GI - T_GO))
+                    const ratio = (this.data.cp_water / this.data.cp_gas) * (dT_water / dT_gas);
+                    this.data.m_eb = this.data.m_water * ratio;
+
+                    this.addTrace(`ṁ_W = ${this.data.m_water.toExponential(4)} kg/s`, 'info');
+                    this.addTrace(`C_pW / C_pG = ${this.data.cp_water} / ${this.data.cp_gas} = ${(this.data.cp_water / this.data.cp_gas).toFixed(4)}`, 'info');
+                    this.addTrace(`ΔT_gas = ${this.data.T_gi} - ${this.data.T_go} = ${dT_gas.toFixed(2)} K`, 'info');
+                    this.addTrace(`ΔT_water = ${this.data.T_wo} - ${this.data.T_wi} = ${dT_water.toFixed(2)} K`, 'info');
+                    this.addTrace(`Ratio = ${(this.data.cp_water / this.data.cp_gas).toFixed(4)} × (${dT_water.toFixed(2)} / ${dT_gas.toFixed(2)}) = ${ratio.toFixed(4)}`, 'info');
+                    this.addTrace(`ṁ_G,EB = ${this.data.m_water.toExponential(4)} × ${ratio.toFixed(4)} = ${this.data.m_eb.toExponential(4)} kg/s`, 'good');
+
+                    this.updateResult('result_m_eb', this.data.m_eb.toExponential(4), 'status-info');
+
+                    this.showAlert('success', `Step 9 Complete: ṁ_G,EB = ${this.data.m_eb.toExponential(4)} kg/s`);
+                    this.displayTrace();
+
+                } catch (e) {
+                    this.addTrace(`Error: ${e.message}`, 'error');
+                    this.showAlert('error', `Step 9 Failed: ${e.message}`);
+                }
+            }
+
+            // ========== STEP 10: ERROR ==========
+            step10_error() {
+                this.trace = ['=== STEP 10: Calculate Error Percentage ==='];
+                
+                if (!this.validate()) return;
+
+                try {
+                    if (this.data.m_dry === null || this.data.m_eb === null) {
+                        this.showAlert('error', 'Please complete Steps 8 and 9 first');
+                        return;
+                    }
+
+                    if (Math.abs(this.data.m_dry) < 1e-10) {
+                        this.showAlert('error', 'ṁ_G,dry is too small for error calculation');
+                        return;
+                    }
+
+                    // Error (%) = ((ṁ_G,EB - ṁ_G,dry) / ṁ_G,dry) × 100
+                    this.data.error_percent = ((this.data.m_eb - this.data.m_dry) / this.data.m_dry) * 100;
+
+                    this.addTrace(`ṁ_G,EB = ${this.data.m_eb.toExponential(4)} kg/s`, 'info');
+                    this.addTrace(`ṁ_G,dry = ${this.data.m_dry.toExponential(4)} kg/s`, 'info');
+                    this.addTrace(`Difference = ${(this.data.m_eb - this.data.m_dry).toExponential(4)} kg/s`, 'info');
+                    this.addTrace(`Error (%) = ((${this.data.m_eb.toExponential(4)} - ${this.data.m_dry.toExponential(4)}) / ${this.data.m_dry.toExponential(4)}) × 100`, 'info');
+                    this.addTrace(`Error (%) = ${this.data.error_percent.toFixed(2)} %`, 'good');
+
+                    // Color code
+                    let status = 'status-error';
+                    if (Math.abs(this.data.error_percent) < 5) {
+                        status = 'status-good';
+                    } else if (Math.abs(this.data.error_percent) < 15) {
+                        status = 'status-warning';
+                    }
+
+                    this.updateResult('result_error', this.data.error_percent.toFixed(2) + ' %', status);
+
+                    const message = Math.abs(this.data.error_percent) < 5 
+                        ? 'Excellent agreement between methods'
+                        : Math.abs(this.data.error_percent) < 15
+                        ? 'Acceptable agreement'
+                        : 'Large discrepancy detected';
+
+                    this.showAlert('success', `Step 10 Complete: Error = ${this.data.error_percent.toFixed(2)}% - ${message}`);
+                    this.displayTrace();
+
+                } catch (e) {
+                    this.addTrace(`Error: ${e.message}`, 'error');
+                    this.showAlert('error', `Step 10 Failed: ${e.message}`);
+                }
+            }
+
+            // ========== COMPARE RESULTS ==========
+            compareResults() {
+                if (this.data.m_dry === null || this.data.m_eb === null) {
+                    this.showAlert('error', 'Please complete all calculation steps first');
+                    return;
+                }
+
+                const diff = Math.abs(this.data.m_eb - this.data.m_dry);
+                const avgVal = (this.data.m_eb + this.data.m_dry) / 2;
+
+                let message = '<strong>Comparison Results:</strong><br>';
+                message += `ṁ_G,dry = ${this.data.m_dry.toExponential(4)} kg/s<br>`;
+                message += `ṁ_G,EB = ${this.data.m_eb.toExponential(4)} kg/s<br>`;
+                message += `Difference = ${diff.toExponential(4)} kg/s<br>`;
+                message += `Error = ${this.data.error_percent.toFixed(2)}%<br><br>`;
+
+                if (Math.abs(this.data.error_percent) < 5) {
+                    message += '<strong style="color: #22c55e;">✓ Methods agree well</strong>';
+                } else if (Math.abs(this.data.error_percent) < 15) {
+                    message += '<strong style="color: #eab308;">⚠ Acceptable difference</strong>';
                 } else {
-                    lambdaStatus = 'rich';
-                    lambdaDesc = 'Rich Mixture';
+                    message += '<strong style="color: #ef4444;">✗ Significant discrepancy</strong>';
                 }
 
-                document.getElementById('lambda-status').className = `lambda-status ${lambdaStatus}`;
-                document.getElementById('lambda-status').textContent = lambdaStatus.toUpperCase();
-                document.getElementById('lambda-desc').textContent = lambdaDesc;
-            } else {
-                setOutputValue('lambda-value', null);
-                document.getElementById('lambda-status').className = 'lambda-status';
-                document.getElementById('lambda-status').textContent = '—';
-                document.getElementById('lambda-desc').textContent = '—';
+                this.showAlert('info', message);
             }
 
-            // ============ FUEL MASS FLOW ============
-            let m_fuel = null;
-            if (v_fuel !== null && rho_fuel !== null && v_fuel > 0) {
-                m_fuel = (v_fuel * rho_fuel) / (60 * 1e6); // ml/min to kg/s
-            }
-            setOutputValue('m-fuel', m_fuel, 6);
+            // ========== UI HELPERS ==========
+            updateResult(elementId, value, status = '') {
+                const elem = document.getElementById(elementId);
+                const valueElem = elem.querySelector('.result-value');
+                valueElem.textContent = value;
 
-            // ============ THEORETICAL AIR (A₀) ============
-            let a0 = null;
-            if (hcv !== null && ocv !== null) {
-                a0 = (22.4 / 0.21) * (1 / 12 + (1 / 4) * (hcv - ocv / 8));
-            }
-            setOutputValue('a0', a0, 4);
-
-            // ============ DRY EXHAUST VOLUME (G') ============
-            let gprime = null;
-            if (lambda !== null && a0 !== null && lambda > 0) {
-                gprime = (lambda - 0.21) * a0 + 22.4 * (1 / 12);
-            }
-            setOutputValue('gprime', gprime, 4);
-
-            // ============ STANDARD VOLUME ============
-            let v_std = null;
-            if (gprime !== null && m_fuel !== null && gprime > 0) {
-                v_std = gprime * m_fuel;
-            }
-            setOutputValue('v-std', v_std, 6);
-
-            // ============ ACTUAL VOLUME ============
-            let v_actual = null;
-            if (v_std !== null && temp_k !== null && temp_k > 0) {
-                v_actual = v_std * (temp_k / 273);
-            }
-            setOutputValue('v-actual', v_actual, 6);
-
-            // ============ GAS DENSITY ============
-            let rho = null;
-            if (pressure_pa !== null && temp_k !== null && temp_k > 0) {
-                rho = (pressure_pa * 29) / (8314 * temp_k);
-            }
-            setOutputValue('rho', rho, 4);
-
-            // ============ DRY EXHAUST MASS FLOW ============
-            let m_dry = null;
-            if (rho !== null && v_actual !== null && rho > 0) {
-                m_dry = rho * v_actual;
-            }
-            setOutputValue('m-dry', m_dry, 6);
-
-            // ============ TEMPERATURE DIFFERENCES ============
-            let dt_water = null;
-            let dt_gas = null;
-            if (t_water_out !== null && t_water_in !== null) {
-                dt_water = t_water_out - t_water_in;
-            }
-            if (t_gas_in !== null && t_gas_out !== null) {
-                dt_gas = t_gas_in - t_gas_out;
-            }
-            setOutputValue('dt-water', dt_water, 2);
-            setOutputValue('dt-gas', dt_gas, 2);
-
-            // ============ ENERGY BALANCE MASS FLOW ============
-            let m_eb = null;
-            if (m_water !== null && cp_water !== null && cp_gas !== null && 
-                dt_water !== null && dt_gas !== null && dt_gas !== 0) {
-                m_eb = m_water * (cp_water / cp_gas) * (dt_water / dt_gas);
-            } else if (dt_gas === 0) {
-                document.getElementById('dtemp-error').textContent = 'ΔT<sub>gas</sub> must ≠ 0';
-                document.getElementById('t-gas-out').classList.add('input-error');
-            }
-            setOutputValue('m-eb', m_eb, 6);
-
-            // ============ ERROR CALCULATION ============
-            let error_percent = null;
-            if (m_dry !== null && m_eb !== null && m_dry !== 0) {
-                error_percent = ((m_eb - m_dry) / m_dry) * 100;
-            }
-
-            if (error_percent !== null && !isNaN(error_percent)) {
-                setOutputValue('error-percent', Math.abs(error_percent), 2);
-                const errorStatus = document.getElementById('error-status');
-                const absError = Math.abs(error_percent);
-
-                if (absError <= 5) {
-                    errorStatus.className = 'error-status acceptable';
-                    errorStatus.textContent = 'Acceptable';
-                } else if (absError <= 15) {
-                    errorStatus.className = 'error-status warning';
-                    errorStatus.textContent = 'Warning';
-                } else {
-                    errorStatus.className = 'error-status critical';
-                    errorStatus.textContent = 'Critical';
+                // Remove previous status classes
+                elem.classList.remove('status-good', 'status-warning', 'status-error', 'status-info');
+                if (status) {
+                    elem.classList.add(status);
                 }
             }
 
-            // ============ MASS RATIO ============
-            if (m_dry !== null && m_eb !== null && m_dry !== 0) {
-                const ratio = (m_eb / m_dry).toFixed(3);
-                document.getElementById('mass-ratio').textContent = ratio;
+            showAlert(type, message) {
+                const alertContainer = document.getElementById('alertContainer');
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type}`;
+                alert.innerHTML = message;
+                alertContainer.innerHTML = '';
+                alertContainer.appendChild(alert);
+
+                setTimeout(() => {
+                    alert.style.animation = 'fadeOut 0.3s ease';
+                    setTimeout(() => alert.remove(), 300);
+                }, 5000);
             }
 
-            // ============ STATUS ============
-            document.getElementById('status-indicator').textContent = 'Calculated';
-            
-            const now = new Date();
-            const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-            document.getElementById('last-update').textContent = time;
+            addTrace(line, type = 'info') {
+                this.trace.push({ line, type });
+            }
+
+            displayTrace() {
+                const traceElement = document.getElementById('calculationTrace');
+                traceElement.style.display = 'block';
+                traceElement.innerHTML = this.trace.map(t => {
+                    if (typeof t === 'string') {
+                        return `<div class="trace-line">${t}</div>`;
+                    }
+                    return `<div class="trace-line ${t.type}">${t.line}</div>`;
+                }).join('');
+                traceElement.scrollTop = traceElement.scrollHeight;
+            }
+
+            reset() {
+                // Clear inputs
+                document.getElementById('co2').value = '';
+                document.getElementById('co').value = '';
+                document.getElementById('o2').value = '';
+                document.getElementById('hc_ppm').value = '';
+                document.getElementById('no_ppm').value = '';
+                document.getElementById('h_cv').value = '';
+                document.getElementById('o_cv').value = '';
+                document.getElementById('n_mol').value = '';
+                document.getElementById('v_fuel').value = '';
+                document.getElementById('T_gi').value = '';
+                document.getElementById('T_go').value = '';
+                document.getElementById('T_wi').value = '';
+                document.getElementById('T_wo').value = '';
+                document.getElementById('m_water').value = '';
+
+                // Reset data
+                this.data = {
+                    co2: 0, co: 0, o2: 0, hc_ppm: 0, no_ppm: 0, hc: 0, no: 0,
+                    h_cv: 0, o_cv: 0, n_mol: 0,
+                    v_fuel: 0, rho_fuel: 850, m_fuel: 0,
+                    T_exhaust: 373, P_exhaust: 101325,
+                    m_water: 0, cp_water: 4186, cp_gas: 1005,
+                    T_gi: 0, T_go: 0, T_wi: 0, T_wo: 0,
+                    lambda: null, A0: null, G_prime: null,
+                    V_std: null, V_actual: null, rho_exhaust: null,
+                    m_dry: null, m_eb: null, error_percent: null
+                };
+
+                // Clear results
+                document.querySelectorAll('.result-value').forEach(el => el.textContent = '—');
+                document.querySelectorAll('.result-item').forEach(el => {
+                    el.classList.remove('status-good', 'status-warning', 'status-error', 'status-info');
+                });
+
+                // Clear alerts and trace
+                document.getElementById('alertContainer').innerHTML = '';
+                document.getElementById('calculationTrace').style.display = 'none';
+
+                this.showAlert('success', 'All data cleared. Ready for new analysis.');
+            }
         }
 
         // ============================================
-        // EVENT LISTENERS (Real-time calculation)
+        // INITIALIZE APPLICATION
         // ============================================
-        const inputs = document.querySelectorAll('input[type="number"]');
-        inputs.forEach(input => {
-            input.addEventListener('input', calculateAll);
-        });
+        const app = new ExhaustAnalysisApp();
 
-        // ============================================
-        // EXPORT FUNCTION
-        // ============================================
-        function exportData() {
-            const timestamp = new Date().toISOString();
-            const data = {
-                timestamp,
-                inputs: {
-                    co2: getInputValue('co2'),
-                    co: getInputValue('co'),
-                    o2: getInputValue('o2'),
-                    hc_ppm: getInputValue('hc-ppm'),
-                    no_ppm: getInputValue('no-ppm'),
-                    hcv: getInputValue('hcv'),
-                    ocv: getInputValue('ocv'),
-                    n: getInputValue('n-hc'),
-                    v_fuel: getInputValue('v-fuel'),
-                    rho_fuel: getInputValue('rho-fuel'),
-                    temp_k: getInputValue('temp-k'),
-                    pressure_pa: getInputValue('pressure-pa'),
-                    m_water: getInputValue('m-water'),
-                    cp_water: getInputValue('cp-water'),
-                    cp_gas: getInputValue('cp-gas'),
-                    t_gas_in: getInputValue('t-gas-in'),
-                    t_gas_out: getInputValue('t-gas-out'),
-                    t_water_in: getInputValue('t-water-in'),
-                    t_water_out: getInputValue('t-water-out'),
-                },
-                results: {
-                    lambda: document.getElementById('lambda-value').textContent,
-                    m_dry: document.getElementById('m-dry').textContent,
-                    m_eb: document.getElementById('m-eb').textContent,
-                    error_percent: document.getElementById('error-percent').textContent,
-                }
-            };
-
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `exhaust-analysis-${timestamp.slice(0, 10)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // ============================================
-        // RESET FUNCTION
-        // ============================================
-        function resetForm() {
-            inputs.forEach(input => input.value = '');
-            clearErrors();
-            document.querySelectorAll('[id*="-error"]').forEach(el => el.textContent = '');
-            document.getElementById('lambda-value').textContent = '0.000';
-            document.getElementById('lambda-status').textContent = '—';
-            document.getElementById('m-dry').textContent = '0.000';
-            document.getElementById('m-eb').textContent = '0.000';
-            document.getElementById('error-percent').textContent = '0.00%';
-            document.getElementById('status-indicator').textContent = 'Ready';
-            document.getElementById('last-update').textContent = '—';
-        }
-
-        // Initial calculation
-        calculateAll();
+        // Add fade-out animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
