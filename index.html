@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exhaust Gas Analysis & Combustion Diagnostics</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <title>Exhaust Gas Mass Flow Rate Calculator</title>
     <style>
         * {
             margin: 0;
@@ -13,1486 +15,1112 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #00d4ff;
-            --secondary: #00ff88;
-            --accent: #ff0055;
-            --dark-bg: #0a0e27;
-            --glass-light: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --text-primary: #e8f0ff;
-            --text-secondary: #a8b8d8;
-            --success: #00ff88;
-            --warning: #ffa500;
-            --danger: #ff0055;
-            --info: #00d4ff;
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: 'Barlow Condensed', sans-serif;
+            background: #0d0f14;
+            color: #e5e7eb;
+            overflow: hidden;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f4d 50%, #0d1d3d 100%);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            min-height: 100vh;
-            animation: gradientShift 15s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        body.light-mode {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #f0f4f8 100%);
-            --text-primary: #1a2a4d;
-            --text-secondary: #4a5a8d;
-            --glass-light: rgba(0, 0, 0, 0.03);
-            --glass-border: rgba(0, 0, 0, 0.1);
-        }
-
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 2rem;
-            padding: 2rem;
-            max-width: 1600px;
-            margin: 0 auto;
-            min-height: 100vh;
-        }
-
-        @media (max-width: 1200px) {
-            .container {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-        }
-
-        /* HEADER */
-        header {
+        /* Grid background texture */
+        body::before {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            z-index: 1000;
-            background: rgba(10, 14, 39, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 1rem 2rem;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(0deg, transparent 24%, rgba(245, 158, 11, 0.05) 25%, rgba(245, 158, 11, 0.05) 26%, transparent 27%, transparent 74%, rgba(245, 158, 11, 0.05) 75%, rgba(245, 158, 11, 0.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(245, 158, 11, 0.05) 25%, rgba(245, 158, 11, 0.05) 26%, transparent 27%, transparent 74%, rgba(245, 158, 11, 0.05) 75%, rgba(245, 158, 11, 0.05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        body.light-mode header {
-            background: rgba(255, 255, 255, 0.8);
+        .wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            width: 100%;
+            height: 100%;
+            gap: 20px;
+            padding: 20px;
         }
 
-        .header-content {
-            max-width: 1600px;
-            margin: 0 auto;
+        /* === SIDEBAR === */
+        .sidebar {
+            width: 350px;
+            background: #161b22;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #f59e0b #1a1f26;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #1a1f26;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #f59e0b;
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #f59e0b;
+        }
+
+        .sidebar-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #f59e0b;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .collapsible-group {
+            margin-bottom: 20px;
+        }
+
+        .group-header {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .toggle-btn {
-            background: var(--glass-light);
-            border: 1px solid var(--glass-border);
-            color: var(--text-primary);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .toggle-btn:hover {
-            background: var(--glass-light);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
-        }
-
-        /* GLASS PANEL */
-        .panel {
-            background: var(--glass-light);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .panel:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-4px);
-        }
-
-        /* INPUT PANEL */
-        .input-panel {
-            margin-top: 5rem;
-        }
-
-        .panel-title {
-            font-size: 1.3rem;
             font-weight: 600;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #f59e0b;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .group-header:hover {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.5);
+        }
+
+        .group-header::after {
+            content: '▼';
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+
+        .group-header.collapsed::after {
+            transform: rotate(-90deg);
+        }
+
+        .group-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding-top: 12px;
+        }
+
+        .group-content.collapsed {
+            max-height: 0;
+            padding-top: 0;
         }
 
         .input-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 14px;
         }
 
         .input-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-        }
-
-        .input-unit {
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
-
-        input[type="number"],
-        input[type="text"] {
-            width: 100%;
-            padding: 0.8rem;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-        }
-
-        input[type="number"]:focus,
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(0, 212, 255, 0.05);
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
-        }
-
-        input.error {
-            border-color: var(--danger);
-            background: rgba(255, 0, 85, 0.05);
-        }
-
-        input.warning {
-            border-color: var(--warning);
-            background: rgba(255, 165, 0, 0.05);
-        }
-
-        .input-error {
-            color: var(--danger);
-            font-size: 0.8rem;
-            margin-top: 0.3rem;
-            display: none;
-        }
-
-        .input-error.show {
             display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .btn {
-            padding: 0.9rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 4px;
+            font-family: 'JetBrains Mono', monospace;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #000;
-            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--glass-light);
-            color: var(--text-primary);
-            border: 1px solid var(--glass-border);
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .real-time-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            padding: 0.8rem;
-            background: rgba(0, 212, 255, 0.05);
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .toggle-switch {
-            width: 40px;
-            height: 24px;
-            background: var(--glass-border);
-            border-radius: 12px;
+        .input-wrapper {
             position: relative;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            background: #0d0f14;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 6px;
+            color: #e5e7eb;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
             transition: all 0.3s ease;
         }
 
-        .toggle-switch.active {
-            background: var(--success);
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4), inset 0 0 8px rgba(245, 158, 11, 0.1);
+            background: rgba(245, 158, 11, 0.03);
         }
 
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 10px;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s ease;
+        .conversion-preview {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            padding-left: 4px;
+            border-left: 2px solid rgba(245, 158, 11, 0.2);
+            padding-left: 8px;
         }
 
-        .toggle-switch.active::after {
-            left: 18px;
-        }
-
-        /* RESULTS PANEL */
-        .results-panel {
-            margin-top: 5rem;
+        /* === MAIN CONTENT === */
+        .main-content {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        /* Results Panel */
+        .results-panel {
+            flex: 0 0 auto;
+            background: #161b22;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        .results-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #f59e0b;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
         }
 
         .result-card {
-            background: var(--glass-light);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 1.5rem;
+            background: #0d0f14;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 6px;
+            padding: 14px;
+            text-align: center;
             transition: all 0.3s ease;
         }
 
         .result-card:hover {
-            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(245, 158, 11, 0.5);
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
+        }
+
+        .result-card.pulse {
+            animation: glowPulse 0.6s ease-out;
+        }
+
+        @keyframes glowPulse {
+            0% {
+                box-shadow: 0 0 0 rgba(245, 158, 11, 0);
+                border-color: rgba(245, 158, 11, 0.8);
+            }
+            50% {
+                box-shadow: 0 0 16px rgba(245, 158, 11, 0.6);
+            }
+            100% {
+                box-shadow: 0 0 0 rgba(245, 158, 11, 0);
+                border-color: rgba(245, 158, 11, 0.2);
+            }
         }
 
         .result-label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+            font-size: 11px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+            font-family: 'JetBrains Mono', monospace;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
         }
 
         .result-value {
-            font-size: 2rem;
-            font-weight: 700;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 0.5rem;
+            font-size: 18px;
+            color: #f59e0b;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            word-break: break-all;
         }
 
         .result-unit {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
+            font-size: 9px;
+            color: #6b7280;
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .lambda-status {
-            display: inline-block;
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: 0.5rem;
-            text-transform: uppercase;
+        .result-equation {
+            font-size: 8px;
+            color: #4b5563;
+            margin-top: 4px;
         }
 
-        .lambda-status.rich {
-            background: rgba(255, 0, 85, 0.2);
-            color: #ff0055;
-            box-shadow: 0 0 10px rgba(255, 0, 85, 0.3);
-        }
-
-        .lambda-status.stoich {
-            background: rgba(0, 255, 136, 0.2);
-            color: #00ff88;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-        }
-
-        .lambda-status.lean {
-            background: rgba(0, 212, 255, 0.2);
-            color: #00d4ff;
-            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-        }
-
-        .warning-banner {
-            background: rgba(255, 165, 0, 0.1);
-            border: 1px solid var(--warning);
+        /* Chart Panel */
+        .chart-panel {
+            flex: 1;
+            background: #161b22;
+            border: 1px solid rgba(245, 158, 11, 0.2);
             border-radius: 8px;
-            padding: 1rem;
-            color: var(--warning);
-            font-size: 0.9rem;
-            display: none;
-            animation: slideDown 0.3s ease;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        .warning-banner.show {
-            display: block;
-        }
-
-        /* VISUALIZATION PANEL */
-        .visualization-panel {
-            margin-top: 5rem;
-        }
-
-        .chart-container {
-            background: var(--glass-light);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            position: relative;
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .chart-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f59e0b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        #lambda {
-            max-width: 100%;
-            height: 200px;
-        }
-
-        #massFlowChart,
-        #compositionChart {
-            max-width: 100%;
-            height: 250px;
-        }
-
-        #errorBar {
-            max-width: 100%;
-            height: 100px;
-        }
-
-        .export-controls {
+        .chart-buttons {
             display: flex;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
+            gap: 10px;
         }
 
-        .btn-export {
-            flex: 1;
-            padding: 0.7rem;
-            background: var(--glass-light);
-            border: 1px solid var(--glass-border);
-            color: var(--text-primary);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
+        button {
+            padding: 10px 16px;
+            background: #f59e0b;
+            border: none;
+            border-radius: 6px;
+            color: #0d0f14;
+            font-family: 'Barlow Condensed', sans-serif;
             font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             transition: all 0.3s ease;
         }
 
-        .btn-export:hover {
-            background: rgba(255, 255, 255, 0.15);
+        button:hover {
+            background: #f59e0b;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
             transform: translateY(-2px);
         }
 
-        /* ANIMATIONS */
-        .number-animate {
-            animation: numberPulse 0.5s ease;
+        button:active {
+            transform: translateY(0);
         }
 
-        @keyframes numberPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .chart-container {
+            position: relative;
+            flex: 1;
+            min-height: 250px;
         }
 
-        .fade-in {
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .wrapper {
+                flex-direction: column;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+
+            .sidebar {
+                width: 100%;
+                max-height: 300px;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
-        /* LOADING STATE */
-        .loading {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid var(--glass-border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
+            .wrapper {
+                padding: 12px;
+                gap: 12px;
             }
 
-            header {
-                padding: 0.8rem 1rem;
+            .sidebar {
+                max-height: 250px;
             }
 
-            .header-content {
-                flex-wrap: wrap;
-                gap: 1rem;
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .panel {
-                padding: 1.5rem;
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
-            .result-value {
-                font-size: 1.5rem;
+            .chart-buttons {
+                width: 100%;
             }
 
-            .button-group {
-                grid-template-columns: 1fr;
+            button {
+                flex: 1;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <div class="logo">⚙️ EGA-CD Pro</div>
-            <div class="header-controls">
-                <button class="toggle-btn" onclick="toggleRealTime()" id="realtimeBtn">
-                    <span class="spinner" style="display:none;"></span> Real-Time: OFF
-                </button>
-                <button class="toggle-btn" onclick="toggleTheme()">🌙 Dark</button>
+    <div class="wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-title">Engine Diagnostics</div>
+
+            <!-- Fuel Properties -->
+            <div class="collapsible-group">
+                <div class="group-header">Fuel Properties</div>
+                <div class="group-content">
+                    <div class="input-group">
+                        <label class="input-label">H/C Ratio (H<sub>cv</sub>)</label>
+                        <input type="number" id="Hcv" step="0.01" placeholder="e.g. 1.8">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">O/C Ratio (O<sub>cv</sub>)</label>
+                        <input type="number" id="Ocv" step="0.01" placeholder="e.g. 0.0">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Carbon Atoms (C)</label>
+                        <input type="number" id="C" step="1" placeholder="e.g. 8">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Hydrogen Atoms (H)</label>
+                        <input type="number" id="H" step="1" placeholder="e.g. 18">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Oxygen Atoms (O)</label>
+                        <input type="number" id="O" step="1" placeholder="e.g. 0">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Sulfur Atoms (S)</label>
+                        <input type="number" id="S" step="1" placeholder="e.g. 0">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Nitrogen Atoms (N)</label>
+                        <input type="number" id="N" step="1" placeholder="e.g. 0">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">HC Analyzer Reference (n)</label>
+                        <input type="number" id="n" step="1" placeholder="e.g. 1" value="1">
+                    </div>
+                </div>
             </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <!-- INPUT PANEL -->
-        <div class="input-panel">
-            <div class="panel">
-                <h2 class="panel-title">Input Parameters</h2>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>CO₂</span>
-                        <span class="input-unit">%</span>
-                    </label>
-                    <input type="number" id="co2" step="0.01" value="12.5" placeholder="0.00">
-                    <div class="input-error"></div>
+            <!-- Fuel Flow -->
+            <div class="collapsible-group">
+                <div class="group-header">Fuel Flow</div>
+                <div class="group-content">
+                    <div class="input-group">
+                        <label class="input-label">Volumetric Flow (V̇<sub>f</sub>) [ml/min]</label>
+                        <input type="number" id="Vdot_f" step="0.1" placeholder="e.g. 100">
+                        <div class="conversion-preview" id="prev-Vdot_f"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Fuel Density (ρ<sub>f</sub>) [kg/L]</label>
+                        <input type="number" id="rho_f" step="0.01" placeholder="e.g. 0.74">
+                        <div class="conversion-preview" id="prev-rho_f"></div>
+                    </div>
                 </div>
+            </div>
 
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>CO</span>
-                        <span class="input-unit">%</span>
-                    </label>
-                    <input type="number" id="co" step="0.01" value="0.5" placeholder="0.00">
-                    <div class="input-error"></div>
+            <!-- Exhaust Gas Analyzer -->
+            <div class="collapsible-group">
+                <div class="group-header">Exhaust Gas Analyzer</div>
+                <div class="group-content">
+                    <div class="input-group">
+                        <label class="input-label">CO₂ [% Vol]</label>
+                        <input type="number" id="CO2" step="0.01" placeholder="e.g. 12.5">
+                        <div class="conversion-preview" id="prev-CO2"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">CO [% Vol]</label>
+                        <input type="number" id="CO" step="0.01" placeholder="e.g. 0.5">
+                        <div class="conversion-preview" id="prev-CO"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">O₂ [% Vol]</label>
+                        <input type="number" id="O2" step="0.01" placeholder="e.g. 1.2">
+                        <div class="conversion-preview" id="prev-O2"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">HC [ppm]</label>
+                        <input type="number" id="HC_ppm" step="1" placeholder="e.g. 300">
+                        <div class="conversion-preview" id="prev-HC"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">NO<sub>x</sub> [ppm] (ref only)</label>
+                        <input type="number" id="NOx_ppm" step="0.1" placeholder="e.g. 50">
+                        <div class="conversion-preview" id="prev-NOx"></div>
+                    </div>
                 </div>
+            </div>
 
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>O₂</span>
-                        <span class="input-unit">%</span>
-                    </label>
-                    <input type="number" id="o2" step="0.01" value="2.5" placeholder="0.00">
-                    <div class="input-error"></div>
+            <!-- Pressure & Temperature -->
+            <div class="collapsible-group">
+                <div class="group-header">Pressure & Temperature</div>
+                <div class="group-content">
+                    <div class="input-group">
+                        <label class="input-label">Pressure (P) [kPa]</label>
+                        <input type="number" id="P_kPa" step="0.1" placeholder="e.g. 101.325">
+                        <div class="conversion-preview" id="prev-P"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Molar Mass (M) [kg/mol]</label>
+                        <input type="number" id="M" step="0.001" placeholder="e.g. 0.0289">
+                        <div class="conversion-preview" id="prev-M"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Exhaust Temp (T<sub>actual</sub>) [°C]</label>
+                        <input type="number" id="T_actual_C" step="1" placeholder="e.g. 300">
+                        <div class="conversion-preview" id="prev-T"></div>
+                    </div>
                 </div>
+            </div>
 
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>HC</span>
-                        <span class="input-unit">ppm</span>
-                    </label>
-                    <input type="number" id="hc_ppm" step="1" value="100" placeholder="0">
-                    <div class="input-error"></div>
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>NO</span>
-                        <span class="input-unit">ppm</span>
-                    </label>
-                    <input type="number" id="no_ppm" step="1" value="500" placeholder="0">
-                    <div class="input-error"></div>
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>Fuel Volume Flow</span>
-                        <span class="input-unit">mL/min</span>
-                    </label>
-                    <input type="number" id="vf" step="0.01" value="50" placeholder="0.00">
-                    <div class="input-error"></div>
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>Fuel Density</span>
-                        <span class="input-unit">kg/m³</span>
-                    </label>
-                    <input type="number" id="rho_f" step="0.1" value="750" placeholder="0.0">
-                    <div class="input-error"></div>
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>Exhaust Temp (In)</span>
-                        <span class="input-unit">K</span>
-                    </label>
-                    <input type="number" id="tgi" step="0.1" value="573.15" placeholder="0.0">
-                    <div class="input-error"></div>
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>Exhaust Temp (Out)</span>
-                        <span class="input-unit">K</span>
-                    </label>
-                    <input type="number" id="tgo" step="0.1" value="323.15" placeholder="0.0">
-                    <div class="input-error"></div>
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>Water Temp (In)</span>
-                        <span class="input-unit">K</span>
-                    </label>
-                    <input type="number" id="twi" step="0.1" value="323.15" placeholder="0.0">
-                    <div class="input-error"></div>
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>Water Temp (Out)</span>
-                        <span class="input-unit">K</span>
-                    </label>
-                    <input type="number" id="two" step="0.1" value="343.15" placeholder="0.0">
-                    <div class="input-error"></div>
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>Water Mass Flow</span>
-                        <span class="input-unit">kg/s</span>
-                    </label>
-                    <input type="number" id="mw" step="0.001" value="0.05" placeholder="0.000">
-                    <div class="input-error"></div>
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>Exhaust Pressure</span>
-                        <span class="input-unit">Pa</span>
-                    </label>
-                    <input type="number" id="p" step="1" value="101325" placeholder="0">
-                    <div class="input-error"></div>
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <span>Exhaust Temperature</span>
-                        <span class="input-unit">K</span>
-                    </label>
-                    <input type="number" id="t_exhaust" step="0.1" value="450" placeholder="0.0">
-                    <div class="input-error"></div>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="calculateAll()">Calculate</button>
-                    <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
-                </div>
-
-                <div class="real-time-toggle" onclick="toggleRealTime()">
-                    <span>Real-Time Calculation</span>
-                    <div class="toggle-switch" id="realtimeToggle"></div>
+            <!-- Energy Balance -->
+            <div class="collapsible-group">
+                <div class="group-header">Energy Balance Inputs</div>
+                <div class="group-content">
+                    <div class="input-group">
+                        <label class="input-label">Water Mass Flow (ṁ<sub>W</sub>) [kg/s]</label>
+                        <input type="number" id="m_W" step="0.001" placeholder="e.g. 0.5">
+                        <div class="conversion-preview" id="prev-m_W"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Exhaust C<sub>p</sub> (C<sub>PG</sub>) [kJ/(kg·K)]</label>
+                        <input type="number" id="C_PG" step="0.01" placeholder="e.g. 1.09">
+                        <div class="conversion-preview" id="prev-C_PG"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Gas Inlet Temp (T<sub>GI</sub>) [°C]</label>
+                        <input type="number" id="T_GI_C" step="1" placeholder="e.g. 400">
+                        <div class="conversion-preview" id="prev-T_GI"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Gas Outlet Temp (T<sub>GO</sub>) [°C]</label>
+                        <input type="number" id="T_GO_C" step="1" placeholder="e.g. 350">
+                        <div class="conversion-preview" id="prev-T_GO"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Water Inlet Temp (T<sub>WI</sub>) [°C]</label>
+                        <input type="number" id="T_WI_C" step="1" placeholder="e.g. 25">
+                        <div class="conversion-preview" id="prev-T_WI"></div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Water Outlet Temp (T<sub>WO</sub>) [°C]</label>
+                        <input type="number" id="T_WO_C" step="1" placeholder="e.g. 45">
+                        <div class="conversion-preview" id="prev-T_WO"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- RESULTS PANEL -->
-        <div class="results-panel">
-            <div class="panel">
-                <h2 class="panel-title">Lambda (λ)</h2>
-                <div class="warning-banner" id="lambdaWarning">⚠️ CO₂ cannot be zero. Calculation blocked.</div>
-                <div class="result-card fade-in">
-                    <div class="result-label">Air-Fuel Equivalence Ratio</div>
-                    <div class="result-value" id="lambdaValue">—</div>
-                    <div class="result-unit">dimensionless</div>
-                    <div class="lambda-status" id="lambdaStatus">—</div>
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- Results Panel -->
+            <div class="results-panel">
+                <div class="results-title">Calculation Results</div>
+                <div class="results-grid">
+                    <div class="result-card" id="card-m_fuel">
+                        <div class="result-label">ṁ<sub>fuel</sub></div>
+                        <div class="result-value" id="val-m_fuel">—</div>
+                        <div class="result-unit">kg/s</div>
+                        <div class="result-equation">(Eq. 2.35)</div>
+                    </div>
+                    <div class="result-card" id="card-lambda">
+                        <div class="result-label">λ</div>
+                        <div class="result-value" id="val-lambda">—</div>
+                        <div class="result-unit">dimensionless</div>
+                        <div class="result-equation">(Eq. 2.36)</div>
+                    </div>
+                    <div class="result-card" id="card-A0">
+                        <div class="result-label">A<sub>0</sub></div>
+                        <div class="result-value" id="val-A0">—</div>
+                        <div class="result-unit">m³<sub>N</sub>/kg<sub>fuel</sub></div>
+                        <div class="result-equation">(Eq. 2.37)</div>
+                    </div>
+                    <div class="result-card" id="card-G_prime">
+                        <div class="result-label">G'</div>
+                        <div class="result-value" id="val-G_prime">—</div>
+                        <div class="result-unit">m³<sub>N</sub>/kg<sub>fuel</sub></div>
+                        <div class="result-equation">(Eq. 2.40)</div>
+                    </div>
+                    <div class="result-card" id="card-Vdot_G_STD">
+                        <div class="result-label">V̇<sub>G,STD</sub></div>
+                        <div class="result-value" id="val-Vdot_G_STD">—</div>
+                        <div class="result-unit">m³<sub>N</sub>/s</div>
+                        <div class="result-equation">(Eq. 2.41)</div>
+                    </div>
+                    <div class="result-card" id="card-Vdot_G_actual">
+                        <div class="result-label">V̇<sub>G,actual</sub></div>
+                        <div class="result-value" id="val-Vdot_G_actual">—</div>
+                        <div class="result-unit">m³/s</div>
+                        <div class="result-equation">(Eq. 2.42)</div>
+                    </div>
+                    <div class="result-card" id="card-rho_exhaust">
+                        <div class="result-label">ρ<sub>exhaust</sub></div>
+                        <div class="result-value" id="val-rho_exhaust">—</div>
+                        <div class="result-unit">kg/m³</div>
+                        <div class="result-equation">(Eq. 2.30)</div>
+                    </div>
+                    <div class="result-card" id="card-m_G_Gprime">
+                        <div class="result-label">ṁ<sub>G,G'</sub></div>
+                        <div class="result-value" id="val-m_G_Gprime">—</div>
+                        <div class="result-unit">kg/s</div>
+                        <div class="result-equation">(Eq. 2.43)</div>
+                    </div>
+                    <div class="result-card" id="card-m_G_EB">
+                        <div class="result-label">ṁ<sub>G,EB</sub></div>
+                        <div class="result-value" id="val-m_G_EB">—</div>
+                        <div class="result-unit">kg/s</div>
+                        <div class="result-equation">(Eq. 2.45)</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="panel">
-                <h2 class="panel-title">Fuel Mass Flow</h2>
-                <div class="result-card fade-in">
-                    <div class="result-label">Fuel Mass Flow Rate</div>
-                    <div class="result-value" id="mfuelValue">—</div>
-                    <div class="result-unit">kg/s</div>
+            <!-- Chart Panel -->
+            <div class="chart-panel">
+                <div class="chart-header">
+                    <div class="chart-title">Mass Flow Comparison</div>
+                    <div class="chart-buttons">
+                        <button id="addPointBtn">+ Add Test Point</button>
+                        <button id="clearChartBtn">Clear Chart</button>
+                    </div>
                 </div>
-            </div>
-
-            <div class="panel">
-                <h2 class="panel-title">Volume Flow</h2>
-                <div class="result-card fade-in">
-                    <div class="result-label">Standard Volume Flow</div>
-                    <div class="result-value" id="vstdValue">—</div>
-                    <div class="result-unit">m³/s</div>
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
                 </div>
-                <div class="result-card fade-in">
-                    <div class="result-label">Actual Volume Flow</div>
-                    <div class="result-value" id="vactualValue">—</div>
-                    <div class="result-unit">m³/s</div>
-                </div>
-            </div>
-
-            <div class="panel">
-                <h2 class="panel-title">Mass Flow Results</h2>
-                <div class="warning-banner" id="tempWarning">⚠️ Temperature difference is too small. Check inputs.</div>
-                <div class="result-card fade-in">
-                    <div class="result-label">Dry Exhaust Mass Flow</div>
-                    <div class="result-value" id="mgdryValue">—</div>
-                    <div class="result-unit">kg/s</div>
-                </div>
-                <div class="result-card fade-in">
-                    <div class="result-label">Energy Balance Mass Flow</div>
-                    <div class="result-value" id="mgebValue">—</div>
-                    <div class="result-unit">kg/s</div>
-                </div>
-            </div>
-
-            <div class="panel">
-                <h2 class="panel-title">Error Analysis</h2>
-                <div class="result-card fade-in">
-                    <div class="result-label">Mass Flow Error</div>
-                    <div class="result-value" id="errorValue">—</div>
-                    <div class="result-unit">%</div>
-                </div>
-            </div>
-
-            <div class="panel">
-                <h2 class="panel-title">Export & Session</h2>
-                <div class="export-controls">
-                    <button class="btn-export" onclick="exportPDF()">📄 PDF</button>
-                    <button class="btn-export" onclick="exportCSV()">📊 CSV</button>
-                    <button class="btn-export" onclick="saveSession()">💾 Save</button>
-                    <button class="btn-export" onclick="loadSession()">📂 Load</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- VISUALIZATION PANEL -->
-        <div class="visualization-panel">
-            <div class="chart-container">
-                <div class="chart-title">Lambda Gauge (0.7 - 1.3)</div>
-                <canvas id="lambdaGauge"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <div class="chart-title">Mass Flow Comparison</div>
-                <canvas id="massFlowChart"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <div class="chart-title">Mass Flow Error (%)</div>
-                <canvas id="errorBar"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <div class="chart-title">Gas Composition</div>
-                <canvas id="compositionChart"></canvas>
             </div>
         </div>
     </div>
 
     <script>
-        // ========================================
-        // GLOBAL STATE & CONFIGURATION
-        // ========================================
+        // ============================================================
+        // FORMULAS AND CALCULATIONS
+        // ============================================================
 
-        const CONFIG = {
-            MOLAR_MASS_AIR: 28.97,
-            GAS_CONSTANT: 8.314,
-            R_SPECIFIC: 287,
-            STANDARD_PRESSURE: 101325,
-            STANDARD_TEMP: 273.15,
-            HC_CARBON_COUNT: 12,
-            NO_CONVERSION: 10000,
-            HC_CONVERSION: 10000,
-            MOLAR_VOLUME_STD: 22.4,
-            OXYGEN_FRACTION: 0.21,
-            CP_WATER: 4186,
-            CP_GAS: 1000,
-            EPSILON: 1e-9,
+        // Eq. 2.35 — Fuel mass flow rate
+        function calcMFuel(Vdot_f_ml_min, rho_f_kg_l) {
+            if (!Vdot_f_ml_min || !rho_f_kg_l) return null;
+            return (Vdot_f_ml_min * rho_f_kg_l) / (60 * 1000);
+        }
+
+        // Eq. 2.36 — Brettschneider equation for lambda
+        function calcLambda(CO2_pct, CO_pct, O2_pct, HC_ppm, Hcv, Ocv, n) {
+            if (!CO2_pct && CO2_pct !== 0) return null;
+            if (!CO_pct && CO_pct !== 0) return null;
+            if (!O2_pct && O2_pct !== 0) return null;
+            if (!HC_ppm && HC_ppm !== 0) return null;
+            if (!Hcv && Hcv !== 0) return null;
+            if (!Ocv && Ocv !== 0) return null;
+            if (!n && n !== 0) return null;
+
+            const HC_pct = HC_ppm / 10000;
+            const numerator = CO2_pct + CO_pct / 2 + O2_pct + 
+                            (Hcv / 4) * (3.5 / (3.5 + CO_pct / CO2_pct)) - 
+                            (Ocv / 2) * (CO2_pct + CO_pct);
+            const denominator = (1 + Hcv / 4 - Ocv / 2) * (CO2_pct + CO_pct + n * HC_pct);
+            return numerator / denominator;
+        }
+
+        // Eq. 2.37 — Stoichiometric air volume
+        function calcA0(C, H, O, S) {
+            if (!C && C !== 0) return null;
+            if (!H && H !== 0) return null;
+            if (!O && O !== 0) return null;
+            if (!S && S !== 0) return null;
+
+            const molar_vol = 22.4;
+            const O2_fraction = 0.21;
+            return (molar_vol / O2_fraction) * (C / 12 + (1 / 4) * (H - O / 8) + S / 32);
+        }
+
+        // Eq. 2.40 — Dry exhaust gas specific volume
+        function calcGPrime(lambda, A0, C, S, N) {
+            if (!lambda && lambda !== 0) return null;
+            if (!A0 && A0 !== 0) return null;
+            if (!C && C !== 0) return null;
+            if (!S && S !== 0) return null;
+            if (!N && N !== 0) return null;
+
+            const molar_vol = 22.4;
+            return (lambda - 0.21) * A0 + molar_vol * (C / 12 + S / 32 + N / 28);
+        }
+
+        // Eq. 2.41 — Volume flow rate at standard conditions
+        function calcVdotGSTD(G_prime, m_fuel) {
+            if (!G_prime && G_prime !== 0) return null;
+            if (!m_fuel && m_fuel !== 0) return null;
+            return G_prime * m_fuel;
+        }
+
+        // Eq. 2.42 — Actual volume flow rate (corrected for temperature)
+        function calcVdotGActual(Vdot_G_STD, T_actual_C) {
+            if (!Vdot_G_STD && Vdot_G_STD !== 0) return null;
+            if (!T_actual_C && T_actual_C !== 0) return null;
+
+            const T_actual_K = T_actual_C + 273.15;
+            const T_STD_K = 273.15;
+            return Vdot_G_STD * (T_actual_K / T_STD_K);
+        }
+
+        // Eq. 2.30 — Exhaust gas density (ideal gas law)
+        function calcRhoExhaust(P_kPa, M, T_C) {
+            if (!P_kPa && P_kPa !== 0) return null;
+            if (!M && M !== 0) return null;
+            if (!T_C && T_C !== 0) return null;
+
+            const P_Pa = P_kPa * 1000;
+            const T_K = T_C + 273.15;
+            const R = 8.314;
+            return (P_Pa * M) / (R * T_K);
+        }
+
+        // Eq. 2.43 — Mass flow rate via G' method
+        function calcMGPrime(rho_exhaust, Vdot_G_actual) {
+            if (!rho_exhaust && rho_exhaust !== 0) return null;
+            if (!Vdot_G_actual && Vdot_G_actual !== 0) return null;
+            return rho_exhaust * Vdot_G_actual;
+        }
+
+        // Eq. 2.45 — Mass flow rate via energy balance
+        function calcMGEB(m_W, C_PW, C_PG, T_GO_C, T_GI_C, T_WO_C, T_WI_C) {
+            if (!m_W && m_W !== 0) return null;
+            if (!C_PG && C_PG !== 0) return null;
+            if (!T_GI_C && T_GI_C !== 0) return null;
+            if (!T_GO_C && T_GO_C !== 0) return null;
+            if (!T_WI_C && T_WI_C !== 0) return null;
+            if (!T_WO_C && T_WO_C !== 0) return null;
+
+            const T_GI_K = T_GI_C + 273.15;
+            const T_GO_K = T_GO_C + 273.15;
+            const T_WI_K = T_WI_C + 273.15;
+            const T_WO_K = T_WO_C + 273.15;
+
+            const numerator = (T_WO_K - T_WI_K);
+            const denominator = (T_GI_K - T_GO_K);
+            if (denominator === 0) return null;
+
+            return m_W * (C_PW / C_PG) * (numerator / denominator);
+        }
+
+        // ============================================================
+        // UI AND STATE
+        // ============================================================
+
+        const inputs = {
+            Hcv: document.getElementById('Hcv'),
+            Ocv: document.getElementById('Ocv'),
+            C: document.getElementById('C'),
+            H: document.getElementById('H'),
+            O: document.getElementById('O'),
+            S: document.getElementById('S'),
+            N: document.getElementById('N'),
+            n: document.getElementById('n'),
+            Vdot_f: document.getElementById('Vdot_f'),
+            rho_f: document.getElementById('rho_f'),
+            CO2: document.getElementById('CO2'),
+            CO: document.getElementById('CO'),
+            O2: document.getElementById('O2'),
+            HC_ppm: document.getElementById('HC_ppm'),
+            NOx_ppm: document.getElementById('NOx_ppm'),
+            P_kPa: document.getElementById('P_kPa'),
+            M: document.getElementById('M'),
+            T_actual_C: document.getElementById('T_actual_C'),
+            m_W: document.getElementById('m_W'),
+            C_PG: document.getElementById('C_PG'),
+            T_GI_C: document.getElementById('T_GI_C'),
+            T_GO_C: document.getElementById('T_GO_C'),
+            T_WI_C: document.getElementById('T_WI_C'),
+            T_WO_C: document.getElementById('T_WO_C')
         };
 
-        let state = {
-            realTimeEnabled: false,
-            lightMode: false,
-            calculations: {},
-            validationErrors: {},
+        const results = {
+            m_fuel: document.getElementById('val-m_fuel'),
+            lambda: document.getElementById('val-lambda'),
+            A0: document.getElementById('val-A0'),
+            G_prime: document.getElementById('val-G_prime'),
+            Vdot_G_STD: document.getElementById('val-Vdot_G_STD'),
+            Vdot_G_actual: document.getElementById('val-Vdot_G_actual'),
+            rho_exhaust: document.getElementById('val-rho_exhaust'),
+            m_G_Gprime: document.getElementById('val-m_G_Gprime'),
+            m_G_EB: document.getElementById('val-m_G_EB')
         };
 
-        let charts = {};
-
-        // ========================================
-        // VALIDATION & ERROR HANDLING
-        // ========================================
-
-        function validateInput(id, value, constraints = {}) {
-            const min = constraints.min !== undefined ? constraints.min : -Infinity;
-            const max = constraints.max !== undefined ? constraints.max : Infinity;
-            const allowZero = constraints.allowZero !== undefined ? constraints.allowZero : true;
-
-            if (value === null || value === '' || isNaN(value)) {
-                return { valid: false, message: 'Required field' };
-            }
-
-            const num = parseFloat(value);
-
-            if (!allowZero && Math.abs(num) < CONFIG.EPSILON) {
-                return { valid: false, message: 'Cannot be zero' };
-            }
-
-            if (num < min) {
-                return { valid: false, message: `Minimum: ${min}` };
-            }
-
-            if (num > max) {
-                return { valid: false, message: `Maximum: ${max}` };
-            }
-
-            return { valid: true };
-        }
-
-        function updateInputValidation(id, isValid, message = '') {
-            const input = document.getElementById(id);
-            const errorEl = input.nextElementSibling;
-
-            if (isValid) {
-                input.classList.remove('error', 'warning');
-                if (errorEl) errorEl.classList.remove('show');
-                state.validationErrors[id] = null;
-            } else {
-                input.classList.add('error');
-                if (errorEl) {
-                    errorEl.textContent = message;
-                    errorEl.classList.add('show');
-                }
-                state.validationErrors[id] = message;
-            }
-        }
-
-        // ========================================
-        // PRECISION FORMATTING
-        // ========================================
-
-        function formatNumber(value, decimals = 6) {
-            if (value === null || isNaN(value) || !isFinite(value)) {
-                return '—';
-            }
-
-            const absValue = Math.abs(value);
-
-            if (absValue < 1e-6 && absValue !== 0) {
-                return value.toExponential(3);
-            }
-
-            if (absValue < 0.01) {
-                return value.toFixed(8);
-            }
-
-            if (absValue < 1) {
-                return value.toFixed(6);
-            }
-
-            if (absValue < 1000) {
-                return value.toFixed(4);
-            }
-
-            return value.toFixed(2);
-        }
-
-        // ========================================
-        // CALCULATION ENGINE
-        // ========================================
-
-        function calculateLambda() {
-            const co2 = parseFloat(document.getElementById('co2').value);
-            const co = parseFloat(document.getElementById('co').value);
-            const o2 = parseFloat(document.getElementById('o2').value);
-            const no_ppm = parseFloat(document.getElementById('no_ppm').value);
-            const hc_ppm = parseFloat(document.getElementById('hc_ppm').value);
-
-            // Validation
-            updateInputValidation('co2', co2 > CONFIG.EPSILON, 'CO₂ must be > 0');
-            if (co2 <= CONFIG.EPSILON) {
-                document.getElementById('lambdaWarning').classList.add('show');
-                return null;
-            }
-            document.getElementById('lambdaWarning').classList.remove('show');
-
-            updateInputValidation('co', co >= 0);
-            updateInputValidation('o2', o2 >= 0);
-
-            // Convert ppm to decimal percentages
-            const hc = hc_ppm / CONFIG.HC_CONVERSION;
-            const no = no_ppm / CONFIG.NO_CONVERSION;
-
-            // Fuel composition estimation
-            const hcv = 2; // H/C ratio assumption
-            const ocv = 0; // O/C ratio assumption
-            const n = CONFIG.HC_CARBON_COUNT;
-
-            // EXACT LAMBDA FORMULA
-            // Numerator
-            const numerator = co2 +
-                (co / 2) +
-                o2 +
-                (no / 2) +
-                ((hcv / 4) * (3.5 / (3.5 + (co / co2))) - (ocv / 2)) / (co2 + co);
-
-            // Denominator
-            const denominator = (1 + (hcv / 4) - (ocv / 2)) / (co2 + co + (n * hc));
-
-            const lambda = numerator / denominator;
-
-            if (!isFinite(lambda)) {
-                return null;
-            }
-
-            return lambda;
-        }
-
-        function calculateFuelMassFlow() {
-            const vf = parseFloat(document.getElementById('vf').value);
-            const rho_f = parseFloat(document.getElementById('rho_f').value);
-
-            updateInputValidation('vf', vf > 0);
-            updateInputValidation('rho_f', rho_f > 0);
-
-            if (vf <= 0 || rho_f <= 0) return null;
-
-            // ṁ_fuel = (V̇_f × ρ_f) / (60 × 10⁶)
-            const mfuel = (vf * rho_f) / (60 * 1e6);
-
-            return mfuel;
-        }
-
-        function calculateStoichiometricAir() {
-            // A₀ = (22.4 / 0.21) × [ (1/12) + (1/4)(Hcv − Ocv/8) ]
-            const hcv = 2;
-            const ocv = 0;
-
-            const a0 = (CONFIG.MOLAR_VOLUME_STD / CONFIG.OXYGEN_FRACTION) *
-                ((1 / 12) + (0.25) * (hcv - (ocv / 8)));
-
-            return a0;
-        }
-
-        function calculateGPrime(lambda) {
-            if (lambda === null) return null;
-
-            const a0 = calculateStoichiometricAir();
-            if (a0 === null) return null;
-
-            // G′ = (λ − 0.21)A₀ + 22.4(1/12)
-            const gprime = (lambda - CONFIG.OXYGEN_FRACTION) * a0 + (CONFIG.MOLAR_VOLUME_STD / 12);
-
-            return gprime;
-        }
-
-        function calculateVolumeFlow() {
-            const mfuel = calculateFuelMassFlow();
-            const lambda = calculateLambda();
-
-            if (mfuel === null || lambda === null) return { vSTD: null, vActual: null };
-
-            const gprime = calculateGPrime(lambda);
-            if (gprime === null) return { vSTD: null, vActual: null };
-
-            // V̇_STD = G′ × ṁ_fuel
-            const vSTD = gprime * mfuel;
-
-            // HIGH-END MODE: V̇_actual = V̇_STD × (T / 273) × (101325 / P)
-            const t = parseFloat(document.getElementById('t_exhaust').value);
-            const p = parseFloat(document.getElementById('p').value);
-
-            updateInputValidation('t_exhaust', t > 0);
-            updateInputValidation('p', p > 0);
-
-            if (t <= 0 || p <= 0) {
-                return { vSTD: vSTD, vActual: null };
-            }
-
-            const vActual = vSTD * (t / CONFIG.STANDARD_TEMP) * (CONFIG.STANDARD_PRESSURE / p);
-
-            return { vSTD: vSTD, vActual: vActual };
-        }
-
-        function calculateExhaustDensity() {
-            const t = parseFloat(document.getElementById('t_exhaust').value);
-            const p = parseFloat(document.getElementById('p').value);
-
-            updateInputValidation('t_exhaust', t > 0);
-            updateInputValidation('p', p > 0);
-
-            if (t <= 0 || p <= 0) return null;
-
-            // ρ = (P × 29) / (8314 × T)
-            const rho = (p * CONFIG.MOLAR_MASS_AIR) / (CONFIG.GAS_CONSTANT * t);
-
-            return rho;
-        }
-
-        function calculateDryExhaustMassFlow() {
-            const volumeFlow = calculateVolumeFlow();
-            if (volumeFlow.vActual === null) return null;
-
-            const rho = calculateExhaustDensity();
-            if (rho === null) return null;
-
-            // ṁ_G,dry = ρ × V̇_actual
-            const mgdry = rho * volumeFlow.vActual;
-
-            return mgdry;
-        }
-
-        function calculateEnergyBalanceMassFlow() {
-            const mw = parseFloat(document.getElementById('mw').value);
-            const two = parseFloat(document.getElementById('two').value);
-            const twi = parseFloat(document.getElementById('twi').value);
-            const tgi = parseFloat(document.getElementById('tgi').value);
-            const tgo = parseFloat(document.getElementById('tgo').value);
-
-            updateInputValidation('mw', mw > 0);
-            updateInputValidation('two', two > 0);
-            updateInputValidation('twi', twi > 0);
-            updateInputValidation('tgi', tgi > 0);
-            updateInputValidation('tgo', tgo > 0);
-
-            if (mw <= 0 || two <= 0 || twi <= 0 || tgi <= 0 || tgo <= 0) return null;
-
-            const deltaT_water = two - twi;
-            const deltaT_gas = tgi - tgo;
-
-            // Check for temperature difference too small
-            if (Math.abs(deltaT_gas) < CONFIG.EPSILON) {
-                document.getElementById('tempWarning').classList.add('show');
-                return null;
-            }
-            document.getElementById('tempWarning').classList.remove('show');
-
-            // ṁ_G,EB = ṁ_W × (Cpw / Cpg) × ((TWO − TWI) / (TGI − TGO))
-            const mgeb = mw * (CONFIG.CP_WATER / CONFIG.CP_GAS) * (deltaT_water / deltaT_gas);
-
-            return mgeb;
-        }
-
-        function calculateError() {
-            const mgeb = calculateEnergyBalanceMassFlow();
-            const mgdry = calculateDryExhaustMassFlow();
-
-            if (mgeb === null || mgdry === null || mgdry <= 0) return null;
-
-            // Error (%) = ((ṁ_G,EB − ṁ_G,dry) / ṁ_G,dry) × 100
-            const error = ((mgeb - mgdry) / mgdry) * 100;
-
-            return error;
-        }
-
-        // ========================================
-        // UI UPDATE FUNCTIONS
-        // ========================================
-
-        function updateResultCard(elementId, value, unit = '', status = null) {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-
-            if (value === null) {
-                element.textContent = '—';
-                return;
-            }
-
-            element.textContent = formatNumber(value);
-            element.classList.add('number-animate');
-            setTimeout(() => element.classList.remove('number-animate'), 500);
-        }
-
-        function getLambdaStatus(lambda) {
-            if (lambda === null) return { status: 'neutral', label: '—' };
-
-            if (lambda < 0.95) {
-                return { status: 'rich', label: '⚫ RICH' };
-            } else if (lambda <= 1.05) {
-                return { status: 'stoich', label: '🟢 STOICHIOMETRIC' };
-            } else {
-                return { status: 'lean', label: '🔵 LEAN' };
-            }
-        }
-
-        function calculateAll() {
-            // Calculate all values
-            const lambda = calculateLambda();
-            const mfuel = calculateFuelMassFlow();
-            const volumeFlow = calculateVolumeFlow();
-            const mgdry = calculateDryExhaustMassFlow();
-            const mgeb = calculateEnergyBalanceMassFlow();
-            const error = calculateError();
-
-            // Store in state
-            state.calculations = {
-                lambda,
-                mfuel,
-                vSTD: volumeFlow.vSTD,
-                vActual: volumeFlow.vActual,
-                mgdry,
-                mgeb,
-                error,
-            };
-
-            // Update UI
-            updateResultCard('lambdaValue', lambda);
-            const lambdaStatus = getLambdaStatus(lambda);
-            const statusEl = document.getElementById('lambdaStatus');
-            statusEl.textContent = lambdaStatus.label;
-            statusEl.className = `lambda-status ${lambdaStatus.status}`;
-
-            updateResultCard('mfuelValue', mfuel);
-            updateResultCard('vstdValue', volumeFlow.vSTD);
-            updateResultCard('vactualValue', volumeFlow.vActual);
-            updateResultCard('mgdryValue', mgdry);
-            updateResultCard('mgebValue', mgeb);
-            updateResultCard('errorValue', error);
-
-            // Update charts
-            updateCharts();
-        }
-
-        function resetAll() {
-            document.querySelectorAll('input[type="number"]').forEach(input => {
-                input.classList.remove('error', 'warning');
+        const resultCards = {
+            m_fuel: document.getElementById('card-m_fuel'),
+            lambda: document.getElementById('card-lambda'),
+            A0: document.getElementById('card-A0'),
+            G_prime: document.getElementById('card-G_prime'),
+            Vdot_G_STD: document.getElementById('card-Vdot_G_STD'),
+            Vdot_G_actual: document.getElementById('card-Vdot_G_actual'),
+            rho_exhaust: document.getElementById('card-rho_exhaust'),
+            m_G_Gprime: document.getElementById('card-m_G_Gprime'),
+            m_G_EB: document.getElementById('card-m_G_EB')
+        };
+
+        // Chart state
+        let testPoints = [];
+        let chart = null;
+
+        // ============================================================
+        // COLLAPSIBLE SECTIONS
+        // ============================================================
+
+        document.querySelectorAll('.group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                this.classList.toggle('collapsed');
+                content.classList.toggle('collapsed');
             });
-
-            document.querySelectorAll('.input-error').forEach(el => {
-                el.classList.remove('show');
-            });
-
-            document.querySelectorAll('[id$="Value"]').forEach(el => {
-                el.textContent = '—';
-            });
-
-            document.getElementById('lambdaStatus').textContent = '—';
-            document.getElementById('lambdaStatus').className = 'lambda-status';
-
-            state.calculations = {};
-            state.validationErrors = {};
-
-            Object.values(charts).forEach(chart => {
-                if (chart) chart.destroy();
-            });
-            charts = {};
-        }
-
-        // ========================================
-        // CHART MANAGEMENT
-        // ========================================
-
-        function initCharts() {
-            // Lambda Gauge
-            const lambdaCtx = document.getElementById('lambdaGauge').getContext('2d');
-            charts.lambda = new Chart(lambdaCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Rich', 'Stoich', 'Lean'],
-                    datasets: [{
-                        data: [10, 10, 10],
-                        backgroundColor: [
-                            'rgba(255, 0, 85, 0.3)',
-                            'rgba(0, 255, 136, 0.3)',
-                            'rgba(0, 212, 255, 0.3)',
-                        ],
-                        borderColor: [
-                            '#ff0055',
-                            '#00ff88',
-                            '#00d4ff',
-                        ],
-                        borderWidth: 2,
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
-                                font: { size: 12 },
-                            },
-                        },
-                    },
-                },
-            });
-
-            // Mass Flow Comparison
-            const massCtx = document.getElementById('massFlowChart').getContext('2d');
-            charts.mass = new Chart(massCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Dry Exhaust', 'Energy Balance'],
-                    datasets: [{
-                        label: 'Mass Flow (kg/s)',
-                        data: [0, 0],
-                        backgroundColor: [
-                            'rgba(0, 212, 255, 0.5)',
-                            'rgba(0, 255, 136, 0.5)',
-                        ],
-                        borderColor: [
-                            '#00d4ff',
-                            '#00ff88',
-                        ],
-                        borderWidth: 2,
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
-                            },
-                        },
-                    },
-                    scales: {
-                        y: {
-                            ticks: {
-                                color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)',
-                            },
-                        },
-                        x: {
-                            ticks: {
-                                color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
-                            },
-                        },
-                    },
-                },
-            });
-
-            // Error Bar
-            const errorCtx = document.getElementById('errorBar').getContext('2d');
-            charts.error = new Chart(errorCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Error %'],
-                    datasets: [{
-                        label: 'Mass Flow Error',
-                        data: [0],
-                        backgroundColor: 'rgba(255, 165, 0, 0.5)',
-                        borderColor: '#ffa500',
-                        borderWidth: 2,
-                    }],
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
-                            },
-                        },
-                    },
-                    scales: {
-                        x: {
-                            ticks: {
-                                color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)',
-                            },
-                        },
-                        y: {
-                            ticks: {
-                                color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
-                            },
-                        },
-                    },
-                },
-            });
-
-            // Gas Composition Pie
-            const compCtx = document.getElementById('compositionChart').getContext('2d');
-            charts.composition = new Chart(compCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['CO₂', 'O₂', 'CO', 'HC', 'NO'],
-                    datasets: [{
-                        data: [12.5, 2.5, 0.5, 0.01, 0.05],
-                        backgroundColor: [
-                            'rgba(0, 212, 255, 0.6)',
-                            'rgba(0, 255, 136, 0.6)',
-                            'rgba(255, 165, 0, 0.6)',
-                            'rgba(255, 0, 85, 0.6)',
-                            'rgba(148, 0, 211, 0.6)',
-                        ],
-                        borderColor: [
-                            '#00d4ff',
-                            '#00ff88',
-                            '#ffa500',
-                            '#ff0055',
-                            '#9400d3',
-                        ],
-                        borderWidth: 2,
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
-                                font: { size: 12 },
-                            },
-                        },
-                    },
-                },
-            });
-        }
-
-        function updateCharts() {
-            const calc = state.calculations;
-
-            if (charts.mass && calc.mgdry !== null && calc.mgeb !== null) {
-                charts.mass.data.datasets[0].data = [calc.mgdry, calc.mgeb];
-                charts.mass.update();
-            }
-
-            if (charts.error && calc.error !== null) {
-                charts.error.data.datasets[0].data = [calc.error];
-                charts.error.update();
-            }
-
-            if (charts.composition) {
-                const co2 = parseFloat(document.getElementById('co2').value) || 0;
-                const o2 = parseFloat(document.getElementById('o2').value) || 0;
-                const co = parseFloat(document.getElementById('co').value) || 0;
-                const hc = parseFloat(document.getElementById('hc_ppm').value) / 10000 || 0;
-                const no = parseFloat(document.getElementById('no_ppm').value) / 10000 || 0;
-
-                charts.composition.data.datasets[0].data = [co2, o2, co, hc, no];
-                charts.composition.update();
-            }
-        }
-
-        // ========================================
-        // THEME & CONTROLS
-        // ========================================
-
-        function toggleTheme() {
-            state.lightMode = !state.lightMode;
-            if (state.lightMode) {
-                document.body.classList.add('light-mode');
-                document.querySelector('.toggle-btn:nth-of-type(2)').textContent = '☀️ Light';
-            } else {
-                document.body.classList.remove('light-mode');
-                document.querySelector('.toggle-btn:nth-of-type(2)').textContent = '🌙 Dark';
-            }
-            localStorage.setItem('ega-theme', state.lightMode);
-        }
-
-        function toggleRealTime() {
-            state.realTimeEnabled = !state.realTimeEnabled;
-            const btn = document.getElementById('realtimeBtn');
-            const toggle = document.getElementById('realtimeToggle');
-
-            if (state.realTimeEnabled) {
-                btn.textContent = '✓ Real-Time: ON';
-                toggle.classList.add('active');
-                document.querySelectorAll('input[type="number"]').forEach(input => {
-                    input.addEventListener('input', calculateAll);
-                });
-            } else {
-                btn.textContent = 'Real-Time: OFF';
-                toggle.classList.remove('active');
-                document.querySelectorAll('input[type="number"]').forEach(input => {
-                    input.removeEventListener('input', calculateAll);
-                });
-            }
-            localStorage.setItem('ega-realtime', state.realTimeEnabled);
-        }
-
-        // ========================================
-        // EXPORT FUNCTIONS
-        // ========================================
-
-        function exportPDF() {
-            const element = document.querySelector('.results-panel');
-            const opt = {
-                margin: 10,
-                filename: 'EGA-Report.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
-            };
-            html2pdf().set(opt).from(element).save();
-        }
-
-        function exportCSV() {
-            const calc = state.calculations;
-            const data = [
-                ['Parameter', 'Value', 'Unit'],
-                ['Lambda (λ)', formatNumber(calc.lambda), 'dimensionless'],
-                ['Fuel Mass Flow', formatNumber(calc.mfuel), 'kg/s'],
-                ['Standard Volume Flow', formatNumber(calc.vSTD), 'm³/s'],
-                ['Actual Volume Flow', formatNumber(calc.vActual), 'm³/s'],
-                ['Dry Exhaust Mass Flow', formatNumber(calc.mgdry), 'kg/s'],
-                ['Energy Balance Mass Flow', formatNumber(calc.mgeb), 'kg/s'],
-                ['Error', formatNumber(calc.error), '%'],
-            ];
-
-            const csv = data.map(row => row.join(',')).join('\n');
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'EGA-Report.csv';
-            a.click();
-        }
-
-        function saveSession() {
-            const inputs = {};
-            document.querySelectorAll('input[type="number"]').forEach(input => {
-                inputs[input.id] = input.value;
-            });
-            localStorage.setItem('ega-session', JSON.stringify(inputs));
-            alert('Session saved successfully!');
-        }
-
-        function loadSession() {
-            const saved = localStorage.getItem('ega-session');
-            if (!saved) {
-                alert('No saved session found.');
-                return;
-            }
-
-            const inputs = JSON.parse(saved);
-            Object.keys(inputs).forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = inputs[id];
-            });
-
-            calculateAll();
-            alert('Session loaded successfully!');
-        }
-
-        // ========================================
-        // INITIALIZATION
-        // ========================================
-
-        window.addEventListener('DOMContentLoaded', () => {
-            initCharts();
-
-            // Load theme preference
-            if (localStorage.getItem('ega-theme') === 'true') {
-                toggleTheme();
-            }
-
-            // Load real-time preference
-            if (localStorage.getItem('ega-realtime') === 'true') {
-                toggleRealTime();
-            }
-
-            // Initial calculation
-            calculateAll();
         });
+
+        // ============================================================
+        // CONVERSION PREVIEWS
+        // ============================================================
+
+        function updateConversionPreviews() {
+            const vdot_f = inputs.Vdot_f.value;
+            if (vdot_f) {
+                const ml_min_to_l_h = (vdot_f * 60) / 1000;
+                document.getElementById('prev-Vdot_f').textContent = `= ${ml_min_to_l_h.toFixed(4)} L/h`;
+            } else {
+                document.getElementById('prev-Vdot_f').textContent = '';
+            }
+
+            const T_actual = inputs.T_actual_C.value;
+            if (T_actual) {
+                const T_K = parseFloat(T_actual) + 273.15;
+                document.getElementById('prev-T').textContent = `= ${T_K.toFixed(2)} K`;
+            } else {
+                document.getElementById('prev-T').textContent = '';
+            }
+
+            const P_kPa = inputs.P_kPa.value;
+            if (P_kPa) {
+                const P_Pa = parseFloat(P_kPa) * 1000;
+                document.getElementById('prev-P').textContent = `= ${P_Pa.toFixed(0)} Pa`;
+            } else {
+                document.getElementById('prev-P').textContent = '';
+            }
+
+            const HC_ppm = inputs.HC_ppm.value;
+            if (HC_ppm) {
+                const HC_pct = parseFloat(HC_ppm) / 10000;
+                document.getElementById('prev-HC').textContent = `= ${HC_pct.toFixed(6)} % Vol`;
+            } else {
+                document.getElementById('prev-HC').textContent = '';
+            }
+
+            const NOx_ppm = inputs.NOx_ppm.value;
+            if (NOx_ppm) {
+                const NOx_pct = parseFloat(NOx_ppm) / 10000;
+                document.getElementById('prev-NOx').textContent = `= ${NOx_pct.toFixed(6)} % Vol (ref)`;
+            } else {
+                document.getElementById('prev-NOx').textContent = '';
+            }
+
+            const T_GI = inputs.T_GI_C.value;
+            if (T_GI) {
+                const T_GI_K = parseFloat(T_GI) + 273.15;
+                document.getElementById('prev-T_GI').textContent = `= ${T_GI_K.toFixed(2)} K`;
+            } else {
+                document.getElementById('prev-T_GI').textContent = '';
+            }
+
+            const T_GO = inputs.T_GO_C.value;
+            if (T_GO) {
+                const T_GO_K = parseFloat(T_GO) + 273.15;
+                document.getElementById('prev-T_GO').textContent = `= ${T_GO_K.toFixed(2)} K`;
+            } else {
+                document.getElementById('prev-T_GO').textContent = '';
+            }
+
+            const T_WI = inputs.T_WI_C.value;
+            if (T_WI) {
+                const T_WI_K = parseFloat(T_WI) + 273.15;
+                document.getElementById('prev-T_WI').textContent = `= ${T_WI_K.toFixed(2)} K`;
+            } else {
+                document.getElementById('prev-T_WI').textContent = '';
+            }
+
+            const T_WO = inputs.T_WO_C.value;
+            if (T_WO) {
+                const T_WO_K = parseFloat(T_WO) + 273.15;
+                document.getElementById('prev-T_WO').textContent = `= ${T_WO_K.toFixed(2)} K`;
+            } else {
+                document.getElementById('prev-T_WO').textContent = '';
+            }
+        }
+
+        // ============================================================
+        // MAIN CALCULATION FUNCTION
+        // ============================================================
+
+        function calculate() {
+            updateConversionPreviews();
+
+            // Get all input values
+            const Hcv = inputs.Hcv.value ? parseFloat(inputs.Hcv.value) : null;
+            const Ocv = inputs.Ocv.value ? parseFloat(inputs.Ocv.value) : null;
+            const C = inputs.C.value ? parseFloat(inputs.C.value) : null;
+            const H = inputs.H.value ? parseFloat(inputs.H.value) : null;
+            const O = inputs.O.value ? parseFloat(inputs.O.value) : null;
+            const S = inputs.S.value ? parseFloat(inputs.S.value) : null;
+            const N = inputs.N.value ? parseFloat(inputs.N.value) : null;
+            const n = inputs.n.value ? parseFloat(inputs.n.value) : null;
+            const Vdot_f = inputs.Vdot_f.value ? parseFloat(inputs.Vdot_f.value) : null;
+            const rho_f = inputs.rho_f.value ? parseFloat(inputs.rho_f.value) : null;
+            const CO2 = inputs.CO2.value ? parseFloat(inputs.CO2.value) : null;
+            const CO = inputs.CO.value ? parseFloat(inputs.CO.value) : null;
+            const O2 = inputs.O2.value ? parseFloat(inputs.O2.value) : null;
+            const HC_ppm = inputs.HC_ppm.value ? parseFloat(inputs.HC_ppm.value) : null;
+            const P_kPa = inputs.P_kPa.value ? parseFloat(inputs.P_kPa.value) : null;
+            const M = inputs.M.value ? parseFloat(inputs.M.value) : null;
+            const T_actual_C = inputs.T_actual_C.value ? parseFloat(inputs.T_actual_C.value) : null;
+            const m_W = inputs.m_W.value ? parseFloat(inputs.m_W.value) : null;
+            const C_PG = inputs.C_PG.value ? parseFloat(inputs.C_PG.value) : null;
+            const T_GI_C = inputs.T_GI_C.value ? parseFloat(inputs.T_GI_C.value) : null;
+            const T_GO_C = inputs.T_GO_C.value ? parseFloat(inputs.T_GO_C.value) : null;
+            const T_WI_C = inputs.T_WI_C.value ? parseFloat(inputs.T_WI_C.value) : null;
+            const T_WO_C = inputs.T_WO_C.value ? parseFloat(inputs.T_WO_C.value) : null;
+
+            // Calculation chain
+            const m_fuel = calcMFuel(Vdot_f, rho_f);
+            const lambda = calcLambda(CO2, CO, O2, HC_ppm, Hcv, Ocv, n);
+            const A0 = calcA0(C, H, O, S);
+            const G_prime = calcGPrime(lambda, A0, C, S, N);
+            const Vdot_G_STD = calcVdotGSTD(G_prime, m_fuel);
+            const Vdot_G_actual = calcVdotGActual(Vdot_G_STD, T_actual_C);
+            const rho_exhaust = calcRhoExhaust(P_kPa, M, T_actual_C);
+            const m_G_Gprime = calcMGPrime(rho_exhaust, Vdot_G_actual);
+            const C_PW = 4.186;
+            const m_G_EB = calcMGEB(m_W, C_PW, C_PG, T_GO_C, T_GI_C, T_WO_C, T_WI_C);
+
+            // Update UI with results
+            updateResult('m_fuel', m_fuel, 6);
+            updateResult('lambda', lambda, 4);
+            updateResult('A0', A0, 4);
+            updateResult('G_prime', G_prime, 4);
+            updateResult('Vdot_G_STD', Vdot_G_STD, 6);
+            updateResult('Vdot_G_actual', Vdot_G_actual, 6);
+            updateResult('rho_exhaust', rho_exhaust, 4);
+            updateResult('m_G_Gprime', m_G_Gprime, 6);
+            updateResult('m_G_EB', m_G_EB, 6);
+        }
+
+        function updateResult(key, value, decimals) {
+            if (value === null || isNaN(value)) {
+                results[key].textContent = '—';
+            } else {
+                results[key].textContent = value.toFixed(decimals);
+                // Pulse animation
+                resultCards[key].classList.remove('pulse');
+                void resultCards[key].offsetWidth; // Trigger reflow
+                resultCards[key].classList.add('pulse');
+            }
+        }
+
+        // ============================================================
+        // EVENT LISTENERS FOR LIVE CALCULATION
+        // ============================================================
+
+        Object.values(inputs).forEach(input => {
+            input.addEventListener('input', calculate);
+        });
+
+        // ============================================================
+        // CHART FUNCTIONALITY
+        // ============================================================
+
+        function initChart() {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: "ṁ\u0047,\u0047'",
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.05)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#f59e0b',
+                            pointBorderColor: '#f59e0b',
+                            pointHoverRadius: 7,
+                            data: [],
+                            tension: 0.3
+                        },
+                        {
+                            label: 'ṁ<sub>G,EB</sub>',
+                            borderColor: '#22d3ee',
+                            backgroundColor: 'rgba(34, 211, 238, 0.05)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#22d3ee',
+                            pointBorderColor: '#22d3ee',
+                            pointHoverRadius: 7,
+                            data: [],
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e5e7eb',
+                                font: {
+                                    family: "'JetBrains Mono', monospace",
+                                    size: 12,
+                                    weight: 600
+                                },
+                                usePointStyle: true,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(13, 15, 20, 0.9)',
+                            titleColor: '#f59e0b',
+                            bodyColor: '#e5e7eb',
+                            borderColor: '#f59e0b',
+                            borderWidth: 1,
+                            padding: 10,
+                            titleFont: {
+                                family: "'JetBrains Mono', monospace",
+                                weight: 600
+                            },
+                            bodyFont: {
+                                family: "'JetBrains Mono', monospace"
+                            },
+                            callbacks: {
+                                afterBody: function(context) {
+                                    if (context[0] && context[1]) {
+                                        const v1 = context[0].parsed.y;
+                                        const v2 = context[1].parsed.y;
+                                        const diff = Math.abs(v1 - v2) / v2 * 100;
+                                        return `Δ = ${diff.toFixed(2)}%`;
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: "'JetBrains Mono', monospace",
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(245, 158, 11, 0.05)'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Test Point',
+                                color: '#e5e7eb',
+                                font: {
+                                    family: "'Barlow Condensed', sans-serif",
+                                    size: 13,
+                                    weight: 600
+                                }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: "'JetBrains Mono', monospace",
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(245, 158, 11, 0.1)'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Mass Flow Rate (kg/s)',
+                                color: '#e5e7eb',
+                                font: {
+                                    family: "'Barlow Condensed', sans-serif",
+                                    size: 13,
+                                    weight: 600
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('addPointBtn').addEventListener('click', function() {
+            const m_G_Gprime_text = results.m_G_Gprime.textContent;
+            const m_G_EB_text = results.m_G_EB.textContent;
+
+            if (m_G_Gprime_text !== '—' && m_G_EB_text !== '—') {
+                const m_G_Gprime = parseFloat(m_G_Gprime_text);
+                const m_G_EB = parseFloat(m_G_EB_text);
+
+                testPoints.push({ m_G_Gprime, m_G_EB });
+
+                // Update chart
+                if (!chart) initChart();
+                chart.data.labels.push(testPoints.length);
+                chart.data.datasets[0].data.push(m_G_Gprime);
+                chart.data.datasets[1].data.push(m_G_EB);
+                chart.update();
+            }
+        });
+
+        document.getElementById('clearChartBtn').addEventListener('click', function() {
+            testPoints = [];
+            if (chart) {
+                chart.data.labels = [];
+                chart.data.datasets[0].data = [];
+                chart.data.datasets[1].data = [];
+                chart.update();
+            }
+        });
+
+        // Initialize chart on load
+        window.addEventListener('load', initChart);
     </script>
 </body>
 </html>
