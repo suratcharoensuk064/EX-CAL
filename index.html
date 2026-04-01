@@ -361,8 +361,19 @@
             .results-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
+            
         }
 
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
         @media (max-width: 768px) {
             .wrapper {
                 padding: 12px;
