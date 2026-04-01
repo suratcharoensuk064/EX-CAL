@@ -1109,16 +1109,17 @@
         document.getElementById('addPointBtn').addEventListener('click', function() {
             const m_G_Gprime_text = results.m_G_Gprime.textContent;
             const m_G_EB_text = results.m_G_EB.textContent;
+            const rpm = document.getElementById('rpm').value;
 
             if (m_G_Gprime_text !== '—' && m_G_EB_text !== '—') {
-                const m_G_Gprime = parseFloat(m_G_Gprime_text);
-                const m_G_EB = parseFloat(m_G_EB_text);
+            const m_G_Gprime = parseFloat(m_G_Gprime_text);
+            const m_G_EB = parseFloat(m_G_EB_text);
+            const label = rpm ? `${rpm} RPM` : `Point ${testPoints.length + 1}`;
 
-                testPoints.push({ m_G_Gprime, m_G_EB });
+            testPoints.push({ m_G_Gprime, m_G_EB, label });
 
-                // Update chart
                 if (!chart) initChart();
-                chart.data.labels.push(testPoints.length);
+                chart.data.labels.push(label);
                 chart.data.datasets[0].data.push(m_G_Gprime);
                 chart.data.datasets[1].data.push(m_G_EB);
                 chart.update();
