@@ -637,14 +637,15 @@
         }
 
         // Eq. 2.36 — Brettschneider
-        function calcLambda(CO2, CO, O2, HC_ppm, Hcv, Ocv, n) {
+        function calcLambda(CO2, CO, O2, HC_ppm, NOx_ppm, Hcv, Ocv, n) {
             const HC_pct = HC_ppm / 10000;
+            const NO_pct = NOx_ppm / 10000;
 
             const numerator =
                 CO2
                 + CO / 2
                 + O2
-                + NO / 2
+                + NO_pct / 2
                 + (Hcv / 4) * (3.5 / (3.5 + CO / CO2))
                 - (Ocv / 2) * (CO2 + CO);
 
@@ -898,6 +899,7 @@
             const CO = inputs.CO.value ? parseFloat(inputs.CO.value) : null;
             const O2 = inputs.O2.value ? parseFloat(inputs.O2.value) : null;
             const HC_ppm = inputs.HC_ppm.value ? parseFloat(inputs.HC_ppm.value) : null;
+            const NOx_ppm = inputs.NOx_ppm.value ? parseFloat(inputs.NOx_ppm.value) : null;
             const P_kPa = inputs.P_kPa.value ? parseFloat(inputs.P_kPa.value) : null;
             const M = inputs.M.value ? parseFloat(inputs.M.value) : null;
             const T_actual_C = inputs.T_actual_C.value ? parseFloat(inputs.T_actual_C.value) : null;
@@ -910,7 +912,7 @@
 
             // Calculation chain
             const m_fuel = calcMFuel(Vdot_f, rho_f);
-            const lambda = calcLambda(CO2, CO, O2, HC_ppm, Hcv, Ocv, n);
+            const lambda = calcLambda(CO2, CO, O2, HC_ppm, NOx_ppm, Hcv, Ocv, n);
             const A0 = calcA0(C, H, O, S);
             const G_prime = calcGPrime(lambda, A0, C, S, N);
             const Vdot_G_STD = calcVdotGSTD(G_prime, m_fuel);
