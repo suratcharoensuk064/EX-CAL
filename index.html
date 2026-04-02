@@ -633,19 +633,48 @@
             </div>
 
             <!-- Chart Panel -->
-            <div class="chart-panel">
-                <div class="chart-header">
-                    <div class="chart-title">Mass Flow Comparison</div>
-                    <div class="chart-buttons">
-                        <button id="addPointBtn">+ Add Test Point</button>
-                        <button id="clearChartBtn">Clear Chart</button>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="comparisonChart"></canvas>
-                </div>
+            <div class="chart-panel" style="display:flex;gap:16px;">
+    <div style="flex:1;display:flex;flex-direction:column;">
+        <div class="chart-header">
+            <div class="chart-title">Mass Flow Comparison</div>
+            <div class="chart-buttons">
+                <button id="addPointBtn">+ Add Test Point</button>
+                <button id="clearChartBtn">Clear Chart</button>
             </div>
         </div>
+        <div class="chart-container">
+            <canvas id="comparisonChart"></canvas>
+        </div>
+    </div>
+
+            <!-- Saved Results Panel -->
+            <div style="width:300px;display:flex;flex-direction:column;background:#0d0f14;border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#f59e0b;letter-spacing:1px;">SAVED RESULTS</div>
+            <div style="display:flex;gap:6px;">
+                <button id="saveResultBtn" style="padding:6px 10px;font-size:11px;">💾 Save</button>
+                <button id="exportPDFBtn" style="padding:6px 10px;font-size:11px;">Export PDF</button>
+            </div>
+        </div>
+            <div style="flex:1;overflow-y:auto;">
+            <table id="savedTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:10px;">
+                <thead>
+                    <tr style="background:rgba(245,158,11,0.1);">
+                        <th style="padding:5px;color:#f59e0b;text-align:center;border-bottom:1px solid rgba(245,158,11,0.3);">RPM</th>
+                        <th style="padding:5px;color:#f59e0b;text-align:center;border-bottom:1px solid rgba(245,158,11,0.3);">ṁ<sub>G,G'</sub></th>
+                        <th style="padding:5px;color:#22d3ee;text-align:center;border-bottom:1px solid rgba(245,158,11,0.3);">ṁ<sub>G,EB</sub></th>
+                        <th style="padding:5px;color:#f59e0b;text-align:center;border-bottom:1px solid rgba(245,158,11,0.3);">%Diff</th>
+                    </tr>
+                </thead>
+                <tbody id="savedTableBody"></tbody>
+            </table>
+        </div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(245,158,11,0.1);display:flex;justify-content:space-between;align-items:center;">
+            <span id="savedCount" style="color:#6b7280;font-size:10px;font-family:'JetBrains Mono',monospace;">0 records</span>
+            <button id="clearTableBtn" style="padding:4px 8px;font-size:10px;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);">Clear</button>
+        </div>
+    </div>
+</div>
     </div>
 
     <script>
