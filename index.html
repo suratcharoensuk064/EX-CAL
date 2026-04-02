@@ -1057,27 +1057,34 @@
                     },
                     scales: {
                         x: {
-                            ticks: {
+                            type: 'linear',
+                            min: 500,
+                            max: 4000,
+                                ticks: {
+                                stepSize: 500,
                                 color: '#9ca3af',
                                 font: {
-                                    family: "'JetBrains Mono', monospace",
-                                    size: 11
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(245, 158, 11, 0.05)'
-                            },
-                            title: {
-                                display: true,
-                                text: 'Engine Speed (RPM)',
-                                color: '#e5e7eb',
-                                font: {
-                                    family: "'Barlow Condensed', sans-serif",
-                                    size: 13,
-                                    weight: 600
-                                }
+                                family: "'JetBrains Mono', monospace",
+                                size: 11
+                        },
+                                callback: function(value) {
+                                    return value + ' RPM';
                             }
                         },
+                                grid: {
+                                color: 'rgba(245, 158, 11, 0.05)'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Engine Speed (RPM)',
+                            color: '#e5e7eb',
+                            font: {
+                                family: "'Barlow Condensed', sans-serif",
+                                size: 13,
+                                weight: 600
+                            }
+                        }
+                    },
                         y: {
                             ticks: {
                                 color: '#9ca3af',
