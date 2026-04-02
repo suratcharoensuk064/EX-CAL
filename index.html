@@ -1171,6 +1171,84 @@
 
         // Initialize chart on load
         window.addEventListener('load', initChart);
+        // ============================================================
+// SAVE & EXPORT
+// ============================================================
+
+let savedResults = [];
+
+document.getElementById('saveResultBtn').addEventListener('click', function() {
+    const rpm = document.getElementById('rpm').value || '—';
+    const mGprime = results.m_G_Gprime.textContent;
+    const mEB = results.m_G_EB.textContent;
+
+    if (mGprime === '—' || mEB === '—') {
+        alert('กรุณาคำนวณให้ครบก่อนบันทึก');
+        return;
+    }
+
+    const pctDiff = Math.abs(parseFloat(mGprime) - parseFloat(mEB)) / parseFloat(mEB) * 100;
+
+    const row = {
+        RPM: rpm,
+        m_fuel: results.m_fuel.textContent,
+        lambda: results.lambda.textContent,
+        A0: results.A0.textContent,
+        G_prime: results.G_prime.textContent,
+        Vdot_STD: results.Vdot_G_STD.textContent,
+        Vdot_actual: results.Vdot_G_actual.textContent,
+        rho: results.rho_exhaust.textContent,
+        m_G_Gprime: mGprime,
+        m_G_EB: mEB,
+        pctDiff: pctDiff.toFixed(2)
+    };
+
+    savedResults.push(row);
+
+    const tbody = document.getElementById('savedTableBody');
+    const tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid rgba(245,158,11,0.08)';
+    tr.innerHTML = `
+        <td style="padding:5px;text-align:center;color:#e5e7eb;">${row.RPM}</td>
+        <td style="padding:5px;text-align:center;color:#f59e0b;font-weight:600;">${row.m_G_Gprime}</td>
+        <td style="padding:5px;text-align:center;color:#22d3ee;font-weight:600;">${row.m_G_EB}</td>
+        <td style="padding:5px;text-align:center;color:${pctDiff < 5 ? '#22d3ee' : '#ef4444'};">${row.pctDiff}%</td>
+    `;
+    tbody.appendChild(tr);
+    document.getElementById('savedCount').textContent = `${savedResults.length} records`;
+});
+
+document.getElementById('clearTableBtn').addEventListener('click', function() {
+    savedResults = [];
+    document.getElementById('savedTableBody').innerHTML = '';
+    document.getElementById('savedCount').textContent = '0 records';
+});
+
+document.getElementById('exportPDFBtn').addEventListener('click', function() {
+    if (savedResults.length === 0) { alert('ยังไม่มีข้อมูลที่บันทึก'); return; }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+
+    doc.setFontSize(16);
+    doc.setTextColor(245, 158, 11);
+    doc.text('Exhaust Gas Mass Flow Rate — Calculation Results', 14, 16);
+    doc.setFontSize(10);
+    doc.setTextColor(150, 150, 150);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 23);
+
+    doc.autoTable({
+        head: [['RPM','ṁfuel (kg/s)','λ','A0','G\'','V̇G,STD','V̇G,act','ρexh','ṁG,G\' (kg/s)','ṁG,EB (kg/s)','%Diff']],
+        body: savedResults.map(r => [r.RPM, r.m_fuel, r.lambda, r.A0, r.G_prime, r.Vdot_STD, r.Vdot_actual, r.rho, r.m_G_Gprime, r.m_G_EB, r.pctDiff+'%']),
+        startY: 28,
+        styles: { fontSize: 8, cellPadding: 3, textColor: [229,231,235], fillColor: [22,27,34] },
+        headStyles: { fillColor: [245,158,11], textColor: [13,15,20], fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [30,37,46] },
+        tableLineColor: [245,158,11],
+        tableLineWidth: 0.1
+    });
+
+    doc.save('exhaust_results.pdf');
+});
     </script>
 </body>
 </html>
