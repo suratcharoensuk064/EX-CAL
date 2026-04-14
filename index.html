@@ -1189,7 +1189,13 @@ document.getElementById('saveResultBtn').addEventListener('click', function() {
     const rpm = document.getElementById('rpm').value || '—';
     const mGprime = results.m_G_Gprime.textContent;
     const mEB = results.m_G_EB.textContent;
-
+    const m_W_lpm = document.getElementById('m_W').value || '—';
+    const row = {
+    RPM: rpm,
+    m_W_lpm: m_W_lpm + ' L/min',   // เพิ่มบรรทัดนี้
+    m_fuel: results.m_fuel.textContent,
+    // ... ที่เหลือเหมือนเดิม
+    };
     if (mGprime === '—' || mEB === '—') {
         alert('กรุณาคำนวณให้ครบก่อนบันทึก');
         return;
