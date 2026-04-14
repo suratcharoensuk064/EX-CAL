@@ -1223,10 +1223,12 @@ document.getElementById('saveResultBtn').addEventListener('click', function() {
     const tr = document.createElement('tr');
     tr.style.borderBottom = '1px solid rgba(245,158,11,0.08)';
     tr.innerHTML = `
-        <td style="padding:5px;text-align:center;color:#e5e7eb;">${row.RPM}</td>
-        <td style="padding:5px;text-align:center;color:#f59e0b;font-weight:600;">${row.m_G_Gprime}</td>
-        <td style="padding:5px;text-align:center;color:#22d3ee;font-weight:600;">${row.m_G_EB}</td>
-        <td style="padding:5px;text-align:center;color:${pctDiff < 5 ? '#22d3ee' : '#ef4444'};">${row.pctDiff}%</td>
+        tr.innerHTML = `
+            <td style="padding:5px;text-align:center;color:#e5e7eb;">${row.RPM}</td>
+            <td style="padding:5px;text-align:center;"><span style="background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.3);border-radius:3px;padding:1px 6px;font-size:9px;">${row.m_W_lpm}</span></td>
+            <td style="padding:5px;text-align:center;color:#f59e0b;font-weight:600;">${row.m_G_Gprime}</td>
+            <td style="padding:5px;text-align:center;color:#22d3ee;font-weight:600;">${row.m_G_EB}</td>
+            <td style="padding:5px;text-align:center;color:${pctDiff < 5 ? '#22d3ee' : '#ef4444'};">${row.pctDiff}%</td>
     `;
     tbody.appendChild(tr);
     document.getElementById('savedCount').textContent = `${savedResults.length} records`;
