@@ -985,7 +985,14 @@
             updateResult('rho_exhaust', rho_exhaust, 4);
             updateResult('m_G_Gprime', m_G_Gprime, 6);
             updateResult('m_G_EB', m_G_EB, 6);
+            updateResult('m_G_EB', m_G_EB, 6);
+            const m_W_tag = document.getElementById('val-m_W_tag');
+            if (m_W_lpm) {
+            m_W_tag.textContent = `@ ${parseFloat(m_W_lpm).toFixed(2)} L/min`;
+        } else {
+            m_W_tag.textContent = '';
         }
+
 
         function updateResult(key, value, decimals) {
             if (value === null || isNaN(value)) {
