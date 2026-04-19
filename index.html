@@ -928,6 +928,20 @@
         });
     }
 
+    function addSessionToChart(session) {
+        if (!chart || !session || session.rpm === null || session.baseResults.m_G_Gprime === null || !isFinite(session.baseResults.m_G_Gprime)) return;
+
+        chart.data.datasets[0].data.push({ x: session.rpm, y: session.baseResults.m_G_Gprime });
+
+        session.ebTrials.forEach(trial => {
+            if (trial.m_G_EB !== null && isFinite(trial.m_G_EB)) {
+                const ds = getEbDatasetByFlow(trial.flowValue);
+                ds.data.push({ x: session.rpm, y: trial.m_G_EB });
+            }
+        });
+        chart.update();
+    }
+
     function addCurrentPointToChart() {
         calculate();
         if (!currentCalc || currentCalc.rpm === null || currentCalc.m_G_Gprime === null || !isFinite(currentCalc.m_G_Gprime)) return;
@@ -1037,8 +1051,8 @@
             currentEbTrials.push(buildTrialFromBatch(flow2, twi2, two2, tgi2, tgo2));
             renderEbTrials();
 
-            document.getElementById('saveSessionBtn').click();
-            addCurrentPointToChart();
+            const savedSession = saveCurrentSession();
+            addSessionToChart(savedSession);
             successCount += 1;
         });
 
@@ -1076,17 +1090,17 @@
         }];
     }
 
-    document.getElementById('saveSessionBtn').addEventListener('click', () => {
+    function saveCurrentSession() {
         calculate();
         if (!currentCalc || currentCalc.rpm === null) {
             alert('กรุณากรอกรอบเครื่องก่อนบันทึก');
-            return;
+            return null;
         }
 
         const trials = getTrialsToSave();
         savedSessionCounter += 1;
 
-        savedSessions.push({
+        const session = {
             sessionId: savedSessionCounter,
             rpm: currentCalc.rpm,
             baseInputs: {
@@ -1100,11 +1114,17 @@
                 Vdot_G_STD: currentCalc.Vdot_G_STD, Vdot_G_actual: currentCalc.Vdot_G_actual, rho_exhaust: currentCalc.rho_exhaust, m_G_Gprime: currentCalc.m_G_Gprime
             },
             ebTrials: trials.map((trial, index) => ({ ...trial, trialNo: index + 1 }))
-        });
+        };
 
+        savedSessions.push(session);
         currentEbTrials = [];
         renderEbTrials();
         renderSavedTables();
+        return session;
+    }
+
+    document.getElementById('saveSessionBtn').addEventListener('click', () => {
+        saveCurrentSession();
     });
 
     document.getElementById('clearSavedResultsBtn').addEventListener('click', () => {
