@@ -1,701 +1,1057 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <title>Exhaust Gas Mass Flow Rate Calculator</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body {
-            width: 100%;
-            min-height: 100%;
-            font-family: 'JetBrains+Mono', sans-serif;
-            background-color: #0f172a;
-            color: #e2e8f0;
-            padding: 20px;
-        }
-        h1, h2, h3 { font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
-        .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 1024px) { .container { grid-template-columns: 350px 1fr; } }
-        .panel { background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; height: fit-content; }
-        .main-content { display: flex; flex-direction: column; gap: 20px; }
-        .title-block { grid-column: 1 / -1; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid #334155; border-radius: 8px; padding: 25px; text-align: center; }
-        .title-block h1 { color: #38bdf8; font-size: 2.5rem; font-weight: 700; margin-bottom: 5px; }
-        .title-block p { color: #94a3b8; font-size: 1rem; }
-        .mode-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; background-color: #0f172a; padding: 4px; border-radius: 6px; border: 1px solid #334155; }
-        .mode-btn { background: none; border: none; color: #64748b; padding: 8px; font-weight: 600; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; }
-        .mode-btn.active { background-color: #38bdf8; color: #0f172a; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-wrapper input, .input-wrapper select { width: 100%; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 12px; color: #f8fafc; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; transition: border-color 0.2s; }
-        .input-wrapper input:focus, .input-wrapper select:focus { outline: none; border-color: #38bdf8; }
-        .input-wrapper .unit { position: absolute; right: 12px; color: #475569; font-size: 0.85rem; font-weight: 600; pointer-events: none; }
-        .input-wrapper input { padding-right: 65px; }
-        .btn { width: 100%; background-color: #38bdf8; color: #0f172a; border: none; padding: 12px; font-size: 1.1rem; font-weight: 700; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 10px; }
-        .btn:hover { background-color: #0ea5e9; }
-        .btn-secondary { background-color: #334155; color: #f8fafc; border: 1px solid #475569; margin-top: 8px; }
-        .btn-secondary:hover { background-color: #475569; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .results-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 768px) { .results-grid { grid-template-columns: 1fr 1fr; } }
-        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; position: relative; overflow: hidden; }
-        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background-color: #334155; }
-        .card.primary::before { background-color: #38bdf8; }
-        .card.accent::before { background-color: #a855f7; }
-        .card.success::before { background-color: #22c55e; }
-        .card h3 { color: #94a3b8; font-size: 0.9rem; margin-bottom: 10px; font-weight: 600; }
-        .card .value { font-size: 2.2rem; font-weight: 700; color: #f8fafc; font-family: 'Barlow Condensed', sans-serif; line-height: 1.1; }
-        .card .value span { font-size: 1.1rem; color: #64748b; margin-left: 5px; font-weight: 400; font-family: 'JetBrains+Mono', sans-serif; }
-        .chart-container { background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; height: 380px; position: relative; }
-        .table-panel { background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; }
-        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-        .table-responsive { width: 100%; overflow-x: auto; border-radius: 6px; border: 1px solid #334155; background-color: #0f172a; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
-        th { background-color: #1e293b; color: #38bdf8; font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 600; padding: 12px; border-bottom: 1px solid #334155; text-transform: uppercase; }
-        td { padding: 10px 12px; border-bottom: 1px solid #1e293b; color: #cbd5e1; white-space: nowrap; }
-        tr:hover td { background-color: #1e293b; color: #fff; }
-        .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
-        .badge-95 { background-color: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
-        .badge-91 { background-color: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); }
-        .badge-e20 { background-color: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
-        .action-btn { background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; font-weight: 600; font-size: 0.8rem; }
-        .action-btn:hover { text-decoration: underline; }
-        .eb-trial-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center; }
-        .eb-trial-row label { font-size: 0.8rem; color: #64748b; font-weight: bold; }
-        .eb-container { background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 12px; margin-bottom: 15px; }
-        .eb-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .eb-header h4 { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; }
-        .eb-add-btn { background: none; border: none; color: #38bdf8; font-size: 0.8rem; cursor: pointer; font-weight: 600; }
-        .eb-add-btn:hover { text-decoration: underline; }
-        .export-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        .export-btn { background-color: #22c55e; color: #0f172a; padding: 6px 12px; font-size: 0.9rem; font-weight: 700; border-radius: 4px; cursor: pointer; border: none; font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; }
-        .export-btn:hover { background-color: #16a34a; }
-        .export-pdf { background-color: #ef4444; color: #fff; }
-        .export-pdf:hover { background-color: #dc2626; }
-    </style>
-</head>
-<body>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph Mode | Exhaust Gas Experiment</title>
 
-<div class="container">
-    <div class="title-block">
-        <h1>Exhaust Gas Mass Flow Rate Calculator</h1>
-        <p>Theoretical Analysis & Experimental Mass Flow Calibration Interface</p>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --bg:#f4f6f8;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#5b6472;
+      --border:#d9dee7;
+      --primary:#2563eb;
+      --green:#16a34a;
+      --radius:12px;
+      --shadow:0 8px 22px rgba(15,23,42,.045);
+      --excel-blue:#4472C4;
+      --excel-orange:#ED7D31;
+      --excel-green:#70AD47;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:"Segoe UI", Tahoma, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    header{
+      background:#ffffff;
+      border-bottom:1px solid var(--border);
+      padding:18px 24px;
+    }
+
+    .header-inner{
+      max-width:1420px;
+      margin:0 auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:21px;
+      font-weight:800;
+      letter-spacing:.1px;
+    }
+
+    .brand p{
+      margin:5px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .badge{
+      border:1px solid var(--border);
+      background:#f8fafc;
+      border-radius:999px;
+      padding:7px 11px;
+      font-size:12px;
+      font-weight:700;
+      color:#334155;
+      white-space:nowrap;
+    }
+
+    .wrap{
+      max-width:1420px;
+      margin:18px auto 44px;
+      padding:0 18px;
+    }
+
+    .toolbar{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr .8fr auto;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
+
+    label{
+      display:block;
+      margin-bottom:7px;
+      font-size:12px;
+      font-weight:800;
+      color:#1f2937;
+    }
+
+    select,input,textarea{
+      width:100%;
+      border:1px solid #cbd5e1;
+      border-radius:8px;
+      padding:9px 10px;
+      font-size:13px;
+      background:white;
+      color:#111827;
+      outline:none;
+    }
+
+    select:focus,input:focus,textarea:focus{
+      border-color:#60a5fa;
+      box-shadow:0 0 0 3px rgba(37,99,235,.10);
+    }
+
+    textarea{
+      min-height:155px;
+      resize:vertical;
+      font-family:Consolas,"Courier New",monospace;
+      line-height:1.4;
+      tab-size:4;
+    }
+
+    button{
+      border:1px solid transparent;
+      border-radius:8px;
+      padding:9px 12px;
+      font-size:13px;
+      font-weight:800;
+      cursor:pointer;
+      white-space:nowrap;
+      background:#f1f5f9;
+      color:#111827;
+    }
+
+    .btn-primary{background:var(--primary);color:white}
+    .btn-green{background:var(--green);color:white}
+    .btn-soft{background:#eef2ff;color:#1e40af;border-color:#dbeafe}
+    .btn-neutral{background:#f8fafc;color:#0f172a;border-color:#d8dee8}
+    .btn-danger{background:#fff1f2;color:#be123c;border-color:#fecdd3}
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin:10px 0 12px;
+    }
+
+    .tab{
+      padding:9px 15px;
+      background:#fff;
+      border:1px solid var(--border);
+      color:#334155;
+      box-shadow:none;
+    }
+
+    .tab.active{
+      background:#111827;
+      color:#fff;
+      border-color:#111827;
+    }
+
+    .paste-grid{
+      display:grid;
+      grid-template-columns:1.35fr .85fr;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .column-guide{
+      background:#fafafa;
+      border:1px dashed #cbd5e1;
+      border-radius:10px;
+      padding:11px 12px;
+      line-height:1.62;
+      font-size:13px;
+      color:#475569;
+    }
+
+    .column-guide b{color:#111827}
+
+    .hint{
+      margin:9px 0 0;
+      color:var(--muted);
+      font-size:12.5px;
+      line-height:1.55;
+    }
+
+    .status{
+      margin-top:10px;
+      color:#166534;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .status.error{color:#b91c1c}
+
+    .table-holder{
+      overflow:auto;
+      max-height:340px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:white;
+    }
+
+    table{
+      border-collapse:separate;
+      border-spacing:0;
+      width:100%;
+      min-width:1180px;
+      font-size:12px;
+    }
+
+    th,td{
+      border-right:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+      padding:7px;
+      text-align:center;
+      white-space:nowrap;
+    }
+
+    th{
+      position:sticky;
+      top:0;
+      z-index:2;
+      background:#eef6ee;
+      color:#111827;
+      font-weight:900;
+    }
+
+    tr:nth-child(even) td{background:#fcfcfc}
+
+    td input{
+      border:0;
+      border-radius:6px;
+      background:transparent;
+      text-align:center;
+      padding:4px;
+      font-size:12px;
+    }
+
+    td input:focus{
+      background:white;
+      outline:2px solid #60a5fa;
+      box-shadow:none;
+    }
+
+    .charts{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+      margin-top:16px;
+    }
+
+    .chart-card{
+      position:relative;
+      background:#fff;
+      border:1px solid #d4d9e2;
+      border-radius:10px;
+      box-shadow:none;
+      padding:12px 18px 12px;
+    }
+
+    .unit-pill{
+      position:absolute;
+      top:14px;
+      right:18px;
+      border:1px solid #dbe1ea;
+      background:#f8fafc;
+      border-radius:999px;
+      padding:5px 10px;
+      font-size:12px;
+      font-weight:800;
+      color:#334155;
+    }
+
+    .chart-box{
+      width:100%;
+      height:458px;
+    }
+
+    /* Custom HTML legend: supports real subscript and smaller legend markers only */
+    .html-legend{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:24px;
+      flex-wrap:wrap;
+      margin-top:4px;
+      padding-bottom:2px;
+      font-family:"Times New Roman", serif;
+      font-size:15px;
+      color:#111827;
+      line-height:1;
+    }
+
+    .legend-item{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      white-space:nowrap;
+    }
+
+    .legend-marker{
+      width:11px;
+      height:11px;
+      display:inline-block;
+      background:var(--c);
+      flex:0 0 auto;
+    }
+
+    .legend-marker.circle{
+      border-radius:50%;
+    }
+
+    .legend-marker.rect{
+      border-radius:0;
+    }
+
+    .legend-marker.triangle{
+      width:0;
+      height:0;
+      background:transparent;
+      border-left:6px solid transparent;
+      border-right:6px solid transparent;
+      border-bottom:12px solid var(--c);
+    }
+
+    .legend-text sub{
+      font-size:70%;
+      vertical-align:sub;
+      line-height:0;
+    }
+
+    .footer-note{
+      color:#64748b;
+      font-size:12px;
+      text-align:center;
+      margin:14px 0 0;
+    }
+
+    @media(max-width:1050px){
+      .toolbar{grid-template-columns:1fr 1fr}
+      .paste-grid{grid-template-columns:1fr}
+      .header-inner{display:block}
+      .badge{display:inline-block;margin-top:10px}
+    }
+
+    @media(max-width:640px){
+      .toolbar{grid-template-columns:1fr}
+      .chart-box{height:380px}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <h1>Graph Mode: Exhaust Gas Experiment</h1>
+      <p>Paste table from Excel → sort by engine speed → plot clean charts automatically</p>
+    </div>
+    <div class="badge">Gasoline 95 / Gasoline 91 • 5 charts per fuel</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="toolbar">
+    <div class="panel">
+      <label>เชื้อเพลิง</label>
+      <select id="fuelSelect">
+        <option value="G95">Gasoline 95</option>
+        <option value="G91">Gasoline 91</option>
+      </select>
     </div>
 
     <div class="panel">
-        <div class="mode-toggle">
-            <button class="mode-btn active" id="modeSingleBtn">Single Test</button>
-            <button class="mode-btn" id="modeBatchBtn">Batch Processing</button>
-        </div>
-
-        <form id="calcForm" onsubmit="return false;">
-            <div id="singleInputsContainer">
-                <div class="form-group">
-                    <label for="fuelType">Fuel Formulation</label>
-                    <div class="input-wrapper">
-                        <select id="fuelType">
-                            <option value="95">Gasoline 95 (C:86.41%, H:13.16%)</option>
-                            <option value="91">Gasoline 91 (C:86.05%, H:13.16%)</option>
-                            <option value="E20">Gasohol E20 (Theoretical Blend)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="o2Dry">Dry Oxygen Fraction (O<sub>2,d</sub>)</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="o2Dry" step="0.0001" min="0" max="21" value="3.5">
-                        <span class="unit">% vol</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="coDry">Dry Carbon Monoxide (CO<sub>d</sub>)</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="coDry" step="0.0001" min="0" max="10" value="0.15">
-                        <span class="unit">% vol</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="fuelFlow">Fuel Mass Flow Rate (<span style="text-transform:none;">ṁ</span><sub>f</sub>)</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="fuelFlow" step="0.0001" min="0" value="0.0012">
-                        <span class="unit">kg/s</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="exhaustTemp">Exhaust Gas Temperature (T<sub>ex</sub>)</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="exhaustTemp" step="0.1" value="350">
-                        <span class="unit">°C</span>
-                    </div>
-                </div>
-            </div>
-
-            <div id="batchInputsContainer" style="display: none;">
-                <div class="form-group">
-                    <label for="batchCalcType">Batch Calculation Target</label>
-                    <div class="input-wrapper">
-                        <select id="batchCalcType">
-                            <option value="lambda">Varying Excess Air Ratio (λ)</option>
-                            <option value="temp">Varying Exhaust Temperature (T)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="batchFuelGroup" class="form-group">
-                    <label for="batchFuelType">Fuel Formulation</label>
-                    <div class="input-wrapper">
-                        <select id="batchFuelType">
-                            <option value="95">Gasoline 95</option>
-                            <option value="91">Gasoline 91</option>
-                            <option value="E20">Gasohol E20</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="batchLambdaParams">
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label for="lambdaStart">λ Start</label>
-                            <div class="input-wrapper"><input type="number" id="lambdaStart" step="0.1" value="0.8"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="lambdaEnd">λ End</label>
-                            <div class="input-wrapper"><input type="number" id="lambdaEnd" step="0.1" value="1.6"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="batchFuelFlowConst">Constant Fuel Flow (ṁ<sub>f</sub>)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="batchFuelFlowConst" step="0.0001" value="0.0012">
-                            <span class="unit">kg/s</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="batchTempConst">Constant Temp (T<sub>ex</sub>)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="batchTempConst" step="1" value="350">
-                            <span class="unit">°C</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="batchTempParams" style="display: none;">
-                    <div class="form-group">
-                        <label for="batchLambdaConst">Constant Excess Air Ratio (λ)</label>
-                        <div class="input-wrapper"><input type="number" id="batchLambdaConst" step="0.01" value="1.05"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="batchFuelFlowConst2">Constant Fuel Flow (ṁ<sub>f</sub>)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="batchFuelFlowConst2" step="0.0001" value="0.0012">
-                            <span class="unit">kg/s</span>
-                        </div>
-                    </div>
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label for="tempStart">Temp Start</label>
-                            <div class="input-wrapper"><input type="number" id="tempStart" step="10" value="100"><span class="unit">°C</span></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="tempEnd">Temp End</label>
-                            <div class="input-wrapper"><input type="number" id="tempEnd" step="10" value="600"><span class="unit">°C</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="batchSteps">Resolution Steps</label>
-                    <div class="input-wrapper"><input type="number" id="batchSteps" min="5" max="50" value="15"></div>
-                </div>
-            </div>
-
-            <div class="eb-container">
-                <div class="eb-header">
-                    <h4>Experimental Verification Trials</h4>
-                    <button type="button" class="eb-add-btn" id="addEbTrialBtn">+ Add Run</button>
-                </div>
-                <div id="ebTrialsList"></div>
-            </div>
-
-            <button type="button" class="btn" id="calcBtn">Execute Computation</button>
-            <button type="button" class="btn btn-secondary" id="saveBtn">Archive Session</button>
-        </form>
+      <label>รูปแบบกราฟ</label>
+      <select id="plotMode" onchange="renderAll()">
+        <option value="line" selected>Line with markers</option>
+        <option value="markers">Markers only</option>
+        <option value="scatter">Scatter แบบเว้นระยะอ่านง่าย</option>
+      </select>
     </div>
 
-    <div class="main-content">
-        <div class="results-grid">
-            <div class="card primary">
-                <h3>Excess Air Ratio (λ)</h3>
-                <div class="value" id="resLambda">--</div>
-            </div>
-            <div class="card accent">
-                <h3>Theoretical Air-Fuel Ratio (AFR<sub>th</sub>)</h3>
-                <div class="value" id="resAfrTh">-- <span>: 1</span></div>
-            </div>
-            <div class="card success">
-                <h3>Exhaust Volumetric Flow Rate (Standard)</h3>
-                <div class="value" id="resVn">-- <span>m³<sub>N</sub>/s</span></div>
-            </div>
-            <div class="card success">
-                <h3>Exhaust Volumetric Flow Rate (Actual Temp)</h3>
-                <div class="value" id="resVact">-- <span>m³/s</span></div>
-            </div>
-            <div class="card primary">
-                <h3>Calculated Dry Gas Volume (G')</h3>
-                <div class="value" id="resGPrime">-- <span>m³<sub>N</sub>/kg<sub>-f</sub></span></div>
-            </div>
-            <div class="card accent">
-                <h3>Theoretical Air Volume (A<sub>0</sub>)</h3>
-                <div class="value" id="resA0">-- <span>m³<sub>N</sub>/kg<sub>-f</sub></span></div>
-            </div>
-            <div class="card primary" style="grid-column: 1 / -1;">
-                <h3>Exhaust Gas Mass Flow Rate (<span style="text-transform:none;">ṁ</span><sub>ex, theoretical</sub>)</h3>
-                <div class="value" id="resMdotEx" style="color: #38bdf8;">-- <span>kg/s</span></div>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <canvas id="resultsChart"></canvas>
-        </div>
-
-        <div class="table-panel">
-            <div class="table-header">
-                <h2>Stored Computational Runs</h2>
-                <div class="export-group">
-                    <button class="export-btn" id="exportExcelBtn">Export Excel (Full)</button>
-                    <button class="export-btn" id="exportInputsExcelBtn">Export Inputs Only</button>
-                    <button class="export-btn export-pdf" id="exportPdfBtn">Generate PDF Report</button>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table id="historyTable">
-                    <thead>
-                        <tr>
-                            <th>Timestamp</th>
-                            <th>Fuel</th>
-                            <th>O<sub>2,d</sub> (%)</th>
-                            <th>CO<sub>d</sub> (%)</th>
-                            <th>λ</th>
-                            <th>A<sub>0</sub></th>
-                            <th>G'</th>
-                            <th>V<sub>N</sub> (m³/s)</th>
-                            <th>V<sub>act</sub> (m³/s)</th>
-                            <th>ṁ<sub>ex</sub> (kg/s)</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyBody">
-                        <tr>
-                            <td colspan="11" style="text-align: center; color: #475569; padding: 20px;">No simulated data in current local memory stack.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="panel">
+      <label>ป้ายแกน X</label>
+      <select id="tickMode" onchange="renderAll()">
+        <option value="auto" selected>อัตโนมัติ อ่านง่าย</option>
+        <option value="all">แสดงรอบจริงทุกจุด</option>
+        <option value="groups">แสดงเฉพาะช่วงรอบ</option>
+      </select>
     </div>
-</div>
+
+    <div class="panel">
+      <label>จำนวนแถว</label>
+      <input id="rowCount" type="number" min="1" max="100" value="15" />
+    </div>
+
+    <div class="panel actions" style="margin-top:0">
+      <button class="btn-neutral" onclick="setRows()">ปรับแถว</button>
+      <button class="btn-primary" onclick="renderAll()">Update Graphs</button>
+    </div>
+  </section>
+
+  <div class="tabs">
+    <button id="tabG95" class="tab active" onclick="switchFuel('G95')">Input_G95</button>
+    <button id="tabG91" class="tab" onclick="switchFuel('G91')">Input_G91</button>
+  </div>
+
+  <section class="paste-grid">
+    <div class="panel">
+      <label>วางข้อมูลจาก Excel ตรงนี้</label>
+      <textarea id="pasteBox" placeholder="คัดลอกจาก Excel แล้ววางตรงนี้ เช่น 15 แถว x 11 คอลัมน์
+1513	0.0048	0.0539	0.1329	21	0.33	3.6	7.3	14	656	34.8"></textarea>
+
+      <div class="actions">
+        <button class="btn-green" onclick="pasteToTable()">วางเข้าตารางและ Plot</button>
+        <button class="btn-soft" onclick="loadExample()">ใส่ข้อมูลตัวอย่าง</button>
+        <button class="btn-neutral" onclick="copyTableAsTSV()">Copy ตารางกลับไป Excel</button>
+        <button class="btn-danger" onclick="clearCurrent()">ล้างข้อมูลชีตนี้</button>
+      </div>
+
+      <p class="hint">
+        กรอกตามลำดับทดลองจริงได้ ไม่ต้องเรียงรอบเอง ระบบจะเรียงตาม Engine speed (rpm) ก่อน plot กราฟ
+      </p>
+      <div id="status" class="status"></div>
+    </div>
+
+    <div class="panel">
+      <label>ลำดับคอลัมน์ที่ต้องวาง</label>
+      <div class="column-guide">
+        <b>1)</b> Engine speed (rpm)<br>
+        <b>2)</b> ṁ<sub>G</sub>′ (kg/s)<br>
+        <b>3)</b> ṁ<sub>G,EB</sub> at 1.2 Lpm (kg/s)<br>
+        <b>4)</b> ṁ<sub>G,EB</sub> at 5 Lpm (kg/s)<br>
+        <b>5)</b> V<sub>fuel</sub> (ml/min)<br>
+        <b>6)</b> CO (%vol)<br>
+        <b>7)</b> CO₂ (%vol)<br>
+        <b>8)</b> O₂ (%vol)<br>
+        <b>9)</b> HC (ppm)<br>
+        <b>10)</b> NOx (ppm)<br>
+        <b>11)</b> T<sub>GI</sub> (°C)
+      </div>
+      <p class="hint">
+        Legend ด้านล่างกราฟเป็น HTML จึงแสดงตัวห้อยจริงได้ ไม่ใช้ขีดล่าง (_)
+      </p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="table-holder">
+      <table id="inputTable">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="hint">ตารางนี้ใช้ตรวจและแก้ตัวเลขหลังวางข้อมูลได้ทันที</p>
+  </section>
+
+  <section class="charts">
+    <article class="chart-card">
+      <span class="unit-pill">kg/s</span>
+      <div class="chart-box"><canvas id="chart_mg"></canvas></div>
+      <div id="legend_mg" class="html-legend"></div>
+    </article>
+
+    <article class="chart-card">
+      <span class="unit-pill">ml/min</span>
+      <div class="chart-box"><canvas id="chart_vfuel"></canvas></div>
+      <div id="legend_vfuel" class="html-legend"></div>
+    </article>
+
+    <article class="chart-card">
+      <span class="unit-pill">%vol</span>
+      <div class="chart-box"><canvas id="chart_gas"></canvas></div>
+      <div id="legend_gas" class="html-legend"></div>
+    </article>
+
+    <article class="chart-card">
+      <span class="unit-pill">ppm</span>
+      <div class="chart-box"><canvas id="chart_hcnox"></canvas></div>
+      <div id="legend_hcnox" class="html-legend"></div>
+    </article>
+
+    <article class="chart-card">
+      <span class="unit-pill">°C</span>
+      <div class="chart-box"><canvas id="chart_tgi"></canvas></div>
+      <div id="legend_tgi" class="html-legend"></div>
+    </article>
+  </section>
+
+  <p class="footer-note">Clean Excel-like chart layout • correct point mapping • sorted by engine speed</p>
+</main>
 
 <script>
-    // ============================================================
-    // THEORETICAL COMBUSTION ENGINE MATHEMATICS ENGINE (100% MANUAL-MATCHED WITH 4-DECIMAL FIXED ROUNDING)
-    // ============================================================
-    
-    // ช่วยแปลงตัวเลขดิบให้ตัดทศนิยมเหลือ 4 ตำแหน่งทันทีแบบเครื่องคิดเลขมือ เพื่อไม่ให้มีเศษแฝง
-    function fix4(num) {
-        return Number(Number(num).toFixed(4));
+const headers = [
+  {key:'rpm', label:'Engine speed (rpm)'},
+  {key:'mgp', label:'ṁG′ (kg/s)'},
+  {key:'mgeb12', label:'ṁG,EB at 1.2 Lpm (kg/s)'},
+  {key:'mgeb5', label:'ṁG,EB at 5 Lpm (kg/s)'},
+  {key:'vfuel', label:'Vfuel (ml/min)'},
+  {key:'co', label:'CO (%vol)'},
+  {key:'co2', label:'CO₂ (%vol)'},
+  {key:'o2', label:'O₂ (%vol)'},
+  {key:'hc', label:'HC (ppm)'},
+  {key:'nox', label:'NOx (ppm)'},
+  {key:'tgi', label:'TGI (°C)'}
+];
+
+const colors = {
+  blue:'#4472C4',
+  orange:'#ED7D31',
+  green:'#70AD47'
+};
+
+const state = {
+  fuel:'G95',
+  data:{G95:[], G91:[]},
+  charts:{}
+};
+
+const exampleG95 = [
+  [1580,0.004217,0.065453,0.131017,20,0.36,2.6,8.2,11,693,34.3],
+  [1578,0.005299,0.059039,0.129338,22,0.32,4.0,7.1,15,636,34.4],
+  [1513,0.004878,0.053591,0.132889,21,0.33,3.6,7.3,14,656,34.8],
+  [1520,0.005230,0.057880,0.130000,22,0.35,3.8,7.0,13,643,34.4],
+  [1529,0.004937,0.056788,0.138625,22,0.36,3.2,7.4,14,689,34.4],
+  [2186,0.012022,0.007716,0.027685,38,0.38,7.2,6.1,44,4924,38.8],
+  [2189,0.011567,0.008859,0.064599,37,0.37,7.1,6.2,42,4845,38.9],
+  [2196,0.011563,0.008467,0.067800,37,0.36,7.3,6.4,44,4736,39.1],
+  [2199,0.012144,0.009541,0.062431,38,0.38,7.4,6.1,46,4223,38.7],
+  [2202,0.011210,0.011093,0.063280,37,0.35,7.2,6.8,44,4323,38.6],
+  [2543,0.009938,0.037638,0.106724,51,0.50,1.6,8.4,48,2963,36.6],
+  [2523,0.010396,0.036950,0.096898,52,0.49,1.9,8.1,47,2639,36.7],
+  [2548,0.010316,0.035808,0.096396,51,0.48,2.0,7.9,46,2739,36.8],
+  [2552,0.010562,0.037465,0.094675,52,0.51,2.1,8.0,48,2839,36.7],
+  [2555,0.010441,0.036985,0.096170,53,0.50,1.7,8.1,49,2923,36.9]
+];
+
+const exampleG91 = [
+  [1553,0.004342,0.038239,0.101969,22,0.37,2.0,8.5,20,724,32.6],
+  [1537,0.004723,0.033222,0.084823,23,0.34,2.3,7.6,21,704,33.4],
+  [1543,0.004723,0.030536,0.087427,22,0.32,2.8,7.4,20,689,34.2],
+  [1557,0.004712,0.029150,0.079444,22,0.22,2.7,7.5,17,732,34.6],
+  [1556,0.004472,0.027991,0.083968,21,0.33,2.7,7.4,18,712,34.9],
+  [2092,0.013434,0.012106,0.020340,40,0.47,7.7,5.3,48,3432,34.1],
+  [2086,0.012288,0.016202,0.025425,39,0.53,7.2,5.6,45,3173,34.2],
+  [2075,0.012270,0.020563,0.028963,38,0.52,7.1,5.2,43,2823,34.3],
+  [2098,0.012808,0.014268,0.027120,38,0.48,7.8,5.3,45,2838,34.1],
+  [2087,0.013324,0.012589,0.027259,40,0.51,7.8,5.4,46,2927,34.3],
+  [2548,0.016493,0.004784,0.021953,54,0.33,6.9,6.2,41,5509,36.7],
+  [2527,0.015963,0.004342,0.023417,53,0.34,6.8,6.3,42,5520,36.8],
+  [2579,0.016161,0.004364,0.035125,54,0.34,6.7,6.3,43,5535,36.9],
+  [2520,0.016691,0.004364,0.023417,55,0.33,6.8,6.2,42,5515,36.8],
+  [2540,0.016492,0.004364,0.023417,54,0.33,6.9,6.2,41,5500,36.7],
+  [3192,0.023851,0.018597,0.064599,73,0.32,7.4,5.9,34,9685,37.8],
+  [3230,0.023822,0.018143,0.060063,74,0.33,7.3,6.0,35,9700,37.7],
+  [3190,0.023354,0.017875,0.061592,73,0.33,7.2,6.0,36,9720,37.9],
+  [3180,0.023377,0.018292,0.063280,72,0.32,7.3,5.9,35,9695,37.8],
+  [3189,0.023523,0.018164,0.062525,72,0.32,7.4,5.9,34,9670,37.7]
+];
+
+function blankRows(n){
+  return Array.from({length:n}, () => Object.fromEntries(headers.map(h => [h.key, ''])));
+}
+
+function rowFromArray(arr){
+  const row = {};
+  headers.forEach((h, i) => row[h.key] = arr[i] ?? '');
+  return row;
+}
+
+function currentRows(){
+  return state.data[state.fuel];
+}
+
+function init(){
+  state.data.G95 = blankRows(15);
+  state.data.G91 = blankRows(15);
+  buildTable();
+  renderAll();
+}
+
+function buildTable(){
+  const thead = document.querySelector('#inputTable thead');
+  const tbody = document.querySelector('#inputTable tbody');
+
+  thead.innerHTML = '<tr>' + headers.map(h => `<th>${h.label}</th>`).join('') + '</tr>';
+
+  tbody.innerHTML = currentRows().map((row, rIdx) => {
+    return '<tr>' + headers.map(h => {
+      const val = row[h.key] ?? '';
+      return `<td><input type="number" step="any" data-row="${rIdx}" data-key="${h.key}" value="${val}"></td>`;
+    }).join('') + '</tr>';
+  }).join('');
+
+  document.getElementById('rowCount').value = currentRows().length;
+}
+
+function saveTable(){
+  document.querySelectorAll('#inputTable input').forEach(input => {
+    const r = Number(input.dataset.row);
+    const key = input.dataset.key;
+    if(currentRows()[r]) currentRows()[r][key] = input.value;
+  });
+}
+
+function switchFuel(fuel){
+  saveTable();
+  state.fuel = fuel;
+  document.getElementById('fuelSelect').value = fuel;
+  document.getElementById('tabG95').classList.toggle('active', fuel === 'G95');
+  document.getElementById('tabG91').classList.toggle('active', fuel === 'G91');
+  buildTable();
+  renderAll();
+}
+
+document.getElementById('fuelSelect').addEventListener('change', e => switchFuel(e.target.value));
+
+function setRows(){
+  saveTable();
+  const n = Math.max(1, Math.min(100, Number(document.getElementById('rowCount').value || 1)));
+  const rows = currentRows();
+
+  if(n > rows.length){
+    rows.push(...blankRows(n - rows.length));
+  }else{
+    rows.length = n;
+  }
+
+  buildTable();
+  renderAll();
+}
+
+function parseNumberCell(value){
+  if(value === null || value === undefined) return '';
+  let s = String(value).trim();
+  if(!s || s === '-' || s === '–') return '';
+  s = s.replace(/,/g,'');
+  const n = Number(s);
+  return Number.isFinite(n) ? n : '';
+}
+
+function pasteToTable(){
+  const text = document.getElementById('pasteBox').value.trim();
+  const status = document.getElementById('status');
+
+  if(!text){
+    status.textContent = 'ยังไม่มีข้อมูลในช่องวาง';
+    status.classList.add('error');
+    return;
+  }
+
+  const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+  const parsedRows = [];
+
+  for(const line of lines){
+    let cells = line.includes('\t') ? line.split('\t') : line.split(/[,\s]+/);
+    cells = cells.map(parseNumberCell);
+
+    const row = {};
+    headers.forEach((h, i) => row[h.key] = cells[i] ?? '');
+    if(row.rpm !== '') parsedRows.push(row);
+  }
+
+  if(parsedRows.length === 0){
+    status.textContent = 'อ่านข้อมูลไม่ได้ ตรวจว่าคอลัมน์แรกเป็นรอบเครื่อง';
+    status.classList.add('error');
+    return;
+  }
+
+  state.data[state.fuel] = parsedRows;
+  status.textContent = `นำเข้าข้อมูลแล้ว ${parsedRows.length} แถว สำหรับ ${state.fuel}`;
+  status.classList.remove('error');
+
+  buildTable();
+  renderAll();
+}
+
+function loadExample(){
+  state.data[state.fuel] = (state.fuel === 'G95' ? exampleG95 : exampleG91).map(rowFromArray);
+  buildTable();
+  renderAll();
+  const status = document.getElementById('status');
+  status.textContent = `ใส่ข้อมูลตัวอย่างแล้ว: ${state.fuel}`;
+  status.classList.remove('error');
+}
+
+function clearCurrent(){
+  state.data[state.fuel] = blankRows(Number(document.getElementById('rowCount').value || 15));
+  document.getElementById('pasteBox').value = '';
+  buildTable();
+  renderAll();
+}
+
+function copyTableAsTSV(){
+  saveTable();
+  const tsv = [
+    headers.map(h => h.label).join('\t'),
+    ...currentRows().map(row => headers.map(h => row[h.key] ?? '').join('\t'))
+  ].join('\n');
+
+  navigator.clipboard.writeText(tsv);
+
+  const status = document.getElementById('status');
+  status.textContent = 'Copy ตารางแล้ว สามารถนำไปวางใน Excel ได้';
+  status.classList.remove('error');
+}
+
+function toNumber(v){
+  if(v === '' || v === null || v === undefined) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function sortedValidRows(){
+  saveTable();
+  return currentRows()
+    .map((row, i) => ({...row, _idx:i}))
+    .filter(row => toNumber(row.rpm) !== null)
+    .sort((a, b) => toNumber(a.rpm) - toNumber(b.rpm));
+}
+
+function nominalGroup(rpm){
+  if(rpm < 1800) return 1500;
+  if(rpm < 2350) return 2200;
+  if(rpm < 2900) return 2500;
+  if(rpm < 3500) return 3200;
+  return Math.round(rpm / 100) * 100;
+}
+
+function groupLabel(rpm){
+  return String(nominalGroup(rpm));
+}
+
+function makeCategoryLabels(rows){
+  const mode = document.getElementById('tickMode').value;
+
+  if(mode === 'all'){
+    return rows.map(row => String(toNumber(row.rpm)));
+  }
+
+  if(mode === 'groups'){
+    const seen = new Set();
+    return rows.map(row => {
+      const label = groupLabel(toNumber(row.rpm));
+      if(seen.has(label)) return '';
+      seen.add(label);
+      return label;
+    });
+  }
+
+  const labels = rows.map(() => '');
+  const groups = {};
+
+  rows.forEach((row, idx) => {
+    const label = groupLabel(toNumber(row.rpm));
+    if(!groups[label]) groups[label] = [];
+    groups[label].push(idx);
+  });
+
+  Object.values(groups).forEach(indexes => {
+    labels[indexes[0]] = String(toNumber(rows[indexes[0]].rpm));
+    if(indexes.length > 1){
+      labels[indexes[indexes.length - 1]] = String(toNumber(rows[indexes[indexes.length - 1]].rpm));
     }
+  });
 
-    function calcA0(C, H, O, S, molar_vol = 22.4, O2_fraction = 0.21) {
-        let raw = (molar_vol / O2_fraction) * (C / 12 + (1 / 4) * (H - O / 8) + S / 32);
-        return fix4(raw); // บังคับให้เป็น 11.1902 หรือ 11.1582 เป๊ะๆ ทันที
-    }
+  return labels;
+}
 
-    function calcLambda(O2_d, CO_d) {
-        let raw = 1 + ((O2_d - 0.5 * CO_d) / (21 - O2_d));
-        return fix4(raw); // บังคับปัดเศษ Lambda ให้ตรงหน้าจอ 4 ตำแหน่ง เช่น 1.1919
-    }
+function isScatter(){
+  return document.getElementById('plotMode').value === 'scatter';
+}
 
-    function calcGPrime(lambda, a0, C, S, N, CO_d = 0.15, molar_vol = 22.4) {
-        // บังคับปัดเศษตัวแปรต้นทางทั้งหมดก่อนคูณ เพื่อให้ตรงกับการกดเครื่องคิดเลขมือของคุณร้อยเปอร์เซ็นต์
-        let l_fixed = fix4(lambda);
-        let a0_fixed = fix4(a0);
-        
-        let term1 = fix4(fix4(l_fixed - 0.21) * a0_fixed);
-        let term2 = fix4(molar_vol * (C / 12 + S / 32 + N / 28));
-        
-        let rawGPrime = term1 + term2;
-        return fix4(rawGPrime); // ผลลัพธ์รวมสุดท้ายจะตรงกับ 12.6007 หรือ 11.9555 เป๊ะ
-    }
+function showLine(){
+  return document.getElementById('plotMode').value === 'line';
+}
 
-    function calcV_N(gPrime, mdot_f) {
-        return fix4(gPrime * fix4(mdot_f));
-    }
+function destroyChart(id){
+  if(state.charts[id]){
+    state.charts[id].destroy();
+    delete state.charts[id];
+  }
+}
 
-    function calcV_actual(V_N, T_ex_celsius) {
-        let termT = fix4(fix4(T_ex_celsius + 273.15) / 273.15);
-        return fix4(V_N * termT);
-    }
+function buildScatterXMap(rows){
+  const groups = {};
+  rows.forEach((row, idx) => {
+    const center = nominalGroup(toNumber(row.rpm));
+    if(!groups[center]) groups[center] = [];
+    groups[center].push({row, idx});
+  });
 
-    function calcMdotEx(V_N, V_act, rho_std = 1.293, rho_act = 0.495) {
-        return fix4(V_N * rho_std);
-    }
+  const map = {};
+  Object.entries(groups).forEach(([centerText, items]) => {
+    const center = Number(centerText);
+    const n = items.length;
+    const step = n <= 5 ? 42 : 34;
+    const maxWidth = Math.min(190, Math.max(70, (n - 1) * step));
+    const actualStep = n <= 1 ? 0 : maxWidth / (n - 1);
 
-    // ============================================================
-    // APPLICATION STATE MANAGEMENT
-    // ============================================================
-    let activeMode = 'single';
-    let chartInstance = null;
-    let savedSessions = [];
-    let ebTrialsCount = 0;
+    items.forEach((item, i) => {
+      map[item.idx] = center + (i - (n - 1) / 2) * actualStep;
+    });
+  });
 
-    const FUEL_DATABASE = {
-        '95': { C: 0.8641, H: 0.1316, O: 0.0, S: 0.0, N: 0.0, afr_th: 14.6 },
-        '91': { C: 0.8605, H: 0.1316, O: 0.0, S: 0.0, N: 0.0, afr_th: 14.55 },
-        'E20': { C: 0.7420, H: 0.1210, O: 0.1370, S: 0.0, N: 0.0, afr_th: 13.2 }
+  return map;
+}
+
+function buildData(rows, key){
+  if(isScatter()){
+    const xMap = buildScatterXMap(rows);
+    return rows
+      .map((row, idx) => ({
+        x: xMap[idx],
+        y: toNumber(row[key]),
+        rpm: toNumber(row.rpm)
+      }))
+      .filter(point => point.x !== null && point.y !== null);
+  }
+
+  return rows.map(row => toNumber(row[key]));
+}
+
+function dataset(labelText, labelHtml, rows, key, color, pointStyle){
+  return {
+    label: labelText,
+    labelHtml,
+    data: buildData(rows, key),
+    borderColor: color,
+    backgroundColor: color,
+    pointBackgroundColor: color,
+    pointBorderColor: color,
+    pointStyle,
+    radius: 6,
+    hoverRadius: 8,
+    borderWidth: showLine() ? 2.25 : 0,
+    showLine: showLine(),
+    tension: 0,
+    spanGaps: false
+  };
+}
+
+function scatterTickValues(rows){
+  const centers = [...new Set(rows.map(r => nominalGroup(toNumber(r.rpm))))].sort((a,b)=>a-b);
+  return centers.length ? centers : [1500,2200,2500];
+}
+
+function xScaleOptions(rows){
+  if(isScatter()){
+    const centers = scatterTickValues(rows);
+    const min = Math.min(...centers) - 180;
+    const max = Math.max(...centers) + 180;
+
+    return {
+      type:'linear',
+      min,
+      max,
+      title:{display:true, text:'Engine speed (rpm)', font:{weight:'bold', size:14, family:'Times New Roman'}},
+      grid:{display:true, color:'#d9d9d9'},
+      afterBuildTicks: axis => {
+        axis.ticks = centers.map(v => ({value:v}));
+      },
+      ticks:{
+        color:'#111827',
+        font:{size:13, family:'Times New Roman'},
+        callback:value => String(value)
+      }
     };
+  }
 
-    // ============================================================
-    // UI CONTROL LAYER
-    // ============================================================
-    function initModeToggle() {
-        const sBtn = document.getElementById('modeSingleBtn');
-        const bBtn = document.getElementById('modeBatchBtn');
-        const sContainer = document.getElementById('singleInputsContainer');
-        const bContainer = document.getElementById('batchInputsContainer');
-
-        sBtn.addEventListener('click', () => {
-            activeMode = 'single';
-            sBtn.classList.add('active');
-            bBtn.classList.remove('active');
-            sContainer.style.display = 'block';
-            bContainer.style.display = 'none';
-        });
-
-        bBtn.addEventListener('click', () => {
-            activeMode = 'batch';
-            bBtn.classList.add('active');
-            sBtn.classList.remove('active');
-            bContainer.style.display = 'block';
-            sContainer.style.display = 'none';
-            updateBatchModeUI();
-        });
+  return {
+    type:'category',
+    title:{display:true, text:'Engine speed (rpm)', font:{weight:'bold', size:14, family:'Times New Roman'}},
+    grid:{display:true, color:'#d9d9d9'},
+    ticks:{
+      color:'#111827',
+      font:{size:13, family:'Times New Roman'},
+      autoSkip:false,
+      maxRotation:0,
+      minRotation:0
     }
+  };
+}
 
-    function updateBatchModeUI() {
-        const type = document.getElementById('batchCalcType').value;
-        const lParams = document.getElementById('batchLambdaParams');
-        const tParams = document.getElementById('batchTempParams');
-        if (type === 'lambda') {
-            lParams.style.display = 'block';
-            tParams.style.display = 'none';
-        } else {
-            lParams.style.display = 'none';
-            tParams.style.display = 'block';
-        }
-    }
+const centerTitlePlugin = {
+  id:'centerTitlePlugin',
+  beforeDraw(chart, args, pluginOptions){
+    const {ctx, chartArea} = chart;
+    if(!chartArea) return;
 
-    function attachNumberInputGuards() {
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('change', (e) => {
-                if(e.target.value === '' || isNaN(parseFloat(e.target.value))) {
-                    e.target.value = e.target.getAttribute('value') || '0';
-                }
-            });
-        });
-    }
+    ctx.save();
+    ctx.font = 'bold 17px "Times New Roman", serif';
+    ctx.fillStyle = '#000';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(pluginOptions.text || '', (chartArea.left + chartArea.right) / 2, 14);
+    ctx.restore();
+  }
+};
 
-    function renderEbTrials() {
-        const container = document.getElementById('ebTrialsList');
-        container.innerHTML = '';
-        if (ebTrialsCount === 0) {
-            container.innerHTML = '<p style="font-size:0.8rem; color:#475569; text-align:center;">No verification runs declared.</p>';
-            return;
-        }
-        for (let i = 0; i < ebTrialsCount; i++) {
-            const div = document.createElement('div');
-            div.className = 'eb-trial-row';
-            div.innerHTML = `
-                <div><label>Run ${i+1} ṁ<sub>w</sub> (kg/s)</label><input type="number" step="0.001" class="eb-mw" value="0.02"></div>
-                <div><label>ΔT<sub>w</sub> (°C)</label><input type="number" step="0.1" class="eb-dtw" value="10"></div>
-                <div><label>ΔT<sub>g</sub> (°C)</label><input type="number" step="0.1" class="eb-dtg" value="15"></div>
-                <button type="button" class="action-btn" onclick="removeEbTrial(${i})">✕</button>
-            `;
-            container.appendChild(div);
-        }
-    }
+Chart.register(centerTitlePlugin);
 
-    window.removeEbTrial = function(index) {
-        ebTrialsCount = Math.max(0, ebTrialsCount - 1);
-        renderEbTrials();
-    };
-
-    // ============================================================
-    // CHART GENERATION LAYER
-    // ============================================================
-    function initChart() {
-        const ctx = document.getElementById('resultsChart').getContext('2d');
-        chartInstance = new Chart(ctx, {
-            type: 'line',
-            data: { datasets: [] },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: { type: 'linear', grid: { color: '#334155' }, title: { display: true, text: 'X Axis', color: '#94a3b8' }, ticks: { color: '#64748b' } },
-                    y: { grid: { color: '#334155' }, title: { display: true, text: 'Exhaust Gas Mass Flow (kg/s)', color: '#94a3b8' }, ticks: { color: '#64748b' } }
-                },
-                plugins: { legend: { labels: { color: '#f8fafc', font: { family: 'JetBrains Mono' } } } }
+function chartOptions(rows, yTitle, titleText){
+  return {
+    responsive:true,
+    maintainAspectRatio:false,
+    layout:{
+      padding:{top:42, right:14, bottom:0, left:8}
+    },
+    interaction:{mode:'nearest', intersect:true},
+    plugins:{
+      centerTitlePlugin:{text:titleText},
+      title:{display:false},
+      legend:{display:false},
+      tooltip:{
+        callbacks:{
+          title:(items) => {
+            if(isScatter()){
+              const raw = items[0].raw;
+              return `Engine speed: ${raw.rpm} rpm`;
             }
-        });
-    }
-
-    function updateChartSingle(lambda, mdot) {
-        chartInstance.data.datasets = [{
-            label: 'Current Operational Run',
-            data: [{ x: lambda, y: mdot }],
-            backgroundColor: '#38bdf8',
-            borderColor: '#38bdf8',
-            pointRadius: 8,
-            pointHoverRadius: 10,
-            showLine: false
-        }];
-        chartInstance.options.scales.x.title.text = 'Excess Air Ratio (λ)';
-        chartInstance.update();
-    }
-
-    function updateChartBatch(xLabel, xData, yData) {
-        const points = xData.map((x, i) => ({ x: x, y: yData[i] }));
-        chartInstance.data.datasets = [{
-            label: 'Batch Simulation Profile',
-            data: points,
-            borderColor: '#a855f7',
-            backgroundColor: 'rgba(168, 85, 247, 0.2)',
-            borderWidth: 2,
-            pointRadius: 4,
-            tension: 0.1
-        }];
-        chartInstance.options.scales.x.title.text = xLabel;
-        chartInstance.update();
-    }
-
-    // ============================================================
-    // CORE RUNTIME CONTROLLER
-    // ============================================================
-    function executeCalculation() {
-        if (activeMode === 'single') {
-            const fKey = document.getElementById('fuelType').value;
-            const f = FUEL_DATABASE[fKey];
-            const o2 = parseFloat(document.getElementById('o2Dry').value);
-            const co = parseFloat(document.getElementById('coDry').value);
-            const mf = parseFloat(document.getElementById('fuelFlow').value);
-            const temp = parseFloat(document.getElementById('exhaustTemp').value);
-
-            const a0 = calcA0(f.C, f.H, f.O, f.S);
-            const lambda = calcLambda(o2, co);
-            const gPrime = calcGPrime(lambda, a0, f.C, f.S, f.N, co);
-            const vn = calcV_N(gPrime, mf);
-            const vact = calcV_actual(vn, temp);
-            const mdotEx = calcMdotEx(vn, vact);
-
-            document.getElementById('resLambda').innerText = lambda.toFixed(4);
-            document.getElementById('resAfrTh').innerHTML = `${f.afr_th.toFixed(2)} <span>: 1</span>`;
-            document.getElementById('resA0').innerHTML = `${a0.toFixed(4)} <span>m³<sub>N</sub>/kg<sub>-f</sub></span>`;
-            document.getElementById('resGPrime').innerHTML = `${gPrime.toFixed(4)} <span>m³<sub>N</sub>/kg<sub>-f</sub></span>`;
-            document.getElementById('resVn').innerHTML = `${vn.toFixed(6)} <span>m³<sub>N</sub>/s</span>`;
-            document.getElementById('resVact').innerHTML = `${vact.toFixed(6)} <span>m³/s</span>`;
-            document.getElementById('resMdotEx').innerHTML = `${mdotEx.toFixed(6)} <span>kg/s</span>`;
-
-            updateChartSingle(lambda, mdotEx);
-        } else {
-            const calcType = document.getElementById('batchCalcType').value;
-            const fKey = document.getElementById('batchFuelType').value;
-            const f = FUEL_DATABASE[fKey];
-            const steps = parseInt(document.getElementById('batchSteps').value);
-
-            let xData = [], yData = [];
-            let xLabel = '';
-
-            const a0 = calcA0(f.C, f.H, f.O, f.S);
-
-            if (calcType === 'lambda') {
-                const startL = parseFloat(document.getElementById('lambdaStart').value);
-                const endL = parseFloat(document.getElementById('lambdaEnd').value);
-                const mf = parseFloat(document.getElementById('batchFuelFlowConst').value);
-                const temp = parseFloat(document.getElementById('batchTempConst').value);
-                xLabel = 'Excess Air Ratio (λ)';
-
-                for (let i = 0; i <= steps; i++) {
-                    let l = fix4(startL + (endL - startL) * (i / steps));
-                    let g = calcGPrime(l, a0, f.C, f.S, f.N);
-                    let vn = calcV_N(g, mf);
-                    let vact = calcV_actual(vn, temp);
-                    let mdot = calcMdotEx(vn, vact);
-                    xData.push(l);
-                    yData.push(mdot);
-                }
-            } else {
-                const lConst = parseFloat(document.getElementById('batchLambdaConst').value);
-                const mf = parseFloat(document.getElementById('batchFuelFlowConst2').value);
-                const startT = parseFloat(document.getElementById('tempStart').value);
-                const endT = parseFloat(document.getElementById('tempEnd').value);
-                xLabel = 'Exhaust Temperature (°C)';
-
-                for (let i = 0; i <= steps; i++) {
-                    let t = fix4(startT + (endT - startT) * (i / steps));
-                    let g = calcGPrime(lConst, a0, f.C, f.S, f.N);
-                    let vn = calcV_N(g, mf);
-                    let vact = calcV_actual(vn, t);
-                    let mdot = calcMdotEx(vn, vact);
-                    xData.push(t);
-                    yData.push(mdot);
-                }
-            }
-            updateChartBatch(xLabel, xData, yData);
+            const row = rows[items[0].dataIndex];
+            return `Engine speed: ${row ? row.rpm : ''} rpm`;
+          }
         }
+      }
+    },
+    scales:{
+      x:xScaleOptions(rows),
+      y:{
+        title:{display:true, text:yTitle, font:{weight:'bold', size:14, family:'Times New Roman'}},
+        beginAtZero:true,
+        grid:{display:true, color:'#d9d9d9'},
+        ticks:{color:'#111827', font:{size:13, family:'Times New Roman'}}
+      }
+    },
+    elements:{
+      point:{radius:6, hoverRadius:8},
+      line:{tension:0}
     }
+  };
+}
 
-    function archiveSession() {
-        const fKey = activeMode === 'single' ? document.getElementById('fuelType').value : document.getElementById('batchFuelType').value;
-        const f = FUEL_DATABASE[fKey];
-        
-        let sessionRecord = {
-            id: Date.now(),
-            timestamp: new Date().toLocaleTimeString(),
-            fuel: `Gasoline ${fKey}`,
-            o2: activeMode === 'single' ? parseFloat(document.getElementById('o2Dry').value) : NaN,
-            co: activeMode === 'single' ? parseFloat(document.getElementById('coDry').value) : NaN,
-            lambda: parseFloat(document.getElementById('resLambda').innerText) || 1.0,
-            a0: parseFloat(document.getElementById('resA0').innerText) || 0.0,
-            gPrime: parseFloat(document.getElementById('resGPrime').innerText) || 0.0,
-            vn: parseFloat(document.getElementById('resVn').innerText) || 0.0,
-            vact: parseFloat(document.getElementById('resVact').innerText) || 0.0,
-            mdot: parseFloat(document.getElementById('resMdotEx').innerText) || 0.0
-        };
+function markerClass(pointStyle){
+  if(pointStyle === 'triangle') return 'triangle';
+  if(pointStyle === 'rect') return 'rect';
+  return 'circle';
+}
 
-        savedSessions.push(sessionRecord);
-        renderHistoryTable();
-    }
+function renderHtmlLegend(legendId, datasets){
+  const el = document.getElementById(legendId);
+  el.innerHTML = datasets.map(ds => {
+    const klass = markerClass(ds.pointStyle);
+    return `
+      <span class="legend-item">
+        <span class="legend-marker ${klass}" style="--c:${ds.backgroundColor}"></span>
+        <span class="legend-text">${ds.labelHtml}</span>
+      </span>
+    `;
+  }).join('');
+}
 
-    function renderHistoryTable() {
-        const tbody = document.getElementById('historyBody');
-        if (savedSessions.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: #475569; padding: 20px;">No simulated data in current local memory stack.</td></tr>`;
-            return;
-        }
-        tbody.innerHTML = '';
-        savedSessions.forEach((s) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${s.timestamp}</td>
-                <td><span class="badge badge-${s.fuel.toLowerCase().replace(' ', '')}">${s.fuel}</span></td>
-                <td>${isNaN(s.o2) ? 'N/A' : s.o2.toFixed(2)}</td>
-                <td>${isNaN(s.co) ? 'N/A' : s.co.toFixed(2)}</td>
-                <td>${s.lambda.toFixed(4)}</td>
-                <td>${s.a0.toFixed(4)}</td>
-                <td>${s.gPrime.toFixed(4)}</td>
-                <td>${s.vn.toFixed(6)}</td>
-                <td>${s.vact.toFixed(6)}</td>
-                <td style="font-weight:bold; color:#38bdf8;">${s.mdot.toFixed(6)}</td>
-                <td><button class="action-btn" onclick="deleteSession(${s.id})">Drop</button></td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
+function createChart(canvasId, legendId, titleText, yTitle, datasets){
+  destroyChart(canvasId);
+  const rows = sortedValidRows();
 
-    window.deleteSession = function(id) {
-        savedSessions = savedSessions.filter(s => s.id !== id);
-        renderHistoryTable();
-    };
+  const config = {
+    type: isScatter() ? 'scatter' : 'line',
+    data: isScatter() ? {datasets} : {labels: makeCategoryLabels(rows), datasets},
+    options: chartOptions(rows, yTitle, titleText)
+  };
 
-    // ============================================================
-    // EXPORT INFRASTRUCTURE
-    // ============================================================
-    function buildResultsTableData() {
-        const headers = ["Timestamp", "Fuel Type", "Dry O2 (%)", "Dry CO (%)", "Lambda (λ)", "Theoretical Air A0", "Dry Gas G'", "V_N (m3/s)", "V_actual (m3/s)", "Mass Flow Rate (kg/s)"];
-        const rows = savedSessions.map(s => [
-            s.timestamp, s.fuel, isNaN(s.o2) ? 'N/A' : s.o2, isNaN(s.co) ? 'N/A' : s.co, s.lambda, s.a0, s.gPrime, s.vn, s.vact, s.mdot
-        ]);
-        return { exportHeaders: headers, rows: rows };
-    }
+  state.charts[canvasId] = new Chart(document.getElementById(canvasId), config);
+  renderHtmlLegend(legendId, datasets);
+}
 
-    function buildInputsTableData() {
-        const headers = ["Timestamp", "Fuel Type", "Dry O2 (%)", "Dry CO (%)", "Fuel Flow (kg/s)", "Exhaust Temp (C)"];
-        const rows = savedSessions.map(s => {
-            const fFlow = activeMode === 'single' ? document.getElementById('fuelFlow').value : document.getElementById('batchFuelFlowConst').value;
-            const tEx = activeMode === 'single' ? document.getElementById('exhaustTemp').value : document.getElementById('batchTempConst').value;
-            return [ s.timestamp, s.fuel, isNaN(s.o2) ? 'N/A' : s.o2, isNaN(s.co) ? 'N/A' : s.co, fFlow, tEx ];
-        });
-        return { exportHeaders: headers, rows: rows };
-    }
+function renderAll(){
+  const fuelName = state.fuel === 'G95' ? 'Gasoline 95' : 'Gasoline 91';
+  const rows = sortedValidRows();
 
-    document.getElementById('exportExcelBtn').addEventListener('click', () => {
-        if (savedSessions.length === 0) {
-            alert('คลังข้อมูลว่างเปล่า กรุณาคำนวณและกดบันทึกข้อมูลก่อนครับ');
-            return;
-        }
-        const resultsData = buildResultsTableData();
-        const inputsData = buildInputsTableData();
+  createChart(
+    'chart_mg',
+    'legend_mg',
+    `อัตราการไหลเชิงมวลของก๊าซไอเสียของเชื้อเพลิง ${fuelName}`,
+    'Mass flow rate (kg/s)',
+    [
+      dataset('ṁG′', 'ṁ<sub>G</sub>′', rows, 'mgp', colors.blue, 'circle'),
+      dataset('ṁG,EB at 1.2 Lpm', 'ṁ<sub>G,EB</sub> at 1.2 Lpm', rows, 'mgeb12', colors.orange, 'rect'),
+      dataset('ṁG,EB at 5 Lpm', 'ṁ<sub>G,EB</sub> at 5 Lpm', rows, 'mgeb5', colors.green, 'triangle')
+    ]
+  );
 
-        const wb = XLSX.utils.book_new();
-        const wsResults = XLSX.utils.aoa_to_sheet([resultsData.exportHeaders, ...resultsData.rows]);
-        
-        const inputsSheetData = [inputsData.exportHeaders, ...inputsData.rows];
-        const wsInputs = XLSX.utils.aoa_to_sheet(inputsSheetData);
+  createChart(
+    'chart_vfuel',
+    'legend_vfuel',
+    `อัตราการไหลเชิงปริมาตรของเชื้อเพลิง ${fuelName}`,
+    'Volume flow rate (ml/min)',
+    [
+      dataset('Vfuel', 'V<sub>fuel</sub>', rows, 'vfuel', colors.blue, 'circle')
+    ]
+  );
 
-        wsResults['!cols'] = resultsData.exportHeaders.map(() => ({ wch: 16 }));
-        wsInputs['!cols'] = inputsData.exportHeaders.map(() => ({ wch: 14 }));
+  createChart(
+    'chart_gas',
+    'legend_gas',
+    `องค์ประกอบก๊าซไอเสีย CO, CO₂ และ O₂ ของเชื้อเพลิง ${fuelName}`,
+    'Gas concentration (%vol)',
+    [
+      dataset('CO', 'CO', rows, 'co', colors.blue, 'circle'),
+      dataset('CO₂', 'CO₂', rows, 'co2', colors.orange, 'rect'),
+      dataset('O₂', 'O₂', rows, 'o2', colors.green, 'triangle')
+    ]
+  );
 
-        XLSX.utils.book_append_sheet(wb, wsResults, 'Results');
-        XLSX.utils.book_append_sheet(wb, wsInputs, 'Input Records');
-        XLSX.writeFile(wb, 'exhaust_results_and_inputs.xlsx');
-    });
+  createChart(
+    'chart_hcnox',
+    'legend_hcnox',
+    `ความเข้มข้น HC และ NOx ของเชื้อเพลิง ${fuelName}`,
+    'Concentration (ppm)',
+    [
+      dataset('HC', 'HC', rows, 'hc', colors.blue, 'circle'),
+      dataset('NOx', 'NOx', rows, 'nox', colors.orange, 'rect')
+    ]
+  );
 
-    document.getElementById('exportInputsExcelBtn').addEventListener('click', () => {
-        if (savedSessions.length === 0) {
-            alert('คลังข้อมูลว่างเปล่า กรุณาคำนวณและกดบันทึกข้อมูลก่อนครับ');
-            return;
-        }
+  createChart(
+    'chart_tgi',
+    'legend_tgi',
+    `อุณหภูมิก๊าซไอเสียขาเข้า T_GI ของเชื้อเพลิง ${fuelName}`,
+    'Temperature (°C)',
+    [
+      dataset('TGI', 'T<sub>GI</sub>', rows, 'tgi', colors.orange, 'circle')
+    ]
+  );
 
-        const inputsData = buildInputsTableData();
-        const wb = XLSX.utils.book_new();
-        const wsInputs = XLSX.utils.aoa_to_sheet([inputsData.exportHeaders, ...inputsData.rows]);
-        wsInputs['!cols'] = inputsData.exportHeaders.map(() => ({ wch: 16 }));
-        XLSX.utils.book_append_sheet(wb, wsInputs, 'Input Records');
-        XLSX.writeFile(wb, 'input_records.xlsx');
-    });
+  const status = document.getElementById('status');
+  status.textContent = `อัปเดตกราฟแล้ว: ${fuelName}, ใช้ข้อมูลที่มีรอบเครื่อง ${rows.length} แถว`;
+  status.classList.remove('error');
+}
 
-    // ============================================================
-    // INIT RUNTIME LISTENERS
-    // ============================================================
-    window.addEventListener('load', () => {
-        attachNumberInputGuards();
-        initModeToggle();
-        initChart();
-        updateBatchModeUI();
-        document.getElementById('batchCalcType')?.addEventListener('change', updateBatchModeUI);
-        renderEbTrials();
-
-        document.getElementById('addEbTrialBtn').addEventListener('click', () => {
-            ebTrialsCount++;
-            renderEbTrials();
-        });
-
-        document.getElementById('calcBtn').addEventListener('click', executeCalculation);
-        document.getElementById('saveBtn').addEventListener('click', archiveSession);
-    });
+init();
 </script>
-
 </body>
 </html>
