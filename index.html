@@ -4,362 +4,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Graph Mode | Exhaust Gas Experiment</title>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     :root{
-      --bg:#f4f6f8;
-      --card:#ffffff;
-      --text:#111827;
-      --muted:#5b6472;
-      --border:#d9dee7;
-      --primary:#2563eb;
-      --green:#16a34a;
-      --radius:12px;
-      --shadow:0 8px 22px rgba(15,23,42,.045);
-      --excel-blue:#4472C4;
-      --excel-orange:#ED7D31;
-      --excel-green:#70AD47;
+      --bg:#f3f4f6; --card:#fff; --text:#111827; --muted:#4b5563;
+      --border:#d9d9d9; --primary:#2563eb; --green:#16a34a;
+      --blue:#4472C4; --orange:#ED7D31; --greenExcel:#70AD47;
     }
-
     *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      font-family:"Segoe UI", Tahoma, Arial, sans-serif;
-      background:var(--bg);
-      color:var(--text);
-    }
-
-    header{
-      background:#ffffff;
-      border-bottom:1px solid var(--border);
-      padding:18px 24px;
-    }
-
-    .header-inner{
-      max-width:1420px;
-      margin:0 auto;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:18px;
-    }
-
-    .brand h1{
-      margin:0;
-      font-size:21px;
-      font-weight:800;
-      letter-spacing:.1px;
-    }
-
-    .brand p{
-      margin:5px 0 0;
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .badge{
-      border:1px solid var(--border);
-      background:#f8fafc;
-      border-radius:999px;
-      padding:7px 11px;
-      font-size:12px;
-      font-weight:700;
-      color:#334155;
-      white-space:nowrap;
-    }
-
-    .wrap{
-      max-width:1420px;
-      margin:18px auto 44px;
-      padding:0 18px;
-    }
-
-    .toolbar{
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr .8fr auto;
-      gap:12px;
-      margin-bottom:12px;
-    }
-
-    .panel{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:14px;
-    }
-
-    label{
-      display:block;
-      margin-bottom:7px;
-      font-size:12px;
-      font-weight:800;
-      color:#1f2937;
-    }
-
-    select,input,textarea{
-      width:100%;
-      border:1px solid #cbd5e1;
-      border-radius:8px;
-      padding:9px 10px;
-      font-size:13px;
-      background:white;
-      color:#111827;
-      outline:none;
-    }
-
-    select:focus,input:focus,textarea:focus{
-      border-color:#60a5fa;
-      box-shadow:0 0 0 3px rgba(37,99,235,.10);
-    }
-
-    textarea{
-      min-height:155px;
-      resize:vertical;
-      font-family:Consolas,"Courier New",monospace;
-      line-height:1.4;
-      tab-size:4;
-    }
-
-    button{
-      border:1px solid transparent;
-      border-radius:8px;
-      padding:9px 12px;
-      font-size:13px;
-      font-weight:800;
-      cursor:pointer;
-      white-space:nowrap;
-      background:#f1f5f9;
-      color:#111827;
-    }
-
-    .btn-primary{background:var(--primary);color:white}
-    .btn-green{background:var(--green);color:white}
-    .btn-soft{background:#eef2ff;color:#1e40af;border-color:#dbeafe}
-    .btn-neutral{background:#f8fafc;color:#0f172a;border-color:#d8dee8}
+    body{margin:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    header{background:#fff;border-bottom:1px solid #d6d6d6;padding:16px 24px}
+    .header-inner{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:18px}
+    .brand h1{margin:0;font-size:21px;font-weight:800}.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .badge{border:1px solid #d9d9d9;background:#f8fafc;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:700;color:#334155;white-space:nowrap}
+    .wrap{max-width:1440px;margin:18px auto 44px;padding:0 18px}
+    .toolbar{display:grid;grid-template-columns:1fr 1.3fr 1fr .8fr auto;gap:12px;margin-bottom:12px}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px}
+    label{display:block;margin-bottom:7px;font-size:12px;font-weight:800;color:#1f2937}
+    select,input,textarea{width:100%;border:1px solid #c9c9c9;border-radius:6px;padding:9px 10px;font-size:13px;background:#fff;color:#111827;outline:none}
+    select:focus,input:focus,textarea:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(37,99,235,.10)}
+    textarea{min-height:150px;resize:vertical;font-family:Consolas,"Courier New",monospace;line-height:1.4;tab-size:4}
+    button{border:1px solid transparent;border-radius:6px;padding:9px 12px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;background:#f1f5f9;color:#111827}
+    .btn-primary{background:var(--primary);color:white}.btn-green{background:var(--green);color:white}
+    .btn-soft{background:#eef2ff;color:#1e40af;border-color:#dbeafe}.btn-neutral{background:#f8fafc;color:#0f172a;border-color:#d8dee8}
     .btn-danger{background:#fff1f2;color:#be123c;border-color:#fecdd3}
-
-    .tabs{
-      display:flex;
-      gap:8px;
-      margin:10px 0 12px;
-    }
-
-    .tab{
-      padding:9px 15px;
-      background:#fff;
-      border:1px solid var(--border);
-      color:#334155;
-      box-shadow:none;
-    }
-
-    .tab.active{
-      background:#111827;
-      color:#fff;
-      border-color:#111827;
-    }
-
-    .paste-grid{
-      display:grid;
-      grid-template-columns:1.35fr .85fr;
-      gap:12px;
-      margin-bottom:12px;
-    }
-
-    .actions{
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      gap:8px;
-      margin-top:10px;
-    }
-
-    .column-guide{
-      background:#fafafa;
-      border:1px dashed #cbd5e1;
-      border-radius:10px;
-      padding:11px 12px;
-      line-height:1.62;
-      font-size:13px;
-      color:#475569;
-    }
-
-    .column-guide b{color:#111827}
-
-    .hint{
-      margin:9px 0 0;
-      color:var(--muted);
-      font-size:12.5px;
-      line-height:1.55;
-    }
-
-    .status{
-      margin-top:10px;
-      color:#166534;
-      font-size:13px;
-      font-weight:800;
-    }
-
-    .status.error{color:#b91c1c}
-
-    .table-holder{
-      overflow:auto;
-      max-height:340px;
-      border:1px solid var(--border);
-      border-radius:10px;
-      background:white;
-    }
-
-    table{
-      border-collapse:separate;
-      border-spacing:0;
-      width:100%;
-      min-width:1180px;
-      font-size:12px;
-    }
-
-    th,td{
-      border-right:1px solid var(--border);
-      border-bottom:1px solid var(--border);
-      padding:7px;
-      text-align:center;
-      white-space:nowrap;
-    }
-
-    th{
-      position:sticky;
-      top:0;
-      z-index:2;
-      background:#eef6ee;
-      color:#111827;
-      font-weight:900;
-    }
-
-    tr:nth-child(even) td{background:#fcfcfc}
-
-    td input{
-      border:0;
-      border-radius:6px;
-      background:transparent;
-      text-align:center;
-      padding:4px;
-      font-size:12px;
-    }
-
-    td input:focus{
-      background:white;
-      outline:2px solid #60a5fa;
-      box-shadow:none;
-    }
-
-    .charts{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:16px;
-      margin-top:16px;
-    }
-
-    .chart-card{
-      position:relative;
-      background:#fff;
-      border:1px solid #d4d9e2;
-      border-radius:10px;
-      box-shadow:none;
-      padding:12px 18px 12px;
-    }
-
-    .unit-pill{
-      position:absolute;
-      top:14px;
-      right:18px;
-      border:1px solid #dbe1ea;
-      background:#f8fafc;
-      border-radius:999px;
-      padding:5px 10px;
-      font-size:12px;
-      font-weight:800;
-      color:#334155;
-    }
-
-    .chart-box{
-      width:100%;
-      height:458px;
-    }
-
-    /* Custom HTML legend: supports real subscript and smaller legend markers only */
-    .html-legend{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:24px;
-      flex-wrap:wrap;
-      margin-top:4px;
-      padding-bottom:2px;
-      font-family:"Times New Roman", serif;
-      font-size:15px;
-      color:#111827;
-      line-height:1;
-    }
-
-    .legend-item{
-      display:inline-flex;
-      align-items:center;
-      gap:7px;
-      white-space:nowrap;
-    }
-
-    .legend-marker{
-      width:11px;
-      height:11px;
-      display:inline-block;
-      background:var(--c);
-      flex:0 0 auto;
-    }
-
-    .legend-marker.circle{
-      border-radius:50%;
-    }
-
-    .legend-marker.rect{
-      border-radius:0;
-    }
-
-    .legend-marker.triangle{
-      width:0;
-      height:0;
-      background:transparent;
-      border-left:6px solid transparent;
-      border-right:6px solid transparent;
-      border-bottom:12px solid var(--c);
-    }
-
-    .legend-text sub{
-      font-size:70%;
-      vertical-align:sub;
-      line-height:0;
-    }
-
-    .footer-note{
-      color:#64748b;
-      font-size:12px;
-      text-align:center;
-      margin:14px 0 0;
-    }
-
-    @media(max-width:1050px){
-      .toolbar{grid-template-columns:1fr 1fr}
-      .paste-grid{grid-template-columns:1fr}
-      .header-inner{display:block}
-      .badge{display:inline-block;margin-top:10px}
-    }
-
-    @media(max-width:640px){
-      .toolbar{grid-template-columns:1fr}
-      .chart-box{height:380px}
-    }
+    .tabs{display:flex;gap:8px;margin:10px 0 12px}.tab{padding:9px 15px;background:#fff;border:1px solid #d9d9d9;color:#334155}.tab.active{background:#111827;color:#fff;border-color:#111827}
+    .paste-grid{display:grid;grid-template-columns:1.35fr .85fr;gap:12px;margin-bottom:12px}
+    .actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}
+    .column-guide{background:#fafafa;border:1px dashed #cbd5e1;border-radius:8px;padding:11px 12px;line-height:1.62;font-size:13px;color:#475569}.column-guide b{color:#111827}
+    .hint{margin:9px 0 0;color:var(--muted);font-size:12.5px;line-height:1.55}.status{margin-top:10px;color:#166534;font-size:13px;font-weight:800}.status.error{color:#b91c1c}
+    .table-holder{overflow:auto;max-height:330px;border:1px solid #d9d9d9;border-radius:8px;background:#fff}
+    table{border-collapse:separate;border-spacing:0;width:100%;min-width:1180px;font-size:12px}
+    th,td{border-right:1px solid #d9d9d9;border-bottom:1px solid #d9d9d9;padding:7px;text-align:center;white-space:nowrap}
+    th{position:sticky;top:0;z-index:2;background:#eef6ee;color:#111827;font-weight:900}
+    tr:nth-child(even) td{background:#fcfcfc}td input{border:0;border-radius:5px;background:transparent;text-align:center;padding:4px;font-size:12px}td input:focus{background:#fff;outline:2px solid #60a5fa;box-shadow:none}
+    .charts{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+    .chart-card{position:relative;background:#fff;border:1px solid #cfcfcf;border-radius:0;padding:10px 14px 10px}
+    .chart-title{margin:0;padding:0 50px 4px;text-align:center;font-family:"Times New Roman",serif;font-size:17px;font-weight:bold;color:#000;line-height:1.2}.chart-title sub{font-size:70%;vertical-align:sub;line-height:0}
+    .unit-pill{position:absolute;top:9px;right:14px;border:1px solid #d9d9d9;background:#f8fafc;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;color:#334155;z-index:3}
+    .chart-box{width:100%;height:432px}
+    .html-legend{display:flex;justify-content:center;align-items:center;gap:24px;flex-wrap:wrap;margin-top:0;padding-bottom:2px;font-family:"Times New Roman",serif;font-size:15px;color:#111827;line-height:1}
+    .legend-item{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}.legend-marker{width:10px;height:10px;display:inline-block;background:var(--c);flex:0 0 auto}.legend-marker.circle{border-radius:50%}.legend-marker.rect{border-radius:0}
+    .legend-marker.triangle{width:0;height:0;background:transparent;border-left:5.5px solid transparent;border-right:5.5px solid transparent;border-bottom:11px solid var(--c)}
+    .legend-text sub{font-size:70%;vertical-align:sub;line-height:0}
+    .footer-note{color:#64748b;font-size:12px;text-align:center;margin:14px 0 0}
+    @media(max-width:1050px){.toolbar{grid-template-columns:1fr 1fr}.paste-grid{grid-template-columns:1fr}.header-inner{display:block}.badge{display:inline-block;margin-top:10px}}
+    @media(max-width:640px){.toolbar{grid-template-columns:1fr}.chart-box{height:380px}}
   </style>
 </head>
 
@@ -368,7 +59,7 @@
   <div class="header-inner">
     <div class="brand">
       <h1>Graph Mode: Exhaust Gas Experiment</h1>
-      <p>Paste table from Excel → sort by engine speed → plot clean charts automatically</p>
+      <p>Paste table from Excel → sort by engine speed → plot Excel-like charts automatically</p>
     </div>
     <div class="badge">Gasoline 95 / Gasoline 91 • 5 charts per fuel</div>
   </div>
@@ -378,18 +69,20 @@
   <section class="toolbar">
     <div class="panel">
       <label>เชื้อเพลิง</label>
-      <select id="fuelSelect">
-        <option value="G95">Gasoline 95</option>
-        <option value="G91">Gasoline 91</option>
-      </select>
+      <select id="fuelSelect"><option value="G95">Gasoline 95</option><option value="G91">Gasoline 91</option></select>
     </div>
 
     <div class="panel">
       <label>รูปแบบกราฟ</label>
       <select id="plotMode" onchange="renderAll()">
-        <option value="line" selected>Line with markers</option>
-        <option value="markers">Markers only</option>
-        <option value="scatter">Scatter แบบเว้นระยะอ่านง่าย</option>
+        <option value="brokenScatter" selected>Broken X-axis scatter แนะนำ</option>
+        <option value="scatterCompact">Scatter รอบจริง แบบกระชับ</option>
+        <option value="scatter500">Scatter รอบจริง แกน X ทุก 500 rpm</option>
+        <option value="scatterTrue">Scatter รอบจริง แกน X ถี่</option>
+        <option value="markers">Markers only แบบ category</option>
+        <option value="line">Line with markers แบบ category</option>
+        <option value="cluster">Grouped scatter อ่านง่ายที่สุด</option>
+        <option value="clusterCloud">Cluster cloud scatter แบบเรียงรอบจริง</option>
       </select>
     </div>
 
@@ -402,10 +95,7 @@
       </select>
     </div>
 
-    <div class="panel">
-      <label>จำนวนแถว</label>
-      <input id="rowCount" type="number" min="1" max="100" value="15" />
-    </div>
+    <div class="panel"><label>จำนวนแถว</label><input id="rowCount" type="number" min="1" max="100" value="15" /></div>
 
     <div class="panel actions" style="margin-top:0">
       <button class="btn-neutral" onclick="setRows()">ปรับแถว</button>
@@ -413,26 +103,21 @@
     </div>
   </section>
 
-  <div class="tabs">
-    <button id="tabG95" class="tab active" onclick="switchFuel('G95')">Input_G95</button>
-    <button id="tabG91" class="tab" onclick="switchFuel('G91')">Input_G91</button>
-  </div>
+  <div class="tabs"><button id="tabG95" class="tab active" onclick="switchFuel('G95')">Input_G95</button><button id="tabG91" class="tab" onclick="switchFuel('G91')">Input_G91</button></div>
 
   <section class="paste-grid">
     <div class="panel">
       <label>วางข้อมูลจาก Excel ตรงนี้</label>
       <textarea id="pasteBox" placeholder="คัดลอกจาก Excel แล้ววางตรงนี้ เช่น 15 แถว x 11 คอลัมน์
 1513	0.0048	0.0539	0.1329	21	0.33	3.6	7.3	14	656	34.8"></textarea>
-
       <div class="actions">
         <button class="btn-green" onclick="pasteToTable()">วางเข้าตารางและ Plot</button>
         <button class="btn-soft" onclick="loadExample()">ใส่ข้อมูลตัวอย่าง</button>
         <button class="btn-neutral" onclick="copyTableAsTSV()">Copy ตารางกลับไป Excel</button>
         <button class="btn-danger" onclick="clearCurrent()">ล้างข้อมูลชีตนี้</button>
       </div>
-
       <p class="hint">
-        กรอกตามลำดับทดลองจริงได้ ไม่ต้องเรียงรอบเอง ระบบจะเรียงตาม Engine speed (rpm) ก่อน plot กราฟ
+        โหมดที่แนะนำคือ Broken X-axis scatter: จุดภายในแต่ละช่วงรอบยัง plot ตามรอบเครื่องจริง แต่ตัดช่องว่างระหว่างกลุ่มรอบออกบางส่วน ทำให้กราฟไม่โล่ง ไม่แน่น และไม่บังคับให้จุดไปทับ 1500 / 2200 / 2500 และแกน Y จะเผื่อขอบบน-ล่างอัตโนมัติ ส่วนกราฟ HC/NOx ใช้แกน ppm แบบ logarithmic และแสดงเฉพาะเส้นและเลขแกนหลัก 1, 10, 100, 1,000, 10,000 เพื่อไม่ให้ตัวเลขและเส้นย่อยรกรุงรัง
       </p>
       <div id="status" class="status"></div>
     </div>
@@ -452,55 +137,24 @@
         <b>10)</b> NOx (ppm)<br>
         <b>11)</b> T<sub>GI</sub> (°C)
       </div>
-      <p class="hint">
-        Legend ด้านล่างกราฟเป็น HTML จึงแสดงตัวห้อยจริงได้ ไม่ใช้ขีดล่าง (_)
-      </p>
+      <p class="hint">ชื่อกราฟและ Legend ใช้ HTML จึงแสดงตัวห้อยจริง ไม่ใช้ขีดล่าง (_)</p>
     </div>
   </section>
 
   <section class="panel">
-    <div class="table-holder">
-      <table id="inputTable">
-        <thead></thead>
-        <tbody></tbody>
-      </table>
-    </div>
+    <div class="table-holder"><table id="inputTable"><thead></thead><tbody></tbody></table></div>
     <p class="hint">ตารางนี้ใช้ตรวจและแก้ตัวเลขหลังวางข้อมูลได้ทันที</p>
   </section>
 
   <section class="charts">
-    <article class="chart-card">
-      <span class="unit-pill">kg/s</span>
-      <div class="chart-box"><canvas id="chart_mg"></canvas></div>
-      <div id="legend_mg" class="html-legend"></div>
-    </article>
-
-    <article class="chart-card">
-      <span class="unit-pill">ml/min</span>
-      <div class="chart-box"><canvas id="chart_vfuel"></canvas></div>
-      <div id="legend_vfuel" class="html-legend"></div>
-    </article>
-
-    <article class="chart-card">
-      <span class="unit-pill">%vol</span>
-      <div class="chart-box"><canvas id="chart_gas"></canvas></div>
-      <div id="legend_gas" class="html-legend"></div>
-    </article>
-
-    <article class="chart-card">
-      <span class="unit-pill">ppm</span>
-      <div class="chart-box"><canvas id="chart_hcnox"></canvas></div>
-      <div id="legend_hcnox" class="html-legend"></div>
-    </article>
-
-    <article class="chart-card">
-      <span class="unit-pill">°C</span>
-      <div class="chart-box"><canvas id="chart_tgi"></canvas></div>
-      <div id="legend_tgi" class="html-legend"></div>
-    </article>
+    <article class="chart-card"><span class="unit-pill">kg/s</span><h2 class="chart-title">อัตราการไหลเชิงมวลของก๊าซไอเสียของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_mg"></canvas></div><div id="legend_mg" class="html-legend"></div></article>
+    <article class="chart-card"><span class="unit-pill">ml/min</span><h2 class="chart-title">อัตราการไหลเชิงปริมาตรของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_vfuel"></canvas></div><div id="legend_vfuel" class="html-legend"></div></article>
+    <article class="chart-card"><span class="unit-pill">%vol</span><h2 class="chart-title">องค์ประกอบก๊าซไอเสีย CO, CO₂ และ O₂ ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_gas"></canvas></div><div id="legend_gas" class="html-legend"></div></article>
+    <article class="chart-card"><span class="unit-pill">ppm</span><h2 class="chart-title">ความเข้มข้น HC และ NOx ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_hcnox"></canvas></div><div id="legend_hcnox" class="html-legend"></div></article>
+    <article class="chart-card"><span class="unit-pill">°C</span><h2 class="chart-title">อุณหภูมิก๊าซไอเสียขาเข้า T<sub>GI</sub> ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_tgi"></canvas></div><div id="legend_tgi" class="html-legend"></div></article>
   </section>
 
-  <p class="footer-note">Clean Excel-like chart layout • correct point mapping • sorted by engine speed</p>
+  <p class="footer-note">Excel-like chart layout • actual-rpm scatter • X-axis tick labels every 500 rpm</p>
 </main>
 
 <script>
@@ -518,17 +172,8 @@ const headers = [
   {key:'tgi', label:'TGI (°C)'}
 ];
 
-const colors = {
-  blue:'#4472C4',
-  orange:'#ED7D31',
-  green:'#70AD47'
-};
-
-const state = {
-  fuel:'G95',
-  data:{G95:[], G91:[]},
-  charts:{}
-};
+const colors = {blue:'#4472C4', orange:'#ED7D31', green:'#70AD47'};
+const state = {fuel:'G95', data:{G95:[], G91:[]}, charts:{}};
 
 const exampleG95 = [
   [1580,0.004217,0.065453,0.131017,20,0.36,2.6,8.2,11,693,34.3],
@@ -571,483 +216,724 @@ const exampleG91 = [
   [3189,0.023523,0.018164,0.062525,72,0.32,7.4,5.9,34,9670,37.7]
 ];
 
-function blankRows(n){
-  return Array.from({length:n}, () => Object.fromEntries(headers.map(h => [h.key, ''])));
-}
+function blankRows(n){return Array.from({length:n}, () => Object.fromEntries(headers.map(h => [h.key, ''])));}
+function rowFromArray(arr){const row={}; headers.forEach((h,i)=>row[h.key]=arr[i]??''); return row;}
+function currentRows(){return state.data[state.fuel];}
 
-function rowFromArray(arr){
-  const row = {};
-  headers.forEach((h, i) => row[h.key] = arr[i] ?? '');
-  return row;
-}
-
-function currentRows(){
-  return state.data[state.fuel];
-}
-
-function init(){
-  state.data.G95 = blankRows(15);
-  state.data.G91 = blankRows(15);
-  buildTable();
-  renderAll();
-}
+function init(){state.data.G95=blankRows(15);state.data.G91=blankRows(15);buildTable();renderAll();}
 
 function buildTable(){
-  const thead = document.querySelector('#inputTable thead');
-  const tbody = document.querySelector('#inputTable tbody');
-
-  thead.innerHTML = '<tr>' + headers.map(h => `<th>${h.label}</th>`).join('') + '</tr>';
-
-  tbody.innerHTML = currentRows().map((row, rIdx) => {
-    return '<tr>' + headers.map(h => {
-      const val = row[h.key] ?? '';
-      return `<td><input type="number" step="any" data-row="${rIdx}" data-key="${h.key}" value="${val}"></td>`;
-    }).join('') + '</tr>';
-  }).join('');
-
-  document.getElementById('rowCount').value = currentRows().length;
+  const thead=document.querySelector('#inputTable thead');
+  const tbody=document.querySelector('#inputTable tbody');
+  thead.innerHTML='<tr>'+headers.map(h=>`<th>${h.label}</th>`).join('')+'</tr>';
+  tbody.innerHTML=currentRows().map((row,rIdx)=>'<tr>'+headers.map(h=>`<td><input type="number" step="any" data-row="${rIdx}" data-key="${h.key}" value="${row[h.key]??''}"></td>`).join('')+'</tr>').join('');
+  document.getElementById('rowCount').value=currentRows().length;
 }
 
 function saveTable(){
-  document.querySelectorAll('#inputTable input').forEach(input => {
-    const r = Number(input.dataset.row);
-    const key = input.dataset.key;
-    if(currentRows()[r]) currentRows()[r][key] = input.value;
+  document.querySelectorAll('#inputTable input').forEach(input=>{
+    const r=Number(input.dataset.row), key=input.dataset.key;
+    if(currentRows()[r]) currentRows()[r][key]=input.value;
   });
 }
 
 function switchFuel(fuel){
-  saveTable();
-  state.fuel = fuel;
-  document.getElementById('fuelSelect').value = fuel;
-  document.getElementById('tabG95').classList.toggle('active', fuel === 'G95');
-  document.getElementById('tabG91').classList.toggle('active', fuel === 'G91');
-  buildTable();
-  renderAll();
+  saveTable(); state.fuel=fuel; document.getElementById('fuelSelect').value=fuel;
+  document.getElementById('tabG95').classList.toggle('active',fuel==='G95');
+  document.getElementById('tabG91').classList.toggle('active',fuel==='G91');
+  buildTable(); renderAll();
 }
-
-document.getElementById('fuelSelect').addEventListener('change', e => switchFuel(e.target.value));
+document.getElementById('fuelSelect').addEventListener('change',e=>switchFuel(e.target.value));
 
 function setRows(){
   saveTable();
-  const n = Math.max(1, Math.min(100, Number(document.getElementById('rowCount').value || 1)));
-  const rows = currentRows();
-
-  if(n > rows.length){
-    rows.push(...blankRows(n - rows.length));
-  }else{
-    rows.length = n;
-  }
-
-  buildTable();
-  renderAll();
+  const n=Math.max(1,Math.min(100,Number(document.getElementById('rowCount').value||1)));
+  const rows=currentRows();
+  if(n>rows.length){rows.push(...blankRows(n-rows.length));} else {rows.length=n;}
+  buildTable(); renderAll();
 }
 
 function parseNumberCell(value){
-  if(value === null || value === undefined) return '';
-  let s = String(value).trim();
-  if(!s || s === '-' || s === '–') return '';
-  s = s.replace(/,/g,'');
-  const n = Number(s);
-  return Number.isFinite(n) ? n : '';
+  if(value===null||value===undefined) return '';
+  let s=String(value).trim();
+  if(!s||s==='-'||s==='–') return '';
+  s=s.replace(/,/g,'');
+  const n=Number(s);
+  return Number.isFinite(n)?n:'';
 }
 
 function pasteToTable(){
-  const text = document.getElementById('pasteBox').value.trim();
-  const status = document.getElementById('status');
-
-  if(!text){
-    status.textContent = 'ยังไม่มีข้อมูลในช่องวาง';
-    status.classList.add('error');
-    return;
-  }
-
-  const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
-  const parsedRows = [];
-
+  const text=document.getElementById('pasteBox').value.trim();
+  const status=document.getElementById('status');
+  if(!text){status.textContent='ยังไม่มีข้อมูลในช่องวาง';status.classList.add('error');return;}
+  const lines=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
+  const parsedRows=[];
   for(const line of lines){
-    let cells = line.includes('\t') ? line.split('\t') : line.split(/[,\s]+/);
-    cells = cells.map(parseNumberCell);
-
-    const row = {};
-    headers.forEach((h, i) => row[h.key] = cells[i] ?? '');
-    if(row.rpm !== '') parsedRows.push(row);
+    let cells=line.includes('\t')?line.split('\t'):line.split(/[,\s]+/);
+    cells=cells.map(parseNumberCell);
+    const row={}; headers.forEach((h,i)=>row[h.key]=cells[i]??'');
+    if(row.rpm!=='') parsedRows.push(row);
   }
-
-  if(parsedRows.length === 0){
-    status.textContent = 'อ่านข้อมูลไม่ได้ ตรวจว่าคอลัมน์แรกเป็นรอบเครื่อง';
-    status.classList.add('error');
-    return;
-  }
-
-  state.data[state.fuel] = parsedRows;
-  status.textContent = `นำเข้าข้อมูลแล้ว ${parsedRows.length} แถว สำหรับ ${state.fuel}`;
+  if(parsedRows.length===0){status.textContent='อ่านข้อมูลไม่ได้ ตรวจว่าคอลัมน์แรกเป็นรอบเครื่อง';status.classList.add('error');return;}
+  state.data[state.fuel]=parsedRows;
+  status.textContent=`นำเข้าข้อมูลแล้ว ${parsedRows.length} แถว สำหรับ ${state.fuel}`;
   status.classList.remove('error');
-
-  buildTable();
-  renderAll();
+  buildTable(); renderAll();
 }
 
 function loadExample(){
-  state.data[state.fuel] = (state.fuel === 'G95' ? exampleG95 : exampleG91).map(rowFromArray);
-  buildTable();
-  renderAll();
-  const status = document.getElementById('status');
-  status.textContent = `ใส่ข้อมูลตัวอย่างแล้ว: ${state.fuel}`;
+  state.data[state.fuel]=(state.fuel==='G95'?exampleG95:exampleG91).map(rowFromArray);
+  buildTable(); renderAll();
+  const status=document.getElementById('status');
+  status.textContent=`ใส่ข้อมูลตัวอย่างแล้ว: ${state.fuel}`;
   status.classList.remove('error');
 }
 
 function clearCurrent(){
-  state.data[state.fuel] = blankRows(Number(document.getElementById('rowCount').value || 15));
-  document.getElementById('pasteBox').value = '';
-  buildTable();
-  renderAll();
+  state.data[state.fuel]=blankRows(Number(document.getElementById('rowCount').value||15));
+  document.getElementById('pasteBox').value='';
+  buildTable(); renderAll();
 }
 
 function copyTableAsTSV(){
   saveTable();
-  const tsv = [
-    headers.map(h => h.label).join('\t'),
-    ...currentRows().map(row => headers.map(h => row[h.key] ?? '').join('\t'))
-  ].join('\n');
-
+  const tsv=[headers.map(h=>h.label).join('\t'),...currentRows().map(row=>headers.map(h=>row[h.key]??'').join('\t'))].join('\n');
   navigator.clipboard.writeText(tsv);
-
-  const status = document.getElementById('status');
-  status.textContent = 'Copy ตารางแล้ว สามารถนำไปวางใน Excel ได้';
+  const status=document.getElementById('status');
+  status.textContent='Copy ตารางแล้ว สามารถนำไปวางใน Excel ได้';
   status.classList.remove('error');
 }
 
-function toNumber(v){
-  if(v === '' || v === null || v === undefined) return null;
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
-}
+function toNumber(v){if(v===''||v===null||v===undefined) return null; const n=Number(v); return Number.isFinite(n)?n:null;}
 
 function sortedValidRows(){
   saveTable();
-  return currentRows()
-    .map((row, i) => ({...row, _idx:i}))
-    .filter(row => toNumber(row.rpm) !== null)
-    .sort((a, b) => toNumber(a.rpm) - toNumber(b.rpm));
+  return currentRows().map((row,i)=>({...row,_idx:i})).filter(row=>toNumber(row.rpm)!==null).sort((a,b)=>toNumber(a.rpm)-toNumber(b.rpm));
 }
 
 function nominalGroup(rpm){
-  if(rpm < 1800) return 1500;
-  if(rpm < 2350) return 2200;
-  if(rpm < 2900) return 2500;
-  if(rpm < 3500) return 3200;
-  return Math.round(rpm / 100) * 100;
+  if(rpm<1800) return 1500;
+  if(rpm<2350) return 2200;
+  if(rpm<2900) return 2500;
+  if(rpm<3500) return 3200;
+  return Math.round(rpm/100)*100;
 }
 
-function groupLabel(rpm){
-  return String(nominalGroup(rpm));
+function groupRangeLabel(rowsInGroup){
+  const rpms = rowsInGroup.map(r => toNumber(r.rpm)).filter(v => v !== null);
+  if(!rpms.length) return '';
+  const min = Math.min(...rpms);
+  const max = Math.max(...rpms);
+  return min === max ? `${min} rpm` : `${min}–${max} rpm`;
+}
+
+function getGroups(rows){
+  const groups={};
+  rows.forEach((row,idx)=>{
+    const key=String(nominalGroup(toNumber(row.rpm)));
+    if(!groups[key]) groups[key]=[];
+    groups[key].push({...row,_chartIndex:idx});
+  });
+  const keys=Object.keys(groups).map(Number).sort((a,b)=>a-b);
+  return {groups, keys};
 }
 
 function makeCategoryLabels(rows){
-  const mode = document.getElementById('tickMode').value;
-
-  if(mode === 'all'){
-    return rows.map(row => String(toNumber(row.rpm)));
-  }
-
-  if(mode === 'groups'){
-    const seen = new Set();
-    return rows.map(row => {
-      const label = groupLabel(toNumber(row.rpm));
-      if(seen.has(label)) return '';
-      seen.add(label);
-      return label;
+  const mode=document.getElementById('tickMode').value;
+  if(mode==='all') return rows.map(row=>String(toNumber(row.rpm)));
+  const labels=rows.map(()=>'');
+  const {groups}=getGroups(rows);
+  if(mode==='groups'){
+    Object.values(groups).forEach(arr=>{
+      const mid=arr[Math.floor((arr.length-1)/2)]._chartIndex;
+      labels[mid]=groupRangeLabel(arr);
     });
+    return labels;
   }
-
-  const labels = rows.map(() => '');
-  const groups = {};
-
-  rows.forEach((row, idx) => {
-    const label = groupLabel(toNumber(row.rpm));
-    if(!groups[label]) groups[label] = [];
-    groups[label].push(idx);
+  Object.values(groups).forEach(arr=>{
+    labels[arr[0]._chartIndex]=String(toNumber(arr[0].rpm));
+    if(arr.length>1) labels[arr[arr.length-1]._chartIndex]=String(toNumber(arr[arr.length-1].rpm));
   });
-
-  Object.values(groups).forEach(indexes => {
-    labels[indexes[0]] = String(toNumber(rows[indexes[0]].rpm));
-    if(indexes.length > 1){
-      labels[indexes[indexes.length - 1]] = String(toNumber(rows[indexes[indexes.length - 1]].rpm));
-    }
-  });
-
   return labels;
 }
 
-function isScatter(){
-  return document.getElementById('plotMode').value === 'scatter';
-}
+function plotMode(){return document.getElementById('plotMode').value;}
+function isScatterLike(){return plotMode()==='brokenScatter'||plotMode()==='cluster'||plotMode()==='clusterCloud'||plotMode()==='scatterTrue'||plotMode()==='scatter500'||plotMode()==='scatterCompact';}
+function isCluster(){return plotMode()==='cluster'||plotMode()==='clusterCloud';}
+function isClusterCloud(){return plotMode()==='clusterCloud';}
+function showLine(){return plotMode()==='line';}
 
-function showLine(){
-  return document.getElementById('plotMode').value === 'line';
-}
+function destroyChart(id){if(state.charts[id]){state.charts[id].destroy();delete state.charts[id];}}
 
-function destroyChart(id){
-  if(state.charts[id]){
-    state.charts[id].destroy();
-    delete state.charts[id];
-  }
-}
+function getClusterXMap(rows){
+  const {groups, keys}=getGroups(rows);
+  const map={};
 
-function buildScatterXMap(rows){
-  const groups = {};
-  rows.forEach((row, idx) => {
-    const center = nominalGroup(toNumber(row.rpm));
-    if(!groups[center]) groups[center] = [];
-    groups[center].push({row, idx});
-  });
+  keys.forEach((key, groupIdx)=>{
+    const arr=groups[String(key)].sort((a,b)=>toNumber(a.rpm)-toNumber(b.rpm));
+    const n=arr.length;
+    const base=groupIdx+1;
 
-  const map = {};
-  Object.entries(groups).forEach(([centerText, items]) => {
-    const center = Number(centerText);
-    const n = items.length;
-    const step = n <= 5 ? 42 : 34;
-    const maxWidth = Math.min(190, Math.max(70, (n - 1) * step));
-    const actualStep = n <= 1 ? 0 : maxWidth / (n - 1);
+    if(isClusterCloud()){
+      const usable=0.68;
+      const left=base-0.34;
 
-    items.forEach((item, i) => {
-      map[item.idx] = center + (i - (n - 1) / 2) * actualStep;
+      arr.forEach((item,i)=>{
+        // IMPORTANT:
+        // Cluster cloud is a grouped display, not a true-rpm x-axis.
+        // The x-position is rank-based so the left-to-right order is always the real rpm order.
+        // This prevents cases like 1580 appearing before 1578.
+        const t = n<=1 ? 0.5 : i/(n-1);
+
+        // Monotonic easing: adds a softer cloud-like spacing but never reverses order.
+        const eased = 0.5 - 0.5 * Math.cos(Math.PI * t);
+
+        map[item._chartIndex]=left + eased*usable;
+      });
+      return;
+    }
+
+    const left=base-0.30;
+    const usable=0.60;
+    arr.forEach((item,i)=>{
+      const t=n<=1?0.5:i/(n-1);
+      const natural=t + 0.035*Math.sin((i+1)*1.7);
+      map[item._chartIndex]=left + Math.max(0, Math.min(1, natural))*usable;
     });
   });
 
   return map;
 }
 
-function buildData(rows, key){
-  if(isScatter()){
-    const xMap = buildScatterXMap(rows);
-    return rows
-      .map((row, idx) => ({
-        x: xMap[idx],
-        y: toNumber(row[key]),
-        rpm: toNumber(row.rpm)
-      }))
-      .filter(point => point.x !== null && point.y !== null);
+function buildData(rows,key){
+  if(plotMode()==='brokenScatter'){
+    return rows.map(row => ({
+      x: brokenXValueForRow(row, rows),
+      y: toNumber(row[key]),
+      rpm: toNumber(row.rpm)
+    })).filter(p => p.x !== null && p.y !== null);
   }
-
-  return rows.map(row => toNumber(row[key]));
+  if(isCluster()){
+    const xMap=getClusterXMap(rows);
+    return rows.map((row,idx)=>({x:xMap[idx], y:toNumber(row[key]), rpm:toNumber(row.rpm)})).filter(p=>p.x!==null&&p.y!==null);
+  }
+  if(plotMode()==='scatterTrue' || plotMode()==='scatter500' || plotMode()==='scatterCompact'){
+    return rows.map(row=>({x:toNumber(row.rpm), y:toNumber(row[key]), rpm:toNumber(row.rpm)})).filter(p=>p.x!==null&&p.y!==null);
+  }
+  return rows.map(row=>toNumber(row[key]));
 }
 
-function dataset(labelText, labelHtml, rows, key, color, pointStyle){
+function dataset(labelText,labelHtml,rows,key,color,pointStyle){
   return {
-    label: labelText,
-    labelHtml,
-    data: buildData(rows, key),
-    borderColor: color,
-    backgroundColor: color,
-    pointBackgroundColor: color,
-    pointBorderColor: color,
-    pointStyle,
-    radius: 6,
-    hoverRadius: 8,
-    borderWidth: showLine() ? 2.25 : 0,
-    showLine: showLine(),
-    tension: 0,
-    spanGaps: false
+    label:labelText,labelHtml,
+    data:buildData(rows,key),
+    borderColor:color,backgroundColor:color,pointBackgroundColor:color,pointBorderColor:color,
+    pointStyle,radius:6,hoverRadius:8,
+    borderWidth:showLine()?2.25:0,showLine:showLine(),tension:0,spanGaps:false
   };
 }
 
-function scatterTickValues(rows){
-  const centers = [...new Set(rows.map(r => nominalGroup(toNumber(r.rpm))))].sort((a,b)=>a-b);
-  return centers.length ? centers : [1500,2200,2500];
+
+function roundDownTo(value, step){
+  return Math.floor(value / step) * step;
+}
+
+function roundUpTo(value, step){
+  return Math.ceil(value / step) * step;
+}
+
+function compactActualRpmTicks(minAxis, maxAxis){
+  const ticks = [];
+  const start = roundUpTo(minAxis, 500);
+  for(let v = start; v <= maxAxis; v += 500){
+    ticks.push(v);
+  }
+
+  // Add the right boundary when it is not already a 500-rpm tick,
+  // e.g. maxAxis = 2600, so the graph has a clear right end without forcing max to 3000.
+  if(!ticks.includes(maxAxis)){
+    ticks.push(maxAxis);
+  }
+
+  // Add the left boundary only if it is a clean useful value, normally 1500.
+  if(!ticks.includes(minAxis)){
+    ticks.unshift(minAxis);
+  }
+
+  return [...new Set(ticks)].sort((a,b)=>a-b);
+}
+
+
+function groupRowsForBrokenAxis(rows){
+  const groups = {};
+  rows.forEach((row, idx) => {
+    const rpm = toNumber(row.rpm);
+    const key = String(nominalGroup(rpm));
+    if(!groups[key]) groups[key] = [];
+    groups[key].push({...row, _chartIndex: idx});
+  });
+
+  const keys = Object.keys(groups).map(Number).sort((a,b) => a-b);
+  keys.forEach(key => {
+    groups[String(key)].sort((a,b) => toNumber(a.rpm) - toNumber(b.rpm));
+  });
+
+  return {groups, keys};
+}
+
+function brokenAxisMeta(rows){
+  const {groups, keys} = groupRowsForBrokenAxis(rows);
+  const segmentWidth = 1.0;
+  const gapWidth = 0.30;
+  const meta = {
+    groups,
+    keys,
+    segmentWidth,
+    gapWidth,
+    startByKey: {},
+    rangeByKey: {},
+    ticks: [],
+    breaks: []
+  };
+
+  keys.forEach((key, i) => {
+    const arr = groups[String(key)];
+    const rpms = arr.map(r => toNumber(r.rpm));
+    const minR = Math.min(...rpms);
+    const maxR = Math.max(...rpms);
+
+    // small padding inside each segment so first/last point does not sit on the edge
+    const pad = Math.max(5, (maxR - minR) * 0.08);
+    const lo = minR - pad;
+    const hi = maxR + pad;
+
+    const start = i * (segmentWidth + gapWidth);
+    const end = start + segmentWidth;
+    const mid = (start + end) / 2;
+
+    meta.startByKey[String(key)] = start;
+    meta.rangeByKey[String(key)] = {lo, hi, minR, maxR, start, end, mid};
+
+    meta.ticks.push({
+      value: mid,
+      label: minR === maxR ? `${minR}` : `${minR}–${maxR}`
+    });
+
+    if(i < keys.length - 1){
+      meta.breaks.push(end + gapWidth / 2);
+    }
+  });
+
+  return meta;
+}
+
+function brokenXValueForRow(row, rows){
+  const rpm = toNumber(row.rpm);
+  const key = String(nominalGroup(rpm));
+  const meta = brokenAxisMeta(rows);
+  const range = meta.rangeByKey[key];
+
+  if(!range) return null;
+  const t = range.hi === range.lo ? 0.5 : (rpm - range.lo) / (range.hi - range.lo);
+  return range.start + Math.max(0, Math.min(1, t)) * meta.segmentWidth;
+}
+
+const brokenAxisBreakPlugin = {
+  id:'brokenAxisBreakPlugin',
+  afterDraw(chart){
+    if(plotMode() !== 'brokenScatter') return;
+
+    const rows = chart.options._sourceRows || [];
+    const meta = brokenAxisMeta(rows);
+    const xScale = chart.scales.x;
+    const yScale = chart.scales.y;
+    if(!xScale || !yScale || !meta.breaks.length) return;
+
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 1.4;
+    ctx.font = 'bold 16px "Times New Roman", serif';
+    ctx.fillStyle = '#111827';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    meta.breaks.forEach(v => {
+      const x = xScale.getPixelForValue(v);
+      const y = yScale.bottom + 18;
+      ctx.fillText('//', x, y);
+    });
+
+    ctx.restore();
+  }
+};
+
+if(!Chart.registry.plugins.get('brokenAxisBreakPlugin')){
+  Chart.register(brokenAxisBreakPlugin);
 }
 
 function xScaleOptions(rows){
-  if(isScatter()){
-    const centers = scatterTickValues(rows);
-    const min = Math.min(...centers) - 180;
-    const max = Math.max(...centers) + 180;
+  if(plotMode()==='brokenScatter'){
+    const meta = brokenAxisMeta(rows);
+    const minX = 0;
+    const maxX = meta.keys.length ? (meta.keys.length - 1) * (meta.segmentWidth + meta.gapWidth) + meta.segmentWidth : 1;
 
     return {
       type:'linear',
-      min,
-      max,
-      title:{display:true, text:'Engine speed (rpm)', font:{weight:'bold', size:14, family:'Times New Roman'}},
-      grid:{display:true, color:'#d9d9d9'},
-      afterBuildTicks: axis => {
-        axis.ticks = centers.map(v => ({value:v}));
+      min:minX,
+      max:maxX,
+      title:{
+        display:true,
+        text:'Engine speed (rpm, broken axis)',
+        font:{weight:'bold',size:14,family:'Times New Roman'}
+      },
+      grid:{display:true,color:'#d9d9d9'},
+      afterBuildTicks:axis=>{
+        axis.ticks = meta.ticks.map(t => ({value:t.value}));
       },
       ticks:{
         color:'#111827',
-        font:{size:13, family:'Times New Roman'},
-        callback:value => String(value)
+        font:{size:13,family:'Times New Roman'},
+        callback:value=>{
+          const tick = meta.ticks.find(t => Math.abs(t.value - value) < 1e-7);
+          return tick ? tick.label : '';
+        }
       }
+    };
+  }
+
+
+  if(isCluster()){
+    const {groups, keys}=getGroups(rows);
+    const ticks=keys.map((key, i)=>({value:i+1, label:groupRangeLabel(groups[String(key)])}));
+    return {
+      type:'linear',
+      min:0.55,
+      max:Math.max(1.45, keys.length+0.45),
+      title:{display:true,text:'Engine speed group (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
+      grid:{display:true,color:'#d9d9d9'},
+      afterBuildTicks:axis=>{axis.ticks=ticks.map(t=>({value:t.value}));},
+      ticks:{
+        color:'#111827',
+        font:{size:13,family:'Times New Roman'},
+        callback:value=>{
+          const tick=ticks.find(t=>Math.abs(t.value-value)<1e-6);
+          return tick?tick.label:'';
+        }
+      }
+    };
+  }
+
+  if(plotMode()==='scatterCompact'){
+    const rpms=rows.map(r=>toNumber(r.rpm)).filter(v=>v!==null);
+    const minRpm=rpms.length?Math.min(...rpms):1500;
+    const maxRpm=rpms.length?Math.max(...rpms):2600;
+
+    // Compact but still TRUE rpm:
+    // G95 1513–2555 becomes 1500–2600, so 1513 is plotted at 1513, not at 1500.
+    // G91 with 3200 rpm becomes about 1500–3300 automatically.
+    const minAxis=Math.max(0, roundDownTo(minRpm, 100));
+    const maxAxis=roundUpTo(maxRpm, 100);
+    const tickValues=compactActualRpmTicks(minAxis, maxAxis);
+
+    return {
+      type:'linear',
+      min:minAxis,
+      max:maxAxis,
+      title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
+      grid:{display:true,color:'#d9d9d9'},
+      afterBuildTicks:axis=>{axis.ticks=tickValues.map(v=>({value:v}));},
+      ticks:{
+        color:'#111827',
+        font:{size:13,family:'Times New Roman'},
+        callback:value=>String(value)
+      }
+    };
+  }
+
+  if(plotMode()==='scatter500'){
+    const rpms=rows.map(r=>toNumber(r.rpm)).filter(v=>v!==null);
+    const minRpm=rpms.length?Math.min(...rpms):1500;
+    const maxRpm=rpms.length?Math.max(...rpms):2500;
+    const minTick=Math.floor(minRpm/500)*500;
+    const maxAxis=Math.ceil(maxRpm/100)*100;
+    const tickValues=compactActualRpmTicks(minTick, maxAxis);
+
+    return {
+      type:'linear',
+      min:minTick,
+      max:maxAxis,
+      title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
+      grid:{display:true,color:'#d9d9d9'},
+      afterBuildTicks:axis=>{axis.ticks=tickValues.map(v=>({value:v}));},
+      ticks:{
+        color:'#111827',
+        font:{size:13,family:'Times New Roman'},
+        callback:value=>String(value)
+      }
+    };
+  }
+
+  if(plotMode()==='scatterTrue'){
+    const rpms=rows.map(r=>toNumber(r.rpm)).filter(v=>v!==null);
+    const min=rpms.length?Math.floor((Math.min(...rpms)-30)/50)*50:1450;
+    const max=rpms.length?Math.ceil((Math.max(...rpms)+30)/50)*50:2650;
+    return {
+      type:'linear',
+      min,max,
+      title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
+      grid:{display:true,color:'#d9d9d9'},
+      ticks:{color:'#111827',font:{size:13,family:'Times New Roman'},stepSize:50,callback:value=>String(value)}
     };
   }
 
   return {
     type:'category',
-    title:{display:true, text:'Engine speed (rpm)', font:{weight:'bold', size:14, family:'Times New Roman'}},
-    grid:{display:true, color:'#d9d9d9'},
-    ticks:{
-      color:'#111827',
-      font:{size:13, family:'Times New Roman'},
-      autoSkip:false,
-      maxRotation:0,
-      minRotation:0
-    }
+    title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
+    grid:{display:true,color:'#d9d9d9'},
+    ticks:{color:'#111827',font:{size:13,family:'Times New Roman'},autoSkip:false,maxRotation:0,minRotation:0}
   };
 }
 
-const centerTitlePlugin = {
-  id:'centerTitlePlugin',
-  beforeDraw(chart, args, pluginOptions){
-    const {ctx, chartArea} = chart;
-    if(!chartArea) return;
 
-    ctx.save();
-    ctx.font = 'bold 17px "Times New Roman", serif';
-    ctx.fillStyle = '#000';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillText(pluginOptions.text || '', (chartArea.left + chartArea.right) / 2, 14);
-    ctx.restore();
+
+function yValuesFromDataset(ds){
+  if(!ds || !Array.isArray(ds.data)) return [];
+  return ds.data
+    .map(p => {
+      if(p === null || p === undefined) return null;
+      if(typeof p === 'number') return p;
+      if(typeof p === 'object' && p.y !== undefined) return Number(p.y);
+      return null;
+    })
+    .filter(v => Number.isFinite(v));
+}
+
+function niceAxisMax(maxValue){
+  if(!Number.isFinite(maxValue) || maxValue <= 0) return 1;
+
+  const padded = maxValue * 1.18;
+  const power = Math.pow(10, Math.floor(Math.log10(padded)));
+  const normalized = padded / power;
+
+  let nice;
+  if(normalized <= 1.2) nice = 1.2;
+  else if(normalized <= 1.5) nice = 1.5;
+  else if(normalized <= 2) nice = 2;
+  else if(normalized <= 2.5) nice = 2.5;
+  else if(normalized <= 3) nice = 3;
+  else if(normalized <= 4) nice = 4;
+  else if(normalized <= 5) nice = 5;
+  else if(normalized <= 6) nice = 6;
+  else if(normalized <= 8) nice = 8;
+  else nice = 10;
+
+  return nice * power;
+}
+
+function axisStatsForAllDatasets(datasets){
+  const vals = [];
+  datasets.forEach(ds => vals.push(...yValuesFromDataset(ds)));
+
+  if(!vals.length){
+    return {max:1, min:0, useNonZeroMin:false};
   }
-};
 
-Chart.register(centerTitlePlugin);
+  const maxVal = Math.max(...vals);
+  const minVal = Math.min(...vals);
+  const maxAxis = niceAxisMax(maxVal);
 
-function chartOptions(rows, yTitle, titleText){
+  const allPositive = minVal > 0;
+  const farFromZero = allPositive && (minVal / maxAxis) > 0.08;
+  const spread = maxVal - minVal;
+
+  if(farFromZero){
+    const bottomPad = Math.max(spread * 0.18, maxVal * 0.04);
+    const rawMin = Math.max(0, minVal - bottomPad);
+
+    const base = Math.max(rawMin, 1);
+    const power = Math.pow(10, Math.floor(Math.log10(base)));
+    const niceMin = Math.floor(rawMin / power) * power;
+
+    return {max:maxAxis, min:niceMin, useNonZeroMin:true};
+  }
+
+  return {max:maxAxis, min:0, useNonZeroMin:false};
+}
+
+function axisMaxForAllDatasets(datasets){
+  return axisStatsForAllDatasets(datasets).max;
+}
+
+
+function positiveYValuesFromDatasets(datasets){
+  const vals = [];
+  datasets.forEach(ds => {
+    yValuesFromDataset(ds).forEach(v => {
+      if(Number.isFinite(v) && v > 0) vals.push(v);
+    });
+  });
+  return vals;
+}
+
+function logAxisMinMax(datasets){
+  const vals = positiveYValuesFromDatasets(datasets);
+  if(!vals.length){
+    return {min:1, max:10};
+  }
+
+  const minVal = Math.min(...vals);
+  const maxVal = Math.max(...vals);
+
+  // Add lower/upper room and round to powers of ten.
+  // Example: HC 11–49 and NOx 636–693 becomes 10–1000,
+  // so HC is no longer glued to the zero line.
+  const minPow = Math.floor(Math.log10(minVal * 0.75));
+  const maxPow = Math.ceil(Math.log10(maxVal * 1.25));
+
   return {
-    responsive:true,
-    maintainAspectRatio:false,
-    layout:{
-      padding:{top:42, right:14, bottom:0, left:8}
-    },
-    interaction:{mode:'nearest', intersect:true},
-    plugins:{
-      centerTitlePlugin:{text:titleText},
-      title:{display:false},
-      legend:{display:false},
-      tooltip:{
-        callbacks:{
-          title:(items) => {
-            if(isScatter()){
-              const raw = items[0].raw;
-              return `Engine speed: ${raw.rpm} rpm`;
-            }
-            const row = rows[items[0].dataIndex];
-            return `Engine speed: ${row ? row.rpm : ''} rpm`;
-          }
+    min: Math.pow(10, minPow),
+    max: Math.pow(10, maxPow)
+  };
+}
+
+function formatLogTick(value){
+  const v = Number(value);
+  if(!Number.isFinite(v) || v <= 0) return '';
+
+  // Show only powers of ten to prevent overlapping log-scale labels.
+  const log10 = Math.log10(v);
+  const isPowerOfTen = Math.abs(log10 - Math.round(log10)) < 1e-8;
+  if(!isPowerOfTen) return '';
+
+  if(v >= 1000) return v.toLocaleString('en-US');
+  return String(v);
+}
+
+
+
+function chartOptions(rows,yTitle,datasets,yScaleMode='linear'){
+  const yStats = axisStatsForAllDatasets(datasets);
+  const logStats = logAxisMinMax(datasets);
+  const useLogY = yScaleMode === 'log';
+
+  const yScale = useLogY
+    ? {
+        type:'logarithmic',
+        min:logStats.min,
+        max:logStats.max,
+        afterBuildTicks(axis){
+          const major = [1, 10, 100, 1000, 10000];
+          axis.ticks = axis.ticks.filter(t => major.includes(Number(t.value)));
+        },
+        title:{display:true,text:yTitle,font:{weight:'bold',size:14,family:'Times New Roman'}},
+        grid:{display:true,color:'#d9d9d9'},
+        ticks:{
+          color:'#111827',
+          font:{size:13,family:'Times New Roman'},
+          padding:6,
+          maxRotation:0,
+          minRotation:0,
+          callback:value=>formatLogTick(value)
         }
       }
+    : {
+        type:'linear',
+        title:{display:true,text:yTitle,font:{weight:'bold',size:14,family:'Times New Roman'}},
+        beginAtZero:!yStats.useNonZeroMin,
+        suggestedMin:yStats.min,
+        suggestedMax:yStats.max,
+        min:yStats.min,
+        max:yStats.max,
+        grid:{display:true,color:'#d9d9d9'},
+        ticks:{color:'#111827',font:{size:13,family:'Times New Roman'}}
+      };
+
+  return {
+    _sourceRows: rows,
+    responsive:true,
+    maintainAspectRatio:false,
+    layout:{padding:{top:8,right:12,bottom:0,left:8}},
+    interaction:{mode:'nearest',intersect:true},
+    plugins:{
+      title:{display:false},
+      legend:{display:false},
+      tooltip:{callbacks:{
+        title:(items)=>{
+          if(isScatterLike()) return `Engine speed: ${items[0].raw.rpm} rpm`;
+          const row=rows[items[0].dataIndex];
+          return `Engine speed: ${row?row.rpm:''} rpm`;
+        },
+        label:(item)=>{
+          const label=item.dataset.label || '';
+          const y=isScatterLike()?item.raw.y:item.parsed.y;
+          return `${label}: ${Number(y).toPrecision(5)}`;
+        }
+      }}
     },
     scales:{
       x:xScaleOptions(rows),
-      y:{
-        title:{display:true, text:yTitle, font:{weight:'bold', size:14, family:'Times New Roman'}},
-        beginAtZero:true,
-        grid:{display:true, color:'#d9d9d9'},
-        ticks:{color:'#111827', font:{size:13, family:'Times New Roman'}}
-      }
+      y:yScale
     },
-    elements:{
-      point:{radius:6, hoverRadius:8},
-      line:{tension:0}
-    }
+    elements:{point:{radius:6,hoverRadius:8},line:{tension:0}}
   };
 }
 
-function markerClass(pointStyle){
-  if(pointStyle === 'triangle') return 'triangle';
-  if(pointStyle === 'rect') return 'rect';
-  return 'circle';
+
+function markerClass(pointStyle){if(pointStyle==='triangle') return 'triangle'; if(pointStyle==='rect') return 'rect'; return 'circle';}
+function renderHtmlLegend(legendId,datasets){
+  document.getElementById(legendId).innerHTML=datasets.map(ds=>`
+    <span class="legend-item">
+      <span class="legend-marker ${markerClass(ds.pointStyle)}" style="--c:${ds.backgroundColor}"></span>
+      <span class="legend-text">${ds.labelHtml}</span>
+    </span>`).join('');
 }
 
-function renderHtmlLegend(legendId, datasets){
-  const el = document.getElementById(legendId);
-  el.innerHTML = datasets.map(ds => {
-    const klass = markerClass(ds.pointStyle);
-    return `
-      <span class="legend-item">
-        <span class="legend-marker ${klass}" style="--c:${ds.backgroundColor}"></span>
-        <span class="legend-text">${ds.labelHtml}</span>
-      </span>
-    `;
-  }).join('');
-}
-
-function createChart(canvasId, legendId, titleText, yTitle, datasets){
+function createChart(canvasId,legendId,yTitle,datasets,yScaleMode='linear'){
   destroyChart(canvasId);
-  const rows = sortedValidRows();
+  const rows=sortedValidRows();
+  const config={type:isScatterLike()?'scatter':'line',data:isScatterLike()?{datasets}:{labels:makeCategoryLabels(rows),datasets},options:chartOptions(rows,yTitle,datasets,yScaleMode)};
+  state.charts[canvasId]=new Chart(document.getElementById(canvasId),config);
+  renderHtmlLegend(legendId,datasets);
+}
 
-  const config = {
-    type: isScatter() ? 'scatter' : 'line',
-    data: isScatter() ? {datasets} : {labels: makeCategoryLabels(rows), datasets},
-    options: chartOptions(rows, yTitle, titleText)
-  };
-
-  state.charts[canvasId] = new Chart(document.getElementById(canvasId), config);
-  renderHtmlLegend(legendId, datasets);
+function updateFuelTitles(){
+  const fuelName=state.fuel==='G95'?'Gasoline 95':'Gasoline 91';
+  document.querySelectorAll('[data-fuel-title]').forEach(el=>el.textContent=fuelName);
 }
 
 function renderAll(){
-  const fuelName = state.fuel === 'G95' ? 'Gasoline 95' : 'Gasoline 91';
-  const rows = sortedValidRows();
+  const rows=sortedValidRows();
+  updateFuelTitles();
 
-  createChart(
-    'chart_mg',
-    'legend_mg',
-    `อัตราการไหลเชิงมวลของก๊าซไอเสียของเชื้อเพลิง ${fuelName}`,
-    'Mass flow rate (kg/s)',
-    [
-      dataset('ṁG′', 'ṁ<sub>G</sub>′', rows, 'mgp', colors.blue, 'circle'),
-      dataset('ṁG,EB at 1.2 Lpm', 'ṁ<sub>G,EB</sub> at 1.2 Lpm', rows, 'mgeb12', colors.orange, 'rect'),
-      dataset('ṁG,EB at 5 Lpm', 'ṁ<sub>G,EB</sub> at 5 Lpm', rows, 'mgeb5', colors.green, 'triangle')
-    ]
-  );
+  createChart('chart_mg','legend_mg','Mass flow rate (kg/s)',[
+    dataset('ṁG′','ṁ<sub>G</sub>′',rows,'mgp',colors.blue,'circle'),
+    dataset('ṁG,EB at 1.2 Lpm','ṁ<sub>G,EB</sub> at 1.2 Lpm',rows,'mgeb12',colors.orange,'rect'),
+    dataset('ṁG,EB at 5 Lpm','ṁ<sub>G,EB</sub> at 5 Lpm',rows,'mgeb5',colors.green,'triangle')
+  ]);
 
-  createChart(
-    'chart_vfuel',
-    'legend_vfuel',
-    `อัตราการไหลเชิงปริมาตรของเชื้อเพลิง ${fuelName}`,
-    'Volume flow rate (ml/min)',
-    [
-      dataset('Vfuel', 'V<sub>fuel</sub>', rows, 'vfuel', colors.blue, 'circle')
-    ]
-  );
+  createChart('chart_vfuel','legend_vfuel','Volume flow rate (ml/min)',[
+    dataset('Vfuel','V<sub>fuel</sub>',rows,'vfuel',colors.blue,'circle')
+  ]);
 
-  createChart(
-    'chart_gas',
-    'legend_gas',
-    `องค์ประกอบก๊าซไอเสีย CO, CO₂ และ O₂ ของเชื้อเพลิง ${fuelName}`,
-    'Gas concentration (%vol)',
-    [
-      dataset('CO', 'CO', rows, 'co', colors.blue, 'circle'),
-      dataset('CO₂', 'CO₂', rows, 'co2', colors.orange, 'rect'),
-      dataset('O₂', 'O₂', rows, 'o2', colors.green, 'triangle')
-    ]
-  );
+  createChart('chart_gas','legend_gas','Gas concentration (%vol)',[
+    dataset('CO','CO',rows,'co',colors.blue,'circle'),
+    dataset('CO₂','CO₂',rows,'co2',colors.orange,'rect'),
+    dataset('O₂','O₂',rows,'o2',colors.green,'triangle')
+  ]);
 
-  createChart(
-    'chart_hcnox',
-    'legend_hcnox',
-    `ความเข้มข้น HC และ NOx ของเชื้อเพลิง ${fuelName}`,
-    'Concentration (ppm)',
-    [
-      dataset('HC', 'HC', rows, 'hc', colors.blue, 'circle'),
-      dataset('NOx', 'NOx', rows, 'nox', colors.orange, 'rect')
-    ]
-  );
+  createChart('chart_hcnox','legend_hcnox','Concentration (ppm)',[
+    dataset('HC','HC',rows,'hc',colors.blue,'circle'),
+    dataset('NOx','NOx',rows,'nox',colors.orange,'rect')
+  ], 'log');
 
-  createChart(
-    'chart_tgi',
-    'legend_tgi',
-    `อุณหภูมิก๊าซไอเสียขาเข้า T_GI ของเชื้อเพลิง ${fuelName}`,
-    'Temperature (°C)',
-    [
-      dataset('TGI', 'T<sub>GI</sub>', rows, 'tgi', colors.orange, 'circle')
-    ]
-  );
+  createChart('chart_tgi','legend_tgi','Temperature (°C)',[
+    dataset('TGI','T<sub>GI</sub>',rows,'tgi',colors.orange,'circle')
+  ]);
 
-  const status = document.getElementById('status');
-  status.textContent = `อัปเดตกราฟแล้ว: ${fuelName}, ใช้ข้อมูลที่มีรอบเครื่อง ${rows.length} แถว`;
+  const status=document.getElementById('status');
+  const fuelName=state.fuel==='G95'?'Gasoline 95':'Gasoline 91';
+  status.textContent=`อัปเดตกราฟแล้ว: ${fuelName}, ใช้ข้อมูลที่มีรอบเครื่อง ${rows.length} แถว${plotMode()==='brokenScatter' ? ' | Broken X-axis: plot ตาม rpm จริงในแต่ละช่วง และตัดช่องว่างระหว่างกลุ่ม' : ''}`;
   status.classList.remove('error');
 }
 
