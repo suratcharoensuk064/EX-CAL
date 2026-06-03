@@ -75,7 +75,9 @@
     <div class="panel">
       <label>รูปแบบกราฟ</label>
       <select id="plotMode" onchange="renderAll()">
-        <option value="brokenScatter" selected>Broken X-axis scatter แนะนำ</option>
+        <option value="rawLine" selected>Raw line with markers รายตัว ไม่เฉลี่ย</option>
+        <option value="presentationScatter">Presentation grouped scatter รายตัว ไม่มีเส้น</option>
+        <option value="brokenScatter">Broken X-axis scatter ตามตำแหน่งรอบจริง</option>
         <option value="scatterCompact">Scatter รอบจริง แบบกระชับ</option>
         <option value="scatter500">Scatter รอบจริง แกน X ทุก 500 rpm</option>
         <option value="scatterTrue">Scatter รอบจริง แกน X ถี่</option>
@@ -117,8 +119,7 @@
         <button class="btn-danger" onclick="clearCurrent()">ล้างข้อมูลชีตนี้</button>
       </div>
       <p class="hint">
-        โหมดที่แนะนำคือ Broken X-axis scatter: จุดภายในแต่ละช่วงรอบยัง plot ตามรอบเครื่องจริง แต่ตัดช่องว่างระหว่างกลุ่มรอบออกบางส่วน ทำให้กราฟไม่โล่ง ไม่แน่น และไม่บังคับให้จุดไปทับ 1500 / 2200 / 2500 และแกน Y จะเผื่อขอบบน-ล่างอัตโนมัติ ส่วนกราฟ HC/NOx ใช้แกน ppm แบบ logarithmic และแสดงเฉพาะเส้นและเลขแกนหลัก 1, 10, 100, 1,000, 10,000 เพื่อไม่ให้ตัวเลขและเส้นย่อยรกรุงรัง
-      </p>
+        โหมดที่แนะนำคือ Raw line with markers: พลอตข้อมูลดิบรายตัวครบทุกแถว ไม่ใช้ค่าเฉลี่ย และลากเส้นเชื่อมจุดเพื่อช่วยดูแนวโน้ม โดย tooltip ยังแสดงรอบเครื่องจริงของแต่ละจุด</p>
       <div id="status" class="status"></div>
     </div>
 
@@ -358,10 +359,10 @@ function makeCategoryLabels(rows){
 }
 
 function plotMode(){return document.getElementById('plotMode').value;}
-function isScatterLike(){return plotMode()==='brokenScatter'||plotMode()==='cluster'||plotMode()==='clusterCloud'||plotMode()==='scatterTrue'||plotMode()==='scatter500'||plotMode()==='scatterCompact';}
+function isScatterLike(){return plotMode()==='rawLine'||plotMode()==='presentationScatter'||plotMode()==='brokenScatter'||plotMode()==='cluster'||plotMode()==='clusterCloud'||plotMode()==='scatterTrue'||plotMode()==='scatter500'||plotMode()==='scatterCompact';}
 function isCluster(){return plotMode()==='cluster'||plotMode()==='clusterCloud';}
 function isClusterCloud(){return plotMode()==='clusterCloud';}
-function showLine(){return plotMode()==='line';}
+function showLine(){return plotMode()==='line'||plotMode()==='rawLine';}
 
 function destroyChart(id){if(state.charts[id]){state.charts[id].destroy();delete state.charts[id];}}
 
@@ -406,6 +407,22 @@ function getClusterXMap(rows){
 }
 
 function buildData(rows,key){
+  if(plotMode()==='rawLine'){
+    return rows.map(row => ({
+      x: presentationXValueForRow(row, rows),
+      y: toNumber(row[key]),
+      rpm: toNumber(row.rpm)
+    }))
+    .filter(p => p.x !== null && p.y !== null)
+    .sort((a,b) => a.x - b.x);
+  }
+  if(plotMode()==='presentationScatter'){
+    return rows.map(row => ({
+      x: presentationXValueForRow(row, rows),
+      y: toNumber(row[key]),
+      rpm: toNumber(row.rpm)
+    })).filter(p => p.x !== null && p.y !== null);
+  }
   if(plotMode()==='brokenScatter'){
     return rows.map(row => ({
       x: brokenXValueForRow(row, rows),
@@ -424,12 +441,22 @@ function buildData(rows,key){
 }
 
 function dataset(labelText,labelHtml,rows,key,color,pointStyle){
+  const isRawLine = plotMode()==='rawLine';
+  const r = isRawLine ? 5.8 : (plotMode()==='presentationScatter' ? 5.5 : 6);
   return {
     label:labelText,labelHtml,
     data:buildData(rows,key),
-    borderColor:color,backgroundColor:color,pointBackgroundColor:color,pointBorderColor:color,
-    pointStyle,radius:6,hoverRadius:8,
-    borderWidth:showLine()?2.25:0,showLine:showLine(),tension:0,spanGaps:false
+    borderColor:color,
+    backgroundColor:color,
+    pointBackgroundColor:color,
+    pointBorderColor:color,
+    pointStyle,
+    radius:r,
+    hoverRadius:r+2,
+    borderWidth:isRawLine?2.1:(showLine()?2.25:0),
+    showLine:showLine(),
+    tension:0,
+    spanGaps:false
   };
 }
 
@@ -481,10 +508,37 @@ function groupRowsForBrokenAxis(rows){
   return {groups, keys};
 }
 
+
+function representativeRpmLabel(rowsInGroup){
+  const rpms = rowsInGroup
+    .map(r => toNumber(r.rpm))
+    .filter(v => Number.isFinite(v));
+
+  if(!rpms.length) return '';
+
+  const avg = rpms.reduce((sum, v) => sum + v, 0) / rpms.length;
+
+  // Representative labels for thesis-style engine-speed groups.
+  // Gasoline 91: 2075–2098 should read as 2000 rpm group.
+  // Gasoline 95: 2186–2202 should read as 2200 rpm group.
+  if(avg < 1800) return '1500';
+  if(avg < 2150) return '2000';
+  if(avg < 2350) return '2200';
+  if(avg < 2850) return '2500';
+  if(avg < 3500) return '3000';
+
+  return String(Math.round(avg / 100) * 100);
+}
+
+
+
 function brokenAxisMeta(rows){
   const {groups, keys} = groupRowsForBrokenAxis(rows);
-  const segmentWidth = 1.0;
-  const gapWidth = 0.30;
+
+  // Wider segment = less crowded points inside each group.
+  const segmentWidth = 1.28;
+  const gapWidth = 0.38;
+
   const meta = {
     groups,
     keys,
@@ -502,21 +556,47 @@ function brokenAxisMeta(rows){
     const minR = Math.min(...rpms);
     const maxR = Math.max(...rpms);
 
-    // small padding inside each segment so first/last point does not sit on the edge
-    const pad = Math.max(5, (maxR - minR) * 0.08);
-    const lo = minR - pad;
-    const hi = maxR + pad;
+    const labelText = representativeRpmLabel(arr);
+    const labelRpm = Number(labelText);
+
+    // Local mini-axis:
+    // include both the displayed label and all true rpm data.
+    // Therefore 2000 is placed left of points 2075–2098,
+    // and 3200 stays close to points 3180–3230.
+    let rawLo = Number.isFinite(labelRpm) ? Math.min(minR, labelRpm) : minR;
+    let rawHi = Number.isFinite(labelRpm) ? Math.max(maxR, labelRpm) : maxR;
+
+    // Prevent over-compression for very narrow groups.
+    // Keep at least 80 rpm of local width, centered around the actual data/label range.
+    const minLocalSpan = 80;
+    const currentSpan = rawHi - rawLo;
+    if(currentSpan < minLocalSpan){
+      const mid = (rawHi + rawLo) / 2;
+      rawLo = mid - minLocalSpan / 2;
+      rawHi = mid + minLocalSpan / 2;
+    }
+
+    const pad = Math.max(5, (rawHi - rawLo) * 0.10);
+    const lo = rawLo - pad;
+    const hi = rawHi + pad;
 
     const start = i * (segmentWidth + gapWidth);
     const end = start + segmentWidth;
-    const mid = (start + end) / 2;
+
+    const labelT = Number.isFinite(labelRpm) && hi !== lo
+      ? (labelRpm - lo) / (hi - lo)
+      : 0.5;
+
+    const labelX = start + Math.max(0, Math.min(1, labelT)) * segmentWidth;
 
     meta.startByKey[String(key)] = start;
-    meta.rangeByKey[String(key)] = {lo, hi, minR, maxR, start, end, mid};
+    meta.rangeByKey[String(key)] = {
+      lo, hi, minR, maxR, labelRpm, start, end, labelX
+    };
 
     meta.ticks.push({
-      value: mid,
-      label: minR === maxR ? `${minR}` : `${minR}–${maxR}`
+      value: labelX,
+      label: labelText
     });
 
     if(i < keys.length - 1){
@@ -526,6 +606,78 @@ function brokenAxisMeta(rows){
 
   return meta;
 }
+
+
+
+function presentationAxisMeta(rows){
+  const {groups, keys} = groupRowsForBrokenAxis(rows);
+
+  const segmentWidth = 1.60;
+  const gapWidth = 1.10;
+
+  const meta = {
+    groups,
+    keys,
+    segmentWidth,
+    gapWidth,
+    ticks: [],
+    breaks: [],
+    startByKey: {}
+  };
+
+  keys.forEach((key, i) => {
+    const arr = groups[String(key)];
+    const start = i * (segmentWidth + gapWidth);
+    const end = start + segmentWidth;
+
+    meta.startByKey[String(key)] = start;
+
+    // Label is placed near the left side of the local segment.
+    // Points are placed to the right, so a 1537 rpm point does not visually sit on 1500.
+    meta.ticks.push({
+      value: start + segmentWidth * 0.06,
+      label: representativeRpmLabel(arr)
+    });
+
+    if(i < keys.length - 1){
+      meta.breaks.push(end + gapWidth / 2);
+    }
+  });
+
+  return meta;
+}
+
+function presentationXValueForRow(row, rows){
+  const rpm = toNumber(row.rpm);
+  const key = String(nominalGroup(rpm));
+  const meta = presentationAxisMeta(rows);
+  const arr = (meta.groups[String(key)] || []).slice().sort((a,b) => toNumber(a.rpm) - toNumber(b.rpm));
+  const start = meta.startByKey[String(key)];
+
+  if(start === undefined || !arr.length) return null;
+
+  // Use all matching row objects by rpm order. If duplicate rpm exists, preserve occurrence count.
+  let idx = arr.findIndex(r => r === row);
+  if(idx < 0){
+    // fallback by rpm value and original chart index
+    idx = arr.findIndex(r => toNumber(r.rpm) === rpm && r._chartIndex === row._chartIndex);
+  }
+  if(idx < 0){
+    idx = arr.findIndex(r => toNumber(r.rpm) === rpm);
+  }
+  if(idx < 0) idx = 0;
+
+  const n = arr.length;
+
+  // Equal spacing inside each group, but still sorted by actual rpm.
+  // Leave a little room at left for the group label.
+  const left = 0.16;
+  const right = 0.72;
+  const t = n === 1 ? 0.5 : idx / (n - 1);
+  return start + (left + t * (right - left)) * meta.segmentWidth;
+}
+
+
 
 function brokenXValueForRow(row, rows){
   const rpm = toNumber(row.rpm);
@@ -573,6 +725,64 @@ if(!Chart.registry.plugins.get('brokenAxisBreakPlugin')){
 }
 
 function xScaleOptions(rows){
+  if(plotMode()==='rawLine'){
+    const meta = presentationAxisMeta(rows);
+    const minX = 0;
+    const maxX = meta.keys.length ? (meta.keys.length - 1) * (meta.segmentWidth + meta.gapWidth) + meta.segmentWidth : 1;
+
+    return {
+      type:'linear',
+      min:minX,
+      max:maxX,
+      title:{
+        display:true,
+        text:'Engine speed (rpm)',
+        font:{weight:'bold',size:14,family:'Times New Roman'}
+      },
+      grid:{display:true,color:'#d9d9d9'},
+      afterBuildTicks:axis=>{
+        axis.ticks = meta.ticks.map(t => ({value:t.value}));
+      },
+      ticks:{
+        color:'#111827',
+        font:{size:13,family:'Times New Roman'},
+        callback:value=>{
+          const tick = meta.ticks.find(t => Math.abs(t.value - value) < 1e-7);
+          return tick ? tick.label : '';
+        }
+      }
+    };
+  }
+
+  if(plotMode()==='presentationScatter'){
+    const meta = presentationAxisMeta(rows);
+    const minX = 0;
+    const maxX = meta.keys.length ? (meta.keys.length - 1) * (meta.segmentWidth + meta.gapWidth) + meta.segmentWidth : 1;
+
+    return {
+      type:'linear',
+      min:minX,
+      max:maxX,
+      title:{
+        display:true,
+        text:'Engine speed (rpm)',
+        font:{weight:'bold',size:14,family:'Times New Roman'}
+      },
+      grid:{display:true,color:'#d9d9d9'},
+      afterBuildTicks:axis=>{
+        axis.ticks = meta.ticks.map(t => ({value:t.value}));
+      },
+      ticks:{
+        color:'#111827',
+        font:{size:13,family:'Times New Roman'},
+        callback:value=>{
+          const tick = meta.ticks.find(t => Math.abs(t.value - value) < 1e-7);
+          return tick ? tick.label : '';
+        }
+      }
+    };
+  }
+
   if(plotMode()==='brokenScatter'){
     const meta = brokenAxisMeta(rows);
     const minX = 0;
@@ -584,7 +794,7 @@ function xScaleOptions(rows){
       max:maxX,
       title:{
         display:true,
-        text:'Engine speed (rpm, broken axis)',
+        text:'Engine speed (rpm)',
         font:{weight:'bold',size:14,family:'Times New Roman'}
       },
       grid:{display:true,color:'#d9d9d9'},
@@ -928,12 +1138,12 @@ function renderAll(){
   ], 'log');
 
   createChart('chart_tgi','legend_tgi','Temperature (°C)',[
-    dataset('TGI','T<sub>GI</sub>',rows,'tgi',colors.orange,'circle')
+    dataset('TGI','T<sub>GI</sub>',rows,'tgi',colors.blue,'circle')
   ]);
 
   const status=document.getElementById('status');
   const fuelName=state.fuel==='G95'?'Gasoline 95':'Gasoline 91';
-  status.textContent=`อัปเดตกราฟแล้ว: ${fuelName}, ใช้ข้อมูลที่มีรอบเครื่อง ${rows.length} แถว${plotMode()==='brokenScatter' ? ' | Broken X-axis: plot ตาม rpm จริงในแต่ละช่วง และตัดช่องว่างระหว่างกลุ่ม' : ''}`;
+  status.textContent=`อัปเดตกราฟแล้ว: ${fuelName}, ใช้ข้อมูลที่มีรอบเครื่อง ${rows.length} แถว${plotMode()==='rawLine' ? ' | Raw line: พลอตรายตัวครบทุกจุด ไม่ใช้ค่าเฉลี่ย' : ''}`;
   status.classList.remove('error');
 }
 
