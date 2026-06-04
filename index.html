@@ -51,7 +51,9 @@
     .footer-note{color:#64748b;font-size:12px;text-align:center;margin:14px 0 0}
     @media(max-width:1050px){.toolbar{grid-template-columns:1fr 1fr}.paste-grid{grid-template-columns:1fr}.header-inner{display:block}.badge{display:inline-block;margin-top:10px}}
     @media(max-width:640px){.toolbar{grid-template-columns:1fr}.chart-box{height:380px}}
-  </style>
+  
+.unit-pill{display:none!important;}
+</style>
 </head>
 
 <body>
@@ -148,11 +150,11 @@
   </section>
 
   <section class="charts">
-    <article class="chart-card"><span class="unit-pill">kg/s</span><h2 class="chart-title">อัตราการไหลเชิงมวลของก๊าซไอเสียของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_mg"></canvas></div><div id="legend_mg" class="html-legend"></div></article>
-    <article class="chart-card"><span class="unit-pill">ml/min</span><h2 class="chart-title">อัตราการไหลเชิงปริมาตรของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_vfuel"></canvas></div><div id="legend_vfuel" class="html-legend"></div></article>
-    <article class="chart-card"><span class="unit-pill">%vol</span><h2 class="chart-title">องค์ประกอบก๊าซไอเสีย CO, CO₂ และ O₂ ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_gas"></canvas></div><div id="legend_gas" class="html-legend"></div></article>
-    <article class="chart-card"><span class="unit-pill">ppm</span><h2 class="chart-title">ความเข้มข้น HC และ NOx ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_hcnox"></canvas></div><div id="legend_hcnox" class="html-legend"></div></article>
-    <article class="chart-card"><span class="unit-pill">°C</span><h2 class="chart-title">อุณหภูมิก๊าซไอเสียขาเข้า T<sub>GI</sub> ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_tgi"></canvas></div><div id="legend_tgi" class="html-legend"></div></article>
+    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอัตราการไหลเชิงมวลของก๊าซไอเสียกับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_mg"></canvas></div><div id="legend_mg" class="html-legend"></div></article>
+    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอัตราการสิ้นเปลืองเชื้อเพลิงเชิงปริมาตรกับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_vfuel"></canvas></div><div id="legend_vfuel" class="html-legend"></div></article>
+    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างองค์ประกอบก๊าซไอเสีย CO, CO₂ และ O₂ กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_gas"></canvas></div><div id="legend_gas" class="html-legend"></div></article>
+    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่าง Gas Concentration ของ HC และ NOx กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_hcnox"></canvas></div><div id="legend_hcnox" class="html-legend"></div></article>
+    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอุณหภูมิก๊าซไอเสียขาเข้า T<sub>GI</sub> กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_tgi"></canvas></div><div id="legend_tgi" class="html-legend"></div></article>
   </section>
 
   <p class="footer-note">Excel-like chart layout • actual-rpm scatter • X-axis tick labels every 500 rpm</p>
@@ -170,7 +172,7 @@ const headers = [
   {key:'o2', label:'O₂ (%vol)'},
   {key:'hc', label:'HC (ppm)'},
   {key:'nox', label:'NOx (ppm)'},
-  {key:'tgi', label:'TGI (°C)'}
+  {key:'tgi12', label:'T<sub>GI</sub> at 1.2 Lpm (°C)'}, {key:'tgi5', label:'T<sub>GI</sub> at 5 Lpm (°C)'}
 ];
 
 const colors = {blue:'#4472C4', orange:'#ED7D31', green:'#70AD47'};
@@ -250,6 +252,7 @@ function setRows(){
   saveTable();
   const n=Math.max(1,Math.min(100,Number(document.getElementById('rowCount').value||1)));
   const rows=currentRows();
+  normalizeTgiFields(rows);
   if(n>rows.length){rows.push(...blankRows(n-rows.length));} else {rows.length=n;}
   buildTable(); renderAll();
 }
@@ -1112,6 +1115,22 @@ function updateFuelTitles(){
   document.querySelectorAll('[data-fuel-title]').forEach(el=>el.textContent=fuelName);
 }
 
+
+function normalizeTgiFields(rows){
+  rows.forEach(r => {
+    // Backward compatibility:
+    // ถ้าไฟล์/ข้อมูลเก่ายังมี r.tgi แต่ไม่มี r.tgi12 ให้ใช้ r.tgi เป็น TGI at 1.2 Lpm
+    if((r.tgi12 === undefined || r.tgi12 === null || r.tgi12 === '') && r.tgi !== undefined){
+      r.tgi12 = r.tgi;
+    }
+    // ถ้ายังไม่มี tgi5 ให้ปล่อยว่าง ไม่สร้างค่าปลอม
+    if(r.tgi5 === undefined){
+      r.tgi5 = null;
+    }
+  });
+  return rows;
+}
+
 function renderAll(){
   const rows=sortedValidRows();
   updateFuelTitles();
@@ -1132,13 +1151,14 @@ function renderAll(){
     dataset('O₂','O₂',rows,'o2',colors.green,'triangle')
   ]);
 
-  createChart('chart_hcnox','legend_hcnox','Concentration (ppm)',[
+  createChart('chart_hcnox','legend_hcnox','Gas Concentration (ppm)',[
     dataset('HC','HC',rows,'hc',colors.blue,'circle'),
     dataset('NOx','NOx',rows,'nox',colors.orange,'rect')
   ], 'log');
 
   createChart('chart_tgi','legend_tgi','Temperature (°C)',[
-    dataset('TGI','T<sub>GI</sub>',rows,'tgi',colors.blue,'circle')
+    dataset('TGI at 1.2 Lpm','T<sub>GI</sub> at 1.2 Lpm',rows,'tgi12',colors.blue,'circle'),
+    dataset('TGI at 5 Lpm','T<sub>GI</sub> at 5 Lpm',rows,'tgi5',colors.orange,'rect')
   ]);
 
   const status=document.getElementById('status');
