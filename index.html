@@ -129,7 +129,7 @@
       <label>ลำดับคอลัมน์ที่ต้องวาง</label>
       <div class="column-guide">
         <b>1)</b> Engine speed (rpm)<br>
-        <b>2)</b> ṁ<sub>G</sub>′ (kg/s)<br>
+        <b>2)</b> ṁ<sub>G,G′</sub> (kg/s)<br>
         <b>3)</b> ṁ<sub>G,EB</sub> at 1.2 Lpm (kg/s)<br>
         <b>4)</b> ṁ<sub>G,EB</sub> at 5 Lpm (kg/s)<br>
         <b>5)</b> V<sub>fuel</sub> (ml/min)<br>
@@ -526,7 +526,7 @@ function representativeRpmLabel(rowsInGroup){
   // Gasoline 95: 2186–2202 should read as 2200 rpm group.
   if(avg < 1800) return '1500';
   if(avg < 2150) return '2000';
-  if(avg < 2350) return '2200';
+  if(avg < 2350) return '2100';
   if(avg < 2850) return '2500';
   if(avg < 3500) return '3000';
 
@@ -1136,7 +1136,7 @@ function renderAll(){
   updateFuelTitles();
 
   createChart('chart_mg','legend_mg','Mass flow rate (kg/s)',[
-    dataset('ṁG′','ṁ<sub>G</sub>′',rows,'mgp',colors.blue,'circle'),
+    dataset('ṁG′','ṁ<sub>G,G′</sub>',rows,'mgp',colors.blue,'circle'),
     dataset('ṁG,EB at 1.2 Lpm','ṁ<sub>G,EB</sub> at 1.2 Lpm',rows,'mgeb12',colors.orange,'rect'),
     dataset('ṁG,EB at 5 Lpm','ṁ<sub>G,EB</sub> at 5 Lpm',rows,'mgeb5',colors.green,'triangle')
   ]);
