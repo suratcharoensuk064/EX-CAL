@@ -638,7 +638,7 @@ function presentationAxisMeta(rows){
     // Label is placed near the left side of the local segment.
     // Points are placed to the right, so a 1537 rpm point does not visually sit on 1500.
     meta.ticks.push({
-      value: start + segmentWidth * 0.06,
+      value: start,
       label: representativeRpmLabel(arr)
     });
 
@@ -674,8 +674,8 @@ function presentationXValueForRow(row, rows){
 
   // Equal spacing inside each group, but still sorted by actual rpm.
   // Leave a little room at left for the group label.
-  const left = 0.16;
-  const right = 0.72;
+  const left = 0.18;
+  const right = 0.74;
   const t = n === 1 ? 0.5 : idx / (n - 1);
   return start + (left + t * (right - left)) * meta.segmentWidth;
 }
@@ -727,6 +727,11 @@ if(!Chart.registry.plugins.get('brokenAxisBreakPlugin')){
   Chart.register(brokenAxisBreakPlugin);
 }
 
+
+function tickFont(size=15){
+  return {size:size, family:'Times New Roman', weight:'bold'};
+}
+
 function xScaleOptions(rows){
   if(plotMode()==='rawLine'){
     const meta = presentationAxisMeta(rows);
@@ -735,6 +740,7 @@ function xScaleOptions(rows){
 
     return {
       type:'linear',
+      offset:false,
       min:minX,
       max:maxX,
       title:{
@@ -747,8 +753,8 @@ function xScaleOptions(rows){
         axis.ticks = meta.ticks.map(t => ({value:t.value}));
       },
       ticks:{
-        color:'#111827',
-        font:{size:13,family:'Times New Roman'},
+        color:'#000',
+        font:{size:15,family:'Times New Roman',weight:'bold'},
         callback:value=>{
           const tick = meta.ticks.find(t => Math.abs(t.value - value) < 1e-7);
           return tick ? tick.label : '';
@@ -764,6 +770,7 @@ function xScaleOptions(rows){
 
     return {
       type:'linear',
+      offset:false,
       min:minX,
       max:maxX,
       title:{
@@ -776,8 +783,8 @@ function xScaleOptions(rows){
         axis.ticks = meta.ticks.map(t => ({value:t.value}));
       },
       ticks:{
-        color:'#111827',
-        font:{size:13,family:'Times New Roman'},
+        color:'#000',
+        font:{size:15,family:'Times New Roman',weight:'bold'},
         callback:value=>{
           const tick = meta.ticks.find(t => Math.abs(t.value - value) < 1e-7);
           return tick ? tick.label : '';
@@ -793,6 +800,7 @@ function xScaleOptions(rows){
 
     return {
       type:'linear',
+      offset:false,
       min:minX,
       max:maxX,
       title:{
@@ -805,8 +813,8 @@ function xScaleOptions(rows){
         axis.ticks = meta.ticks.map(t => ({value:t.value}));
       },
       ticks:{
-        color:'#111827',
-        font:{size:13,family:'Times New Roman'},
+        color:'#000',
+        font:{size:15,family:'Times New Roman',weight:'bold'},
         callback:value=>{
           const tick = meta.ticks.find(t => Math.abs(t.value - value) < 1e-7);
           return tick ? tick.label : '';
@@ -827,8 +835,8 @@ function xScaleOptions(rows){
       grid:{display:true,color:'#d9d9d9'},
       afterBuildTicks:axis=>{axis.ticks=ticks.map(t=>({value:t.value}));},
       ticks:{
-        color:'#111827',
-        font:{size:13,family:'Times New Roman'},
+        color:'#000',
+        font:{size:15,family:'Times New Roman',weight:'bold'},
         callback:value=>{
           const tick=ticks.find(t=>Math.abs(t.value-value)<1e-6);
           return tick?tick.label:'';
@@ -857,8 +865,8 @@ function xScaleOptions(rows){
       grid:{display:true,color:'#d9d9d9'},
       afterBuildTicks:axis=>{axis.ticks=tickValues.map(v=>({value:v}));},
       ticks:{
-        color:'#111827',
-        font:{size:13,family:'Times New Roman'},
+        color:'#000',
+        font:{size:15,family:'Times New Roman',weight:'bold'},
         callback:value=>String(value)
       }
     };
@@ -880,8 +888,8 @@ function xScaleOptions(rows){
       grid:{display:true,color:'#d9d9d9'},
       afterBuildTicks:axis=>{axis.ticks=tickValues.map(v=>({value:v}));},
       ticks:{
-        color:'#111827',
-        font:{size:13,family:'Times New Roman'},
+        color:'#000',
+        font:{size:15,family:'Times New Roman',weight:'bold'},
         callback:value=>String(value)
       }
     };
@@ -896,7 +904,7 @@ function xScaleOptions(rows){
       min,max,
       title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
       grid:{display:true,color:'#d9d9d9'},
-      ticks:{color:'#111827',font:{size:13,family:'Times New Roman'},stepSize:50,callback:value=>String(value)}
+      ticks:{color:'#000',font:{size:15,family:'Times New Roman',weight:'bold'},stepSize:50,callback:value=>String(value)}
     };
   }
 
@@ -904,7 +912,7 @@ function xScaleOptions(rows){
     type:'category',
     title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
     grid:{display:true,color:'#d9d9d9'},
-    ticks:{color:'#111827',font:{size:13,family:'Times New Roman'},autoSkip:false,maxRotation:0,minRotation:0}
+    ticks:{color:'#000',font:{size:15,family:'Times New Roman',weight:'bold'},autoSkip:false,maxRotation:0,minRotation:0}
   };
 }
 
@@ -1042,8 +1050,8 @@ function chartOptions(rows,yTitle,datasets,yScaleMode='linear'){
         title:{display:true,text:yTitle,font:{weight:'bold',size:14,family:'Times New Roman'}},
         grid:{display:true,color:'#d9d9d9'},
         ticks:{
-          color:'#111827',
-          font:{size:13,family:'Times New Roman'},
+          color:'#000',
+          font:{size:15,family:'Times New Roman',weight:'bold'},
           padding:6,
           maxRotation:0,
           minRotation:0,
@@ -1059,14 +1067,14 @@ function chartOptions(rows,yTitle,datasets,yScaleMode='linear'){
         min:yStats.min,
         max:yStats.max,
         grid:{display:true,color:'#d9d9d9'},
-        ticks:{color:'#111827',font:{size:13,family:'Times New Roman'}}
+        ticks:{color:'#000',font:{size:15,family:'Times New Roman',weight:'bold'}}
       };
 
   return {
     _sourceRows: rows,
     responsive:true,
     maintainAspectRatio:false,
-    layout:{padding:{top:8,right:12,bottom:0,left:8}},
+    layout:{padding:{top:10,right:18,bottom:18,left:16}},
     interaction:{mode:'nearest',intersect:true},
     plugins:{
       title:{display:false},
