@@ -15,10 +15,10 @@
     *{box-sizing:border-box}
     body{margin:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
     header{background:#fff;border-bottom:1px solid #d6d6d6;padding:16px 24px}
-    .header-inner{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:18px}
+    .header-inner{max-width:1800px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:18px}
     .brand h1{margin:0;font-size:21px;font-weight:800}.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
     .badge{border:1px solid #d9d9d9;background:#f8fafc;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:700;color:#334155;white-space:nowrap}
-    .wrap{max-width:1440px;margin:18px auto 44px;padding:0 18px}
+    .wrap{max-width:1800px;margin:18px auto 44px;padding:0 12px}
     .toolbar{display:grid;grid-template-columns:1fr 1.3fr 1fr .8fr auto;gap:12px;margin-bottom:12px}
     .panel{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px}
     label{display:block;margin-bottom:7px;font-size:12px;font-weight:800;color:#1f2937}
@@ -41,14 +41,17 @@
     tr:nth-child(even) td{background:#fcfcfc}td input{border:0;border-radius:5px;background:transparent;text-align:center;padding:4px;font-size:12px}td input:focus{background:#fff;outline:2px solid #60a5fa;box-shadow:none}
     .charts{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
     .chart-card{position:relative;background:#fff;border:1px solid #cfcfcf;border-radius:0;padding:10px 14px 10px}
-    .chart-title{margin:0;padding:0 50px 4px;text-align:center;font-family:"Times New Roman",serif;font-size:17px;font-weight:bold;color:#000;line-height:1.2}.chart-title sub{font-size:70%;vertical-align:sub;line-height:0}
+    .chart-title{margin:0;padding:0 50px 4px;text-align:center;font-family:"Times New Roman",serif;font-size:22px;font-weight:bold;color:#000;line-height:1.2}.chart-title sub{font-size:70%;vertical-align:sub;line-height:0}
     .unit-pill{position:absolute;top:9px;right:14px;border:1px solid #d9d9d9;background:#f8fafc;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;color:#334155;z-index:3}
     .chart-box{width:100%;height:432px}
     #chart_mg_box{height:1200px}
     #chart_tgi_box{height:700px}
-    .html-legend{display:flex;justify-content:center;align-items:center;gap:24px;flex-wrap:wrap;margin-top:0;padding-bottom:2px;font-family:"Times New Roman",serif;font-size:16px;color:#111827;line-height:1}
-    .legend-item{display:inline-flex;align-items:center;gap:9px;white-space:nowrap}.legend-marker{width:14px;height:14px;display:inline-block;background:var(--c);flex:0 0 auto}.legend-marker.circle{border-radius:50%}.legend-marker.rect{border-radius:0}
-    .legend-marker.triangle{width:0;height:0;background:transparent;border-left:7.5px solid transparent;border-right:7.5px solid transparent;border-bottom:14px solid var(--c)}
+    .html-legend{display:flex;justify-content:center;align-items:center;gap:48px;flex-wrap:wrap;margin-top:0;padding-bottom:2px;font-family:"Times New Roman",serif;font-size:26px;color:#111827;line-height:1}
+    .html-legend.legend-large{font-size:28px;gap:52px;}
+    .html-legend.legend-large .legend-marker{width:28px;height:28px;}
+    .html-legend.legend-large .legend-marker.triangle{border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:28px solid var(--c);width:0;height:0;background:transparent;}
+    .legend-item{display:inline-flex;align-items:center;gap:16px;white-space:nowrap}.legend-marker{width:26px;height:26px;display:inline-block;background:var(--c);flex:0 0 auto}.legend-marker.circle{border-radius:50%}.legend-marker.rect{border-radius:0}
+    .legend-marker.triangle{width:0;height:0;background:transparent;border-left:13px solid transparent;border-right:13px solid transparent;border-bottom:26px solid var(--c)}
     .legend-marker.crossRot{background:transparent;position:relative;width:11px;height:11px;}
     .legend-item.dashed-line::before{content:'– –';margin-right:4px;font-weight:bold;color:var(--lc);font-size:13px;}
     .legend-marker.crossRot::before,.legend-marker.crossRot::after{content:'';position:absolute;background:var(--c);top:50%;left:50%;transform-origin:center;}
@@ -166,12 +169,12 @@
   </section>
 
   <section class="charts">
-    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอัตราการไหลเชิงมวลขาเข้าและอัตราการไหลเชิงมวลก๊าซไอเสียกับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box" id="chart_mg_box"><canvas id="chart_mg"></canvas></div><div id="legend_mg" class="html-legend"></div></article>
+    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอัตราการไหลเชิงมวลขาเข้าและอัตราการไหลเชิงมวลก๊าซไอเสียกับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box" id="chart_mg_box"><canvas id="chart_mg"></canvas></div><div id="legend_mg" class="html-legend legend-large"></div></article>
     <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอัตราการสิ้นเปลืองเชื้อเพลิงเชิงปริมาตรกับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_vfuel"></canvas></div><div id="legend_vfuel" class="html-legend"></div></article>
     <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างองค์ประกอบก๊าซไอเสีย CO, CO₂ และ O₂ กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_gas"></canvas></div><div id="legend_gas" class="html-legend"></div></article>
     <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่าง Gas Concentration ของ HC และ NOx กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_hcnox"></canvas></div><div id="legend_hcnox" class="html-legend"></div></article>
-    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอุณหภูมิของน้ำเข้า-ออกและก๊าซไอเสียเข้า-ออกที่อัตราการไหลของน้ำ 1.2 Lpm กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_temp12"></canvas></div><div id="legend_temp12" class="html-legend"></div></article>
-    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอุณหภูมิของน้ำเข้า-ออกและก๊าซไอเสียเข้า-ออกที่อัตราการไหลของน้ำ 5 Lpm กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_temp5"></canvas></div><div id="legend_temp5" class="html-legend"></div></article>
+    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอุณหภูมิของน้ำเข้า-ออกและอุณหภูมิก๊าซไอเสียเข้า-ออกที่อัตราการไหลของน้ำ 1.2 Lpm กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_temp12"></canvas></div><div id="legend_temp12" class="html-legend"></div></article>
+    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอุณหภูมิของน้ำเข้า-ออกและอุณหภูมิก๊าซไอเสียเข้า-ออกที่อัตราการไหลของน้ำ 5 Lpm กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_temp5"></canvas></div><div id="legend_temp5" class="html-legend"></div></article>
       <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอัตราการไหลเชิงปริมาตรของอากาศกับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_vair"></canvas></div><div id="legend_vair" class="html-legend"></div></article>
   </section>
 
@@ -468,7 +471,7 @@ function buildData(rows,key){
 
 function dataset(labelText,labelHtml,rows,key,color,pointStyle){
   const isRawLine = plotMode()==='rawLine';
-  const r = isRawLine ? 8 : (plotMode()==='presentationScatter' ? 8 : 8);
+  const r = isRawLine ? 10 : (plotMode()==='presentationScatter' ? 10 : 10);
   return {
     label:labelText,labelHtml,
     data:buildData(rows,key),
@@ -496,7 +499,7 @@ function datasetDashed(labelText,labelHtml,rows,key,color,pointStyle){
 
 function datasetSmall(labelText,labelHtml,rows,key,color,pointStyle){
   const isRawLine = plotMode()==='rawLine';
-  const r = isRawLine ? 7 : (plotMode()==='presentationScatter' ? 7 : 7);
+  const r = isRawLine ? 9 : (plotMode()==='presentationScatter' ? 9 : 9);
   return {
     label:labelText,labelHtml,
     data:buildData(rows,key),
@@ -517,7 +520,7 @@ function datasetSmall(labelText,labelHtml,rows,key,color,pointStyle){
 
 function datasetHollow(labelText,labelHtml,rows,key,color,pointStyle){
   const isRawLine = plotMode()==='rawLine';
-  const r = isRawLine ? 10 : 10;
+  const r = isRawLine ? 12 : 12;
   return {
     label:labelText,labelHtml,
     data:buildData(rows,key),
@@ -538,7 +541,7 @@ function datasetHollow(labelText,labelHtml,rows,key,color,pointStyle){
 
 function datasetLarger(labelText,labelHtml,rows,key,color,pointStyle){
   const isRawLine = plotMode()==='rawLine';
-  const r = isRawLine ? 10 : (plotMode()==='presentationScatter' ? 10 : 10);
+  const r = isRawLine ? 12 : (plotMode()==='presentationScatter' ? 12 : 12);
   return {
     label:labelText,labelHtml,
     data:buildData(rows,key),
@@ -853,7 +856,7 @@ function xScaleOptions(rows){
       title:{
         display:true,
         text:'Engine speed (rpm)',
-        font:{weight:'bold',size:14,family:'Times New Roman'}
+        font:{weight:'bold',size:20,family:'Times New Roman'}
       },
       grid:{display:true,color:'#d9d9d9'},
       afterBuildTicks:axis=>{
@@ -861,7 +864,7 @@ function xScaleOptions(rows){
       },
       ticks:{
         color:'#000',
-        font:{size:15,family:'Times New Roman',weight:'bold'},
+        font:{size:18,family:'Times New Roman',weight:'bold'},
         callback:value=>{
           const tick = meta.ticks.find(t => Math.abs(t.value - value) < 1e-7);
           return tick ? tick.label : '';
@@ -883,7 +886,7 @@ function xScaleOptions(rows){
       title:{
         display:true,
         text:'Engine speed (rpm)',
-        font:{weight:'bold',size:14,family:'Times New Roman'}
+        font:{weight:'bold',size:20,family:'Times New Roman'}
       },
       grid:{display:true,color:'#d9d9d9'},
       afterBuildTicks:axis=>{
@@ -891,7 +894,7 @@ function xScaleOptions(rows){
       },
       ticks:{
         color:'#000',
-        font:{size:15,family:'Times New Roman',weight:'bold'},
+        font:{size:18,family:'Times New Roman',weight:'bold'},
         callback:value=>{
           const tick = meta.ticks.find(t => Math.abs(t.value - value) < 1e-7);
           return tick ? tick.label : '';
@@ -913,7 +916,7 @@ function xScaleOptions(rows){
       title:{
         display:true,
         text:'Engine speed (rpm)',
-        font:{weight:'bold',size:14,family:'Times New Roman'}
+        font:{weight:'bold',size:20,family:'Times New Roman'}
       },
       grid:{display:true,color:'#d9d9d9'},
       afterBuildTicks:axis=>{
@@ -921,7 +924,7 @@ function xScaleOptions(rows){
       },
       ticks:{
         color:'#000',
-        font:{size:15,family:'Times New Roman',weight:'bold'},
+        font:{size:18,family:'Times New Roman',weight:'bold'},
         callback:value=>{
           const tick = meta.ticks.find(t => Math.abs(t.value - value) < 1e-7);
           return tick ? tick.label : '';
@@ -938,12 +941,12 @@ function xScaleOptions(rows){
       type:'linear',
       min:0.55,
       max:Math.max(1.45, keys.length+0.45),
-      title:{display:true,text:'Engine speed group (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
+      title:{display:true,text:'Engine speed group (rpm)',font:{weight:'bold',size:20,family:'Times New Roman'}},
       grid:{display:true,color:'#d9d9d9'},
       afterBuildTicks:axis=>{axis.ticks=ticks.map(t=>({value:t.value}));},
       ticks:{
         color:'#000',
-        font:{size:15,family:'Times New Roman',weight:'bold'},
+        font:{size:18,family:'Times New Roman',weight:'bold'},
         callback:value=>{
           const tick=ticks.find(t=>Math.abs(t.value-value)<1e-6);
           return tick?tick.label:'';
@@ -968,12 +971,12 @@ function xScaleOptions(rows){
       type:'linear',
       min:minAxis,
       max:maxAxis,
-      title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
+      title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:20,family:'Times New Roman'}},
       grid:{display:true,color:'#d9d9d9'},
       afterBuildTicks:axis=>{axis.ticks=tickValues.map(v=>({value:v}));},
       ticks:{
         color:'#000',
-        font:{size:15,family:'Times New Roman',weight:'bold'},
+        font:{size:18,family:'Times New Roman',weight:'bold'},
         callback:value=>String(value)
       }
     };
@@ -991,12 +994,12 @@ function xScaleOptions(rows){
       type:'linear',
       min:minTick,
       max:maxAxis,
-      title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
+      title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:20,family:'Times New Roman'}},
       grid:{display:true,color:'#d9d9d9'},
       afterBuildTicks:axis=>{axis.ticks=tickValues.map(v=>({value:v}));},
       ticks:{
         color:'#000',
-        font:{size:15,family:'Times New Roman',weight:'bold'},
+        font:{size:18,family:'Times New Roman',weight:'bold'},
         callback:value=>String(value)
       }
     };
@@ -1009,17 +1012,17 @@ function xScaleOptions(rows){
     return {
       type:'linear',
       min,max,
-      title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
+      title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:20,family:'Times New Roman'}},
       grid:{display:true,color:'#d9d9d9'},
-      ticks:{color:'#000',font:{size:15,family:'Times New Roman',weight:'bold'},stepSize:50,callback:value=>String(value)}
+      ticks:{color:'#000',font:{size:18,family:'Times New Roman',weight:'bold'},stepSize:50,callback:value=>String(value)}
     };
   }
 
   return {
     type:'category',
-    title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:14,family:'Times New Roman'}},
+    title:{display:true,text:'Engine speed (rpm)',font:{weight:'bold',size:20,family:'Times New Roman'}},
     grid:{display:true,color:'#d9d9d9'},
-    ticks:{color:'#000',font:{size:15,family:'Times New Roman',weight:'bold'},autoSkip:false,maxRotation:0,minRotation:0}
+    ticks:{color:'#000',font:{size:18,family:'Times New Roman',weight:'bold'},autoSkip:false,maxRotation:0,minRotation:0}
   };
 }
 
@@ -1154,11 +1157,11 @@ function chartOptions(rows,yTitle,datasets,yScaleMode='linear'){
           const major = [1, 10, 100, 1000, 10000];
           axis.ticks = axis.ticks.filter(t => major.includes(Number(t.value)));
         },
-        title:{display:true,text:yTitle,font:{weight:'bold',size:14,family:'Times New Roman'}},
+        title:{display:true,text:yTitle,font:{weight:'bold',size:20,family:'Times New Roman'}},
         grid:{display:true,color:'#d9d9d9'},
         ticks:{
           color:'#000',
-          font:{size:15,family:'Times New Roman',weight:'bold'},
+          font:{size:18,family:'Times New Roman',weight:'bold'},
           padding:6,
           maxRotation:0,
           minRotation:0,
@@ -1167,14 +1170,14 @@ function chartOptions(rows,yTitle,datasets,yScaleMode='linear'){
       }
     : {
         type:'linear',
-        title:{display:true,text:yTitle,font:{weight:'bold',size:14,family:'Times New Roman'}},
+        title:{display:true,text:yTitle,font:{weight:'bold',size:20,family:'Times New Roman'}},
         beginAtZero:!yStats.useNonZeroMin,
         suggestedMin:yStats.min,
         suggestedMax:yStats.max,
         min:yStats.min,
         max:yStats.max,
         grid:{display:true,color:'#d9d9d9'},
-        ticks:{color:'#000',font:{size:15,family:'Times New Roman',weight:'bold'}}
+        ticks:{color:'#000',font:{size:18,family:'Times New Roman',weight:'bold'}}
       };
 
   return {
@@ -1301,9 +1304,9 @@ function createChartFineY(canvasId,legendId,yTitle,datasets,stepSize,yMax){
     ...opts.scales.y.ticks,
     stepSize: stepSize,
     color:'#000',
-    font:{size:15,family:'Times New Roman',weight:'bold'}
+    font:{size:18,family:'Times New Roman',weight:'bold'}
   };
-  if(yMax !== undefined){
+  if(yMax !== undefined && yMax !== null){
     opts.scales.y.max = yMax;
     opts.scales.y.suggestedMax = yMax;
   }
@@ -1337,12 +1340,18 @@ function renderAll(){
   const rows=sortedValidRows();
   updateFuelTitles();
 
-  createChartFineY('chart_mg','legend_mg','Mass flow rate (kg/s)',[
-    dataset('ṁG′','ṁ<sub>G,G′</sub>',rows,'mgp',colors.blue,'circle'),
-    dataset('ṁG,EB at 1.2 Lpm','ṁ<sub>G,EB</sub> at 1.2 Lpm',rows,'mgeb12',colors.orange,'rect'),
-    datasetLarger('ṁG,EB at 5 Lpm','ṁ<sub>G,EB</sub> at 5 Lpm',rows,'mgeb5',colors.green,'triangle'),
-    datasetLarger('ṁin','ṁ<sub>in</sub>',rows,'mgmb','#9333ea','rectRot')
-  ], 0.001, 0.15);
+  (()=>{
+    const _ds_mg=[
+      dataset('ṁG′','ṁ<sub>G,G′</sub>',rows,'mgp',colors.blue,'circle'),
+      dataset('ṁG,EB at 1.2 Lpm','ṁ<sub>G,EB</sub> at 1.2 Lpm',rows,'mgeb12',colors.orange,'rect'),
+      datasetLarger('ṁG,EB at 5 Lpm','ṁ<sub>G,EB</sub> at 5 Lpm',rows,'mgeb5',colors.green,'triangle'),
+      datasetLarger('ṁin','ṁ<sub>in</sub>',rows,'mgmb','#9333ea','rectRot')
+    ];
+    const _vals_mg=_ds_mg.flatMap(d=>d.data.map(p=>typeof p==='object'?p.y:p)).filter(v=>Number.isFinite(v));
+    const _rawMax_mg=Math.max(..._vals_mg);
+    const _yMax_mg=0.140;
+    createChartFineY('chart_mg','legend_mg','Mass flow rate (kg/s)',_ds_mg,0.005,_yMax_mg);
+  })();
 
 
 
