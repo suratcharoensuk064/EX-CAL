@@ -52,6 +52,7 @@
     .html-legend.legend-large .legend-marker.triangle{border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:28px solid var(--c);width:0;height:0;background:transparent;}
     .legend-item{display:inline-flex;align-items:center;gap:16px;white-space:nowrap}.legend-marker{width:26px;height:26px;display:inline-block;background:var(--c);flex:0 0 auto}.legend-marker.circle{border-radius:50%}.legend-marker.rect{border-radius:0}
     .legend-marker.triangle{width:0;height:0;background:transparent;border-left:13px solid transparent;border-right:13px solid transparent;border-bottom:26px solid var(--c)}
+    .legend-marker.rectRot{border-radius:0;transform:rotate(45deg);}
     .legend-marker.crossRot{background:transparent;position:relative;width:11px;height:11px;}
     .legend-item.dashed-line::before{content:'– –';margin-right:4px;font-weight:bold;color:var(--lc);font-size:13px;}
     .legend-marker.crossRot::before,.legend-marker.crossRot::after{content:'';position:absolute;background:var(--c);top:50%;left:50%;transform-origin:center;}
@@ -579,43 +580,6 @@ function datasetWithXOffset(labelText,labelHtml,rows,key,color,pointStyle,xOffse
   return base;
 }
 
-// AFR-specific X positioning: spread points finely inside each rpm group
-// while keeping every marker safely inside the plotting area.
-function afrXValueForRow(row, rows){
-  const rpm = toNumber(row.rpm);
-  const key = String(nominalGroup(rpm));
-  const meta = presentationAxisMeta(rows);
-  const arr = (meta.groups[String(key)] || []).slice().sort((a,b)=>toNumber(a.rpm)-toNumber(b.rpm));
-  const start = meta.startByKey[String(key)];
-  if(start === undefined || !arr.length) return null;
-
-  let idx = arr.findIndex(r => r === row);
-  if(idx < 0) idx = arr.findIndex(r => toNumber(r.rpm) === rpm && r._chartIndex === row._chartIndex);
-  if(idx < 0) idx = arr.findIndex(r => toNumber(r.rpm) === rpm);
-  if(idx < 0) idx = 0;
-
-  const n = arr.length;
-  // Wider usable region + fine spacing between every measured point.
-  const left = 0.20;
-  const right = 0.84;
-  const t = n <= 1 ? 0.5 : idx/(n-1);
-  const microGap = n <= 1 ? 0 : (idx - (n-1)/2) * 0.008;
-  const normalized = Math.max(0.14, Math.min(0.90, left + t*(right-left) + microGap));
-  return start + normalized * meta.segmentWidth;
-}
-
-function datasetAFR(labelText,labelHtml,rows,key,color,pointStyle,xShift){
-  const base = dataset(labelText,labelHtml,rows,key,color,pointStyle);
-  base.data = rows.map(row => ({
-    x: afrXValueForRow(row, rows),
-    y: toNumber(row[key]),
-    rpm: toNumber(row.rpm)
-  })).filter(p => p.x !== null && p.y !== null);
-
-  base.data = base.data.map(p => ({...p, x:p.x + xShift}));
-  return base;
-}
-
 function datasetWithYOffset(labelText,labelHtml,rows,key,color,pointStyle,yOffset){
   const base = dataset(labelText,labelHtml,rows,key,color,pointStyle);
   if(yOffset && Array.isArray(base.data)){
@@ -629,6 +593,17 @@ function datasetWithYOffset(labelText,labelHtml,rows,key,color,pointStyle,yOffse
 }
 
 
+
+function withYOffset(ds, yOffset){
+  if(yOffset && Array.isArray(ds.data)){
+    ds.data = ds.data.map(p => {
+      if(typeof p === 'object' && p !== null && 'y' in p) return {...p, y: p.y + yOffset};
+      if(typeof p === 'number') return p + yOffset;
+      return p;
+    });
+  }
+  return ds;
+}
 
 function roundDownTo(value, step){
   return Math.floor(value / step) * step;
@@ -1267,7 +1242,7 @@ function chartOptions(rows,yTitle,datasets,yScaleMode='linear'){
 }
 
 
-function markerClass(pointStyle){if(pointStyle==='triangle') return 'triangle'; if(pointStyle==='rect') return 'rect'; if(pointStyle==='crossRot') return 'crossRot'; return 'circle';}
+function markerClass(pointStyle){if(pointStyle==='triangle') return 'triangle'; if(pointStyle==='rect') return 'rect'; if(pointStyle==='rectRot') return 'rectRot'; if(pointStyle==='crossRot') return 'crossRot'; return 'circle';}
 function renderHtmlLegend(legendId,datasets){
   document.getElementById(legendId).innerHTML=datasets.map(ds=>{
     const isDashed = Array.isArray(ds.borderDash) && ds.borderDash.length > 0;
@@ -1462,9 +1437,8 @@ function renderAll(){
   ]);
 
   createChart('chart_afr','legend_afr','Air-Fuel Ratio (-)',[
-    // วงกลมทึบ และแยก X อย่างละเอียดเฉพาะกราฟ AFR
-    datasetAFR('AFRλ','AFR<sub>λ</sub>',rows,'afr_lambda',colors.blue,'circle',-0.10),
-    datasetAFR('AFR EMS','AFR<sub>EMS</sub>',rows,'afr_ems',colors.orange,'rectRot',0.10)
+    withYOffset(datasetLarger('AFRλ','AFR<sub>λ</sub>',rows,'afr_lambda',colors.blue,'circle'), -0.6),
+    withYOffset(datasetLarger('AFR EMS','AFR<sub>EMS</sub>',rows,'afr_ems',colors.orange,'rect'), 0.6)
   ]);
 
   createChart('chart_qw','legend_qw','Heat transfer rate (kJ/s)',[
