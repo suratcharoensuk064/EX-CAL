@@ -45,13 +45,17 @@
     .unit-pill{position:absolute;top:9px;right:14px;border:1px solid #d9d9d9;background:#f8fafc;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;color:#334155;z-index:3}
     .chart-box{width:100%;height:432px}
     #chart_mg_box{height:1200px}
+    #chart_afr_box{height:700px}
     #chart_tgi_box{height:700px}
+    #chart_temp12_box, #chart_temp5_box{height:1200px}
     .html-legend{display:flex;justify-content:center;align-items:center;gap:48px;flex-wrap:wrap;margin-top:0;padding-bottom:2px;font-family:"Times New Roman",serif;font-size:26px;color:#111827;line-height:1}
     .html-legend.legend-large{font-size:28px;gap:52px;}
     .html-legend.legend-large .legend-marker{width:28px;height:28px;}
     .html-legend.legend-large .legend-marker.triangle{border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:28px solid var(--c);width:0;height:0;background:transparent;}
     .legend-item{display:inline-flex;align-items:center;gap:16px;white-space:nowrap}.legend-marker{width:26px;height:26px;display:inline-block;background:var(--c);flex:0 0 auto}.legend-marker.circle{border-radius:50%}.legend-marker.rect{border-radius:0}
     .legend-marker.triangle{width:0;height:0;background:transparent;border-left:13px solid transparent;border-right:13px solid transparent;border-bottom:26px solid var(--c)}
+    .legend-marker.diamond{width:22px;height:22px;transform:rotate(45deg);margin:0 3px;}
+    .legend-marker.diamond{width:18px;height:18px;background:var(--c);transform:rotate(45deg);border-radius:0;}
     .legend-marker.crossRot{background:transparent;position:relative;width:11px;height:11px;}
     .legend-item.dashed-line::before{content:'– –';margin-right:4px;font-weight:bold;color:var(--lc);font-size:13px;}
     .legend-marker.crossRot::before,.legend-marker.crossRot::after{content:'';position:absolute;background:var(--c);top:50%;left:50%;transform-origin:center;}
@@ -177,10 +181,10 @@
     <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอัตราการสิ้นเปลืองเชื้อเพลิงเชิงปริมาตรกับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_vfuel"></canvas></div><div id="legend_vfuel" class="html-legend"></div></article>
     <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างองค์ประกอบก๊าซไอเสีย CO, CO₂ และ O₂ กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_gas"></canvas></div><div id="legend_gas" class="html-legend"></div></article>
     <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่าง Gas Concentration ของ HC และ NOx กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_hcnox"></canvas></div><div id="legend_hcnox" class="html-legend"></div></article>
-    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอุณหภูมิของน้ำเข้า-ออกและอุณหภูมิก๊าซไอเสียเข้า-ออกที่อัตราการไหลของน้ำ 1.2 Lpm กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_temp12"></canvas></div><div id="legend_temp12" class="html-legend"></div></article>
-    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอุณหภูมิของน้ำเข้า-ออกและอุณหภูมิก๊าซไอเสียเข้า-ออกที่อัตราการไหลของน้ำ 5 Lpm กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_temp5"></canvas></div><div id="legend_temp5" class="html-legend"></div></article>
+    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอุณหภูมิของน้ำเข้า-ออกและอุณหภูมิก๊าซไอเสียเข้า-ออกที่อัตราการไหลของน้ำ 1.2 Lpm กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box" id="chart_temp12_box"><canvas id="chart_temp12"></canvas></div><div id="legend_temp12" class="html-legend"></div></article>
+    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอุณหภูมิของน้ำเข้า-ออกและอุณหภูมิก๊าซไอเสียเข้า-ออกที่อัตราการไหลของน้ำ 5 Lpm กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box" id="chart_temp5_box"><canvas id="chart_temp5"></canvas></div><div id="legend_temp5" class="html-legend"></div></article>
       <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอัตราการไหลเชิงปริมาตรของอากาศกับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_vair"></canvas></div><div id="legend_vair" class="html-legend"></div></article>
-    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่าง AFR<sub>λ</sub> และ AFR<sub>EMS</sub> กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_afr"></canvas></div><div id="legend_afr" class="html-legend"></div></article>
+    <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่าง AFR<sub>λ</sub> และ AFR<sub>EMS</sub> กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box" id="chart_afr_box"><canvas id="chart_afr"></canvas></div><div id="legend_afr" class="html-legend"></div></article>
     <article class="chart-card"><h2 class="chart-title">ความสัมพันธ์ระหว่างอัตราการถ่ายโอนความร้อนของน้ำหล่อเย็น Q<sub>W</sub> กับความเร็วรอบเครื่องยนต์ของเชื้อเพลิง <span data-fuel-title></span></h2><div class="chart-box"><canvas id="chart_qw"></canvas></div><div id="legend_qw" class="html-legend"></div></article>
   </section>
 
@@ -1230,7 +1234,7 @@ function chartOptions(rows,yTitle,datasets,yScaleMode='linear'){
 }
 
 
-function markerClass(pointStyle){if(pointStyle==='triangle') return 'triangle'; if(pointStyle==='rect') return 'rect'; if(pointStyle==='crossRot') return 'crossRot'; return 'circle';}
+function markerClass(pointStyle){if(pointStyle==='triangle') return 'triangle'; if(pointStyle==='rect') return 'rect'; if(pointStyle==='crossRot') return 'crossRot'; if(pointStyle==='rectRot') return 'diamond'; return 'circle';}
 function renderHtmlLegend(legendId,datasets){
   document.getElementById(legendId).innerHTML=datasets.map(ds=>{
     const isDashed = Array.isArray(ds.borderDash) && ds.borderDash.length > 0;
@@ -1315,23 +1319,40 @@ function createChartWithYMax(canvasId,legendId,yTitle,datasets,yMax){
   renderHtmlLegend(legendId,datasets);
 }
 
-function createChartFineY(canvasId,legendId,yTitle,datasets,stepSize,yMax){
+function createChartFineY(canvasId,legendId,yTitle,datasets,stepSize,yMax,yMin,markerRadius){
   destroyChart(canvasId);
   const rows=sortedValidRows();
-  const opts=chartOptions(rows,yTitle,datasets,'linear');
+  // Keep plotted values and the original marker size unchanged.
+  const chartDatasets = markerRadius ? datasets.map(d => ({...d, radius:markerRadius, hoverRadius:markerRadius+2})) : datasets;
+  const opts=chartOptions(rows,yTitle,chartDatasets,'linear');
   opts.scales.y.ticks = {
     ...opts.scales.y.ticks,
     stepSize: stepSize,
+    autoSkip: false,
     color:'#000',
     font:{size:18,family:'Times New Roman',weight:'bold'}
   };
+  if(Number.isFinite(yMin) && Number.isFinite(yMax) && Number.isFinite(stepSize) && stepSize > 0){
+    opts.scales.y.afterBuildTicks = (axis) => {
+      const ticks = [];
+      for(let v = yMin; v <= yMax + 1e-9; v += stepSize){
+        ticks.push({value:Number(v.toFixed(10))});
+      }
+      axis.ticks = ticks;
+    };
+  }
+  if(yMin !== undefined && yMin !== null){
+    opts.scales.y.min = yMin;
+    opts.scales.y.suggestedMin = yMin;
+    opts.scales.y.beginAtZero = false;
+  }
   if(yMax !== undefined && yMax !== null){
     opts.scales.y.max = yMax;
     opts.scales.y.suggestedMax = yMax;
   }
-  const config={type:isScatterLike()?'scatter':'line',data:isScatterLike()?{datasets}:{labels:makeCategoryLabels(rows),datasets},options:opts};
+  const config={type:isScatterLike()?'scatter':'line',data:isScatterLike()?{datasets:chartDatasets}:{labels:makeCategoryLabels(rows),datasets:chartDatasets},options:opts};
   state.charts[canvasId]=new Chart(document.getElementById(canvasId),config);
-  renderHtmlLegend(legendId,datasets);
+  renderHtmlLegend(legendId,chartDatasets);
 }
 
 function updateFuelTitles(){
@@ -1402,20 +1423,20 @@ function renderAll(){
     dataset('NOx','NOx',rows,'nox',colors.orange,'rect')
   ], 'log');
 
-  createChart('chart_temp12','legend_temp12','Temperature (°C)',[
-    datasetWithYOffset('Twi at 1.2 Lpm','T<sub>wi</sub> at 1.2 Lpm',rows,'twi12','#2563eb','circle',-1.5),
-    datasetWithYOffset('Two at 1.2 Lpm','T<sub>wo</sub> at 1.2 Lpm',rows,'two12','#dc2626','rect',1.5),
-    datasetWithYOffset('Tgi at 1.2 Lpm','T<sub>gi</sub> at 1.2 Lpm',rows,'tgi12','#16a34a','triangle',-1.5),
-    datasetWithYOffset('Tgo at 1.2 Lpm','T<sub>go</sub> at 1.2 Lpm',rows,'tgo12','#d97706','rectRot',1.5)
-  ]);
+  createChartFineY('chart_temp12','legend_temp12','Temperature (°C)',[
+    dataset('Twi at 1.2 Lpm','T<sub>wi</sub> at 1.2 Lpm',rows,'twi12','#2563eb','circle'),
+    dataset('Two at 1.2 Lpm','T<sub>wo</sub> at 1.2 Lpm',rows,'two12','#dc2626','rect'),
+    dataset('Tgi at 1.2 Lpm','T<sub>gi</sub> at 1.2 Lpm',rows,'tgi12','#16a34a','triangle'),
+    dataset('Tgo at 1.2 Lpm','T<sub>go</sub> at 1.2 Lpm',rows,'tgo12','#d97706','rectRot')
+  ],3,98,20,10);
 
 
-  createChart('chart_temp5','legend_temp5','Temperature (°C)',[
-    datasetWithYOffset('Twi at 5 Lpm','T<sub>wi</sub> at 5 Lpm',rows,'twi5','#2563eb','circle',-1.5),
-    datasetWithYOffset('Two at 5 Lpm','T<sub>wo</sub> at 5 Lpm',rows,'two5','#dc2626','rect',1.5),
-    datasetWithYOffset('Tgi at 5 Lpm','T<sub>gi</sub> at 5 Lpm',rows,'tgi5','#16a34a','triangle',-1.5),
-    datasetWithYOffset('Tgo at 5 Lpm','T<sub>go</sub> at 5 Lpm',rows,'tgo5','#d97706','rectRot',1.5)
-  ]);
+  createChartFineY('chart_temp5','legend_temp5','Temperature (°C)',[
+    dataset('Twi at 5 Lpm','T<sub>wi</sub> at 5 Lpm',rows,'twi5','#2563eb','circle'),
+    dataset('Two at 5 Lpm','T<sub>wo</sub> at 5 Lpm',rows,'two5','#dc2626','rect'),
+    dataset('Tgi at 5 Lpm','T<sub>gi</sub> at 5 Lpm',rows,'tgi5','#16a34a','triangle'),
+    dataset('Tgo at 5 Lpm','T<sub>go</sub> at 5 Lpm',rows,'tgo5','#d97706','rectRot')
+  ],3,98,20,10);
 
 
 
@@ -1425,8 +1446,8 @@ function renderAll(){
   ]);
 
   createChart('chart_afr','legend_afr','Air-Fuel Ratio (-)',[
-    datasetHollow('AFRλ','AFR<sub>λ</sub>',rows,'afr_lambda',colors.blue,'circle'),
-    datasetLarger('AFR EMS','AFR<sub>EMS</sub>',rows,'afr_ems',colors.orange,'rectRot')
+    dataset('AFRλ','AFR<sub>λ</sub>',rows,'afr_lambda',colors.blue,'circle'),
+    dataset('AFR EMS','AFR<sub>EMS</sub>',rows,'afr_ems',colors.orange,'rect')
   ]);
 
   createChart('chart_qw','legend_qw','Heat transfer rate (kJ/s)',[
