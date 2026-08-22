@@ -52,7 +52,6 @@
     .html-legend.legend-large .legend-marker.triangle{border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:28px solid var(--c);width:0;height:0;background:transparent;}
     .legend-item{display:inline-flex;align-items:center;gap:16px;white-space:nowrap}.legend-marker{width:26px;height:26px;display:inline-block;background:var(--c);flex:0 0 auto}.legend-marker.circle{border-radius:50%}.legend-marker.rect{border-radius:0}
     .legend-marker.triangle{width:0;height:0;background:transparent;border-left:13px solid transparent;border-right:13px solid transparent;border-bottom:26px solid var(--c)}
-    .legend-marker.rectRot{border-radius:0;transform:rotate(45deg);}
     .legend-marker.crossRot{background:transparent;position:relative;width:11px;height:11px;}
     .legend-item.dashed-line::before{content:'– –';margin-right:4px;font-weight:bold;color:var(--lc);font-size:13px;}
     .legend-marker.crossRot::before,.legend-marker.crossRot::after{content:'';position:absolute;background:var(--c);top:50%;left:50%;transform-origin:center;}
@@ -593,17 +592,6 @@ function datasetWithYOffset(labelText,labelHtml,rows,key,color,pointStyle,yOffse
 }
 
 
-
-function withYOffset(ds, yOffset){
-  if(yOffset && Array.isArray(ds.data)){
-    ds.data = ds.data.map(p => {
-      if(typeof p === 'object' && p !== null && 'y' in p) return {...p, y: p.y + yOffset};
-      if(typeof p === 'number') return p + yOffset;
-      return p;
-    });
-  }
-  return ds;
-}
 
 function roundDownTo(value, step){
   return Math.floor(value / step) * step;
@@ -1242,7 +1230,7 @@ function chartOptions(rows,yTitle,datasets,yScaleMode='linear'){
 }
 
 
-function markerClass(pointStyle){if(pointStyle==='triangle') return 'triangle'; if(pointStyle==='rect') return 'rect'; if(pointStyle==='rectRot') return 'rectRot'; if(pointStyle==='crossRot') return 'crossRot'; return 'circle';}
+function markerClass(pointStyle){if(pointStyle==='triangle') return 'triangle'; if(pointStyle==='rect') return 'rect'; if(pointStyle==='crossRot') return 'crossRot'; return 'circle';}
 function renderHtmlLegend(legendId,datasets){
   document.getElementById(legendId).innerHTML=datasets.map(ds=>{
     const isDashed = Array.isArray(ds.borderDash) && ds.borderDash.length > 0;
@@ -1437,8 +1425,8 @@ function renderAll(){
   ]);
 
   createChart('chart_afr','legend_afr','Air-Fuel Ratio (-)',[
-    withYOffset(datasetLarger('AFRλ','AFR<sub>λ</sub>',rows,'afr_lambda',colors.blue,'circle'), -0.6),
-    withYOffset(datasetLarger('AFR EMS','AFR<sub>EMS</sub>',rows,'afr_ems',colors.orange,'rect'), 0.6)
+    datasetHollow('AFRλ','AFR<sub>λ</sub>',rows,'afr_lambda',colors.blue,'circle'),
+    datasetLarger('AFR EMS','AFR<sub>EMS</sub>',rows,'afr_ems',colors.orange,'rectRot')
   ]);
 
   createChart('chart_qw','legend_qw','Heat transfer rate (kJ/s)',[
